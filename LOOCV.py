@@ -4,8 +4,7 @@ Created on Mon Nov 27 22:26:01 2017
 
 @author: 310122653
 """
-from Classifier_routines import Classifier_random_forest
-from GridSearch import *
+from Classifier_routines import kEras
 
 import itertools
 from matplotlib import *
@@ -59,8 +58,7 @@ def leave_one_out_cross_validation(babies,AnnotMatrix_each_patient,FeatureMatrix
            idx=[nonzero(idx[sb])[0] for sb in range(len(selected_babies))]#.values()]              # get the indices where True
            Xfeat=[val[idx[sb],:] for sb, val in enumerate(FeatureMatrix_auswahl)]   #selecting the datapoints in label
            y_each_patient=[val[idx[sb],:] for sb, val in enumerate(AnnotMatrix_auswahl) if sb in range(len(selected_babies))] #get the values for y from idx and label    
-       #    Xfeat=[val[:,lst] for sb, val in enumerate(FeatureMatrix_auswahl)] # selecting the features to run
-       #    Xfeat=[val[idx[sb],:] for sb, val in enumerate(Xfeat)]   #selecting the datapoints in label
+
         
            #creating another Set where all PAtients are included. In the Random Forest function one is selected for training. otherwise dimension missmatch   
            AnnotMatrix_auswahl_test=[AnnotMatrix_each_patient[k] for k in babies]              # get the annotation values for selected babies
@@ -69,30 +67,23 @@ def leave_one_out_cross_validation(babies,AnnotMatrix_each_patient,FeatureMatrix
            idx_test=[nonzero(idx_test[sb])[0] for sb in range(len(babies))]#.values()]              # get the indices where True
            Xfeat_test=[val[idx_test[sb],:] for sb, val in enumerate(FeatureMatrix_auswahl_test)]  
            y_each_patient_test=[val[idx_test[sb],:] for sb, val in enumerate(AnnotMatrix_auswahl_test) if sb in range(len(babies))] #get the values for y from idx and label
-       #    Xfeat_test=[val[:,lst] for sb, val in enumerate(FeatureMatrix_auswahl_test)] # using the feature values for features in lst2 to run
-       #    Xfeat_test=[val[idx_test[sb],:] for sb, val in enumerate(Xfeat_test)]  
             
        
            #Validate with left out patient 
            # Run the classifier with the selected FEature subset in selecteF
-           resultsF1_macro,resultsK,resultsF1_micro,resultsF1_weight,resultsF1_all,Fimportances,scoring,prediction,probs \
-           =Classifier_random_forest(Xfeat_test, Xfeat,y_each_patient_test, y_each_patient, selected_babies, \
-                                     selected_test, label,classweight, Used_classifier, drawing, lst,\
-                                     ChoosenKind,SamplingMeth,probability_threshold,ASprobLimit,N,crit,msl,deciding_performance_measure,dispinfo)
+           resultsK,resultsF1_all,prediction,loss_and_metrics \
+           =kEras(Xfeat_test, Xfeat,y_each_patient_test, y_each_patient, selected_babies, \
+                              selected_test, label, classweight, Used_classifier, lst, ChoosenKind,\
+                              SamplingMeth)
        
        #    =Classifier_random_forest(Xfeat,y_each_patient,selected_babies,label,classweight)       
        #    sys.exit('Jan werth 222')
 #           classpredictions[V]=prediction
-           ValidatedFimportance[V]=Fimportances
            
            classpredictions.append(prediction)
-           Probabilities.append(probs)
-           ValidatedPerformance_macro.append(resultsF1_macro)
            ValidatedPerformance_K.append(resultsK)
-           ValidatedPerformance_micro.append(resultsF1_micro)
-           ValidatedPerformance_weigth.append(resultsF1_weight)    
            ValidatedPerformance_all[V]=resultsF1_all
-           Validatedscoring.append(scoring)
+           Validatedscoring.append(loss_and_metrics)
        
            if plotting:
                   t_a.append(np.linspace(0,len(y_each_patient_test[V])*30/60,len(y_each_patient_test[V])))
@@ -114,25 +105,15 @@ def leave_one_out_cross_validation(babies,AnnotMatrix_each_patient,FeatureMatrix
        ValidatedPerformance_all_mean=array(mean(ValidatedPerformance_all,0))
        
        
-       if saving:      
-           save(savepath + 'ValidatedFimportance' + description, ValidatedFimportance)     
-         
-           save(savepath + 'ValidatedPerformance_macro' + description, ValidatedPerformance_macro)     
-           save(savepath + 'ValidatedPerformance_K' + description, ValidatedPerformance_K)     
-           save(savepath + 'ValidatedPerformance_micro' + description, ValidatedPerformance_micro)
-           save(savepath + 'ValidatedPerformance_weigth' + description, ValidatedPerformance_weigth)     
-           save(savepath + 'ValidatedPerformance_all' + description, ValidatedPerformance_all)       
            
        return y_each_patient_test,\
               classpredictions,\
-              Probabilities,\
-              ValidatedFimportance,\
-              ValidatedPerformance_macro,\
               ValidatedPerformance_K,\
-              ValidatedPerformance_micro,\
-              ValidatedPerformance_weigth,\
               ValidatedPerformance_all,\
-              Validatedscoring,\
-              ValidatedPerformance_K,\
-              ValidatedPerformance_all_mean
-           
+              ValidatedPerformance_all_mean,\
+              Validatedscoring
+              
+  
+
+
+         

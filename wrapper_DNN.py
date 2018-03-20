@@ -1,16 +1,10 @@
 # -*- coding: utf-8 -*-
 """
-Created on Thu Oct 26 13:11:02 2017
+Created on Thu Mar  8 09:37:59 2018
 
 @author: 310122653
 """
 
-# -*- coding: utf-8 -*-
-"""
-Created on Thu Aug 10 22:10:10 2017
-
-@author: 310122653
-"""
 from platform import python_version
 print ('Python version: ', sep=' ', end='', flush=True);print( python_version())	
 
@@ -19,7 +13,7 @@ print ('Python version: ', sep=' ', end='', flush=True);print( python_version())
 #babies, AnnotMatrix_each_patient, FeatureMatrix_each_patient_all, Class_dict, features_dict, features_indx, \
 #FeatureMatrix_each_patient_fromSession, lst
 from Classifier_routines import Classifier_random_forest
-from Loading_5min_mat_files_cECG import Loading_data_all,Loading_data_perSession,Feature_names,Loading_Annotations
+from Loading_5min_mat_files_DNN import Loading_data_all,Loading_data_perSession,Feature_names,Loading_Annotations
 from LOOCV import leave_one_out_cross_validation
 
 import itertools
@@ -85,9 +79,10 @@ NQS=100; mslQS=5 #100 2
 
 
 Rpeakmethod='R' #R or M
-dataset='cECG'  # Either ECG or cECG and later maybe MMC or InnerSense
+dataset='ECG'  # Either ECG or cECG and later maybe MMC or InnerSense
 #***************
 selectedbabies =[0,1,2,3,5,6,7,8] #0-8 ('4','5','6','7','9','10','11','12','13')
+
 #selectedbabies=[0,1,2,3,5,6,7,8]
 label=[1,2,3,4,6] # 1=AS 2=QS 3=Wake 4=Care-taking 5=NA 6= transition
 #---------------------------
@@ -115,7 +110,7 @@ ChoosenKind=0   # 0-3['regular','borderline1','borderline2','svm'] only when usi
 #---------------------------
 probability_threshold=1 # 1 to use different probabilities tan 0.5 to decide on the class. At the moment it is >=0.2 for any other calss then AS
 ASprobLimit=ASQS# Determine the AS lower limit for the probability for which another class is chosen than AS. For: [3 labels, >3 labels]
-WhichMix='perSession' #perSession or all  # determine how the data was scaled. PEr session or just per patient
+WhichMix='all' #perSession or all  # determine how the data was scaled. PEr session or just per patient
 #--------------------
 Used_classifier='RF' #RF=random forest ; ERF= extreme random forest; TR= Decission tree; GB= Gradient boosting
 N=NQS # Estimators for the trees
@@ -161,17 +156,15 @@ Class_dict, features_dict, features_indx=Feature_names()
 def loadingdata(whichMix):
        if WhichMix=='perSession':            
               babies, AnnotMatrix_each_patient,FeatureMatrix_each_patient\
-              =Loading_data_perSession(dataset, selectedbabies, lst, Rpeakmethod,ux, scaling,\
-                            LoosingAnnot5, LoosingAnnot6, LoosingAnnot6_2, direction6, plotting, Smoothing_short, Pack4, merge34,\
-                            Movingwindow, preaveraging, postaveraging, exceptNOF, onlyNOF, FEAT,\
-                            PolyTrans, ExpFactor, exceptNOpF, onlyNOpF, FEATp,dispinfo)       
+              =Loading_data_perSession(dataset, selectedbabies, lst, Rpeakmethod,ux, \
+                            merge34, Movingwindow, preaveraging, postaveraging, exceptNOF, onlyNOF, FEAT,\
+                            dispinfo)       
               
        elif WhichMix=='all':              
               babies, AnnotMatrix_each_patient, FeatureMatrix_each_patient\
-              =Loading_data_all(dataset,selectedbabies,lst, Rpeakmethod,ux,scaling,\
-                            LoosingAnnot5,LoosingAnnot6,LoosingAnnot6_2,direction6,plotting,Smoothing_short,Pack4,merge34,\
-                            Movingwindow,preaveraging,postaveraging,exceptNOF,onlyNOF,FEAT,\
-                            PolyTrans,ExpFactor,exceptNOpF,onlyNOpF,FEATp)
+              =Loading_data_all(dataset, selectedbabies, lst, Rpeakmethod,ux, \
+                            merge34, Movingwindow, preaveraging, postaveraging, exceptNOF, onlyNOF, FEAT,\
+                            dispinfo)
               
        """
        LOOCV ************************************************************************
