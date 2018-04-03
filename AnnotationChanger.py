@@ -107,6 +107,7 @@ def AnnotationChanger(AnnotMatrix_each_patient,LoosingAnnot5,LoosingAnnot6,Loosi
               for l in range(len(AnnotMatrix_each_patient)):
                      for M in range(len(AnnotMatrix_each_patient[l])): #stepping 5 min 10*30s
                            AAA=list(AnnotMatrix_each_patient[l]).index(4)
+#%%                           
        if merge34:
               for l in range(len(AnnotMatrix_each_patient)):
                      for M in range(1,len(AnnotMatrix_each_patient[l])):# 1 as we want to compare M and M-1, so rnge should start at 1 and not 0

@@ -61,6 +61,7 @@ Loading data declaration & Wrapper variables
 29,30,31,32,33
 **************************************************************************
 """
+FeatureSet='ECG'
 lstQS= [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33] 
 
 #AVERAGING
@@ -84,7 +85,8 @@ dataset='ECG'  # Either ECG or cECG and later maybe MMC or InnerSense
 selectedbabies =[0,1,2,3,5,6,7,8] #0-8 ('4','5','6','7','9','10','11','12','13')
 
 #selectedbabies=[0,1,2,3,5,6,7,8]
-label=[1,2,3,4,6] # 1=AS 2=QS 3=Wake 4=Care-taking 5=NA 6= transition
+#label=[1,2,3,4,6] # 1=AS 2=QS 3=Wake 4=Care-taking 5=NA 6= transition
+label=[1,2,3,4]
 #---------------------------
 # Feature list
 lst = lstQS
@@ -94,7 +96,7 @@ scaling='Z' # Scaling Z or MM
 #---------------------------
 Movingwindow=FensterQS # WIndow size for moving average
 preaveraging=0
-postaveraging=1
+postaveraging=0
 exceptNOF=ExFeatQS #Which Number of Features (NOF) should be used with moving average?  all =oth tzero; only some or all except some defined in FEAT
 onlyNOF=0 # [0,1,2,27,28,29]
 FEAT=FEATaQS
@@ -156,13 +158,13 @@ Class_dict, features_dict, features_indx=Feature_names()
 def loadingdata(whichMix):
        if WhichMix=='perSession':            
               babies, AnnotMatrix_each_patient,FeatureMatrix_each_patient\
-              =Loading_data_perSession(dataset, selectedbabies, lst, Rpeakmethod,ux, \
+              =Loading_data_perSession(dataset, selectedbabies, lst, FeatureSet, Rpeakmethod,ux, \
                             merge34, Movingwindow, preaveraging, postaveraging, exceptNOF, onlyNOF, FEAT,\
                             dispinfo)       
               
        elif WhichMix=='all':              
               babies, AnnotMatrix_each_patient, FeatureMatrix_each_patient\
-              =Loading_data_all(dataset, selectedbabies, lst, Rpeakmethod,ux, \
+              =Loading_data_all(dataset, selectedbabies, lst, FeatureSet, Rpeakmethod,ux, \
                             merge34, Movingwindow, preaveraging, postaveraging, exceptNOF, onlyNOF, FEAT,\
                             dispinfo)
               
@@ -172,44 +174,42 @@ def loadingdata(whichMix):
 
        y_each_patient,\
        classpredictions,\
-       Kappa,\
-       F1_all,\
-       F1_all_mean,\
-       scoring\
+       Performance_Kappa,\
+       Performance_MEA,\
+       Performance_MEA_history\
        =leave_one_out_cross_validation(babies,AnnotMatrix_each_patient,FeatureMatrix_each_patient,\
                 label,classweight, Used_classifier, drawing, lst,ChoosenKind,SamplingMeth,probability_threshold,ASprobLimit,plotting,compare,saving,\
                 N,crit,msl,deciding_performance_measure,dispinfo)
        
        RES_F1_all_IS_mean=array(mean(F1_all,0))          
        
-       return  babies, y_each_patient, classpredictions, Kappa,F1_all
+       return  babies, y_each_patient, classpredictions, Performance_Kappa,Performance_MEA,Performance_MEA_history
 
 
-babies, y_each_patient, classpredictions, Kappa,F1_all\
+babies, y_each_patient, classpredictions,Kappa,Performance_MEA,Performance_MEA_history\
 = loadingdata(WhichMix)                  
 
-F1_all_QS_mean=array(mean(F1_all,0))
 
-# Kappa over all annotations and predictions merged together
-tmp_orig=vstack(y_each_patient)
-tmp_pred=hstack(classpredictions)
-
-#Performance of optimized predictions 
-RES1_F1_all=zeros(shape=(len(babies),len(label)))
-KonfMAT=list()
-KonfMATall=list()
-RES1_Kappa=list()
-
-for K in range(len(babies)):
-       KonfMAT.append(confusion_matrix(y_each_patient[K].ravel(), classpredictions[K], labels=label, sample_weight=None))
-       RES1_Kappa.append(cohen_kappa_score(y_each_patient[K].ravel(),classpredictions[K],labels=label)) # Find the threshold where Kapaa gets max
-       RES1_F1_all[K]=f1_score(y_each_patient[K].ravel(), classpredictions[K],labels=label, average=None)#, pos_label=None)
-RES1_kappa_STD=std(RES1_Kappa)       
-RES1_Kappa.append(mean(RES1_Kappa))
-RES1_F1_all_mean=array(mean(RES1_F1_all,0))    
-RES1_KAPPA_overall=cohen_kappa_score(tmp_orig.ravel(),tmp_pred.ravel(),labels=label)
-KonfMATall.append(confusion_matrix(tmp_orig.ravel(), tmp_pred.ravel(), labels=label, sample_weight=None))
-
+#
+## Kappa over all annotations and predictions merged together
+#tmp_orig=vstack(y_each_patient)
+#tmp_pred=hstack(classpredictions)
+#
+##Performance of optimized predictions 
+#RES_MEA_all=zeros(shape=(len(babies),len(label)))
+#KonfMAT=list()
+#KonfMATall=list()
+#RES_Kappa=list()
+#
+#for K in range(len(babies)):
+#       KonfMAT.append(confusion_matrix(y_each_patient[K].ravel(), classpredictions[K], labels=label, sample_weight=None))
+#       RES_Kappa.append(cohen_kappa_score(y_each_patient[K].ravel(),classpredictions[K],labels=label)) # Find the threshold where Kapaa gets max
+#RES1_kappa_STD=std(RES1_Kappa)       
+#RES1_Kappa.append(mean(RES1_Kappa))
+#RES1_F1_all_mean=array(mean(RES1_F1_all,0))    
+#RES1_KAPPA_overall=cohen_kappa_score(tmp_orig.ravel(),tmp_pred.ravel(),labels=label)
+#KonfMATall.append(confusion_matrix(tmp_orig.ravel(), tmp_pred.ravel(), labels=label, sample_weight=None))
+#
 
 #PlottingFeatureImportance(Fimportance_QS,Fimportance_CT,Fimportance_IS,features_dict)
 
@@ -230,6 +230,6 @@ print("--- %i h ---" % Stunden)
 if saving:
     print("saved at: %s" %zeit)
 print("Console 1 : "); print(description)
-disp(  RES1_Kappa[-1])
-disp(RES1_kappa_STD)
-disp (RES1_KAPPA_overall)
+#disp(  RES1_Kappa[-1])
+#disp(RES1_kappa_STD)
+#disp (RES1_KAPPA_overall)

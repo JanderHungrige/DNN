@@ -33,7 +33,7 @@ from sklearn.kernel_approximation import RBFSampler
 
 
 
-def Loading_data_all(dataset, selectedbabies, lst, Rpeakmethod,ux, \
+def Loading_data_all(dataset, selectedbabies, lst, FeatureSet, Rpeakmethod,ux, \
                             merge34, Movingwindow, preaveraging, postaveraging, exceptNOF, onlyNOF, FEAT,\
                             dispinfo):
 
@@ -45,7 +45,8 @@ def Loading_data_all(dataset, selectedbabies, lst, Rpeakmethod,ux, \
                      if ux:
                             folder=('/home/310122653/Pyhton_Folder/cECG/Matrices/')
                      else:
-                            folder=('E:/cECG_study/C_Processed_Data/DNN-Matrices/Matrices/ECG/')
+#                            folder=('E:/cECG_study/C_Processed_Data/DNN-Matrices/Matrices/ECG/')
+                            folder=('C:/Users/310122653/Documents/PhD/cECG Data/cECG_data_copy/Matrices/ECG/')
               if 'cECG'==dataset:
                      if ux:  
                             folder=('/home/310122653/Pyhton_Folder/cECG/cMatrices/')
@@ -86,10 +87,8 @@ def Loading_data_all(dataset, selectedbabies, lst, Rpeakmethod,ux, \
            #NANs should already be deleted. Not scaled.
            #NANs can be in as there are only NaNs with NaN annotations. Nan al label is not used
                if j==0:
-                   FeatureMatrix_each_patient_all[k]=matlabfile.get('FeatureMatrix') 
-                   FeatureMatrix_each_patient_all[k]=FeatureMatrix_each_patient_all[k].transpose() # transpose to datapoints,features
-       #            FeatureMatrix_each_patient[k]=FeatureMatrix_each_patient[k][~np.isnan(FeatureMatrix_each_patient[k]).any(axis=1)]#deleting NAN and turning Matrix to datapoints,Features
-       
+                   FeatureMatrix_each_patient_all[k]=matlabfile.get('FeatureMatrix')       
+                   
                elif j==1:
                    AnnotMatrix_each_patient[k]=matlabfile.get('Annotations')  
                    AnnotMatrix_each_patient[k]=AnnotMatrix_each_patient[k].transpose() # transpose to datapoints,annotations
@@ -101,9 +100,9 @@ def Loading_data_all(dataset, selectedbabies, lst, Rpeakmethod,ux, \
        #            AnnotMatrix_each_patient[k]= np.delete(AnnotMatrix_each_patient[k],(1,2), axis=1) #Reduce AnnotationMatrix to Nx1
        #            AnnotMatrix_each_patient[k]=AnnotMatrix_each_patient[k][~np.isnan(AnnotMatrix_each_patient[k]).any(axis=1)]#deleting NAN and turning Matrix to datapoints,Features
        
-       
-       FeatureMatrix_each_patient_all=[val[:,lst] for sb, val in enumerate(FeatureMatrix_each_patient_all)] # selecting only the features in lst                      
-                     
+       if FeatureSet=='FET':
+              FeatureMatrix_each_patient_all=[val[:,lst] for sb, val in enumerate(FeatureMatrix_each_patient_all)] # selecting only the features in lst                      
+                                 
        if postaveraging:             
               NOF=np.arange(0,(np.size(FeatureMatrix_each_patient_all[K],1))) # create range from 0-29 (lenth of features)
               if exceptNOF:
@@ -115,9 +114,9 @@ def Loading_data_all(dataset, selectedbabies, lst, Rpeakmethod,ux, \
                      np.convolve(FeatureMatrix_each_patient_all[K][:,F], np.ones((Movingwindow,))/Movingwindow, mode='same')                
                                           
 
-       AnnotMatrix_each_patient=AnnotationChanger(AnnotMatrix_each_patient,LoosingAnnot5,LoosingAnnot6,LoosingAnnot6_2,Smoothing_short,Pack4,direction6,merge34)
-
-                     
+       AnnotMatrix_each_patient=AnnotationChanger(AnnotMatrix_each_patient,0,0,0,0,0,0,merge34)
+       
+                           
        return babies, AnnotMatrix_each_patient, FeatureMatrix_each_patient_all
        
                      
@@ -126,7 +125,7 @@ def Loading_data_all(dataset, selectedbabies, lst, Rpeakmethod,ux, \
        
        #%%
        
-def Loading_data_perSession(ddataset, selectedbabies, lst, Rpeakmethod,ux, \
+def Loading_data_perSession(ddataset, selectedbabies, lst, FeatureSet, Rpeakmethod,ux, \
                             merge34, Movingwindow, preaveraging, postaveraging, exceptNOF, onlyNOF, FEAT,\
                             dispinfo):    
        
@@ -181,7 +180,7 @@ def Loading_data_perSession(ddataset, selectedbabies, lst, Rpeakmethod,ux, \
            #NANs should already be deleted. Not scaled.
            #NANs can be in as there are only NaNs with NaN annotations. Nan al label is not used
                       FeatureMatrix_Session_each_patient[j]=matlabfile.get('FeatureMatrix') 
-                      FeatureMatrix_Session_each_patient[j]=FeatureMatrix_Session_each_patient[j].transpose() # transpose to datapoints,features
+#                      FeatureMatrix_Session_each_patient[j]=FeatureMatrix_Session_each_patient[j].transpose() # transpose to datapoints,features
        # TRIMMING THEM IF SESSIONS ARE TO SHORT OR EMPTY               
 #              FeatureMatrix_Session_each_patient[1]=[];FeatureMatrix_Session_each_patient[5]=[]# just a test delete
               WelcheSindLeer=list()
@@ -202,8 +201,8 @@ def Loading_data_perSession(ddataset, selectedbabies, lst, Rpeakmethod,ux, \
 
                             
               FeatureMatrix_each_patient_fromSession[K]=np.concatenate(FeatureMatrix_Session_each_patient)
-              
-       FeatureMatrix_each_patient_fromSession=[val[:,lst] for sb, val in enumerate(FeatureMatrix_each_patient_fromSession)] # selecting only the features used iin lst
+       if FeatureSet=='FET':              
+              FeatureMatrix_each_patient_fromSession=[val[:,lst] for sb, val in enumerate(FeatureMatrix_each_patient_fromSession)] # selecting only the features used iin lst
               
               
        for K in range(len(Neonate)):           

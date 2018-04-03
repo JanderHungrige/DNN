@@ -4,7 +4,7 @@ Created on Mon Nov 27 22:26:01 2017
 
 @author: 310122653
 """
-from Classifier_routines import kEras
+from DNN_routines import KeraS
 
 import itertools
 from matplotlib import *
@@ -35,10 +35,7 @@ def leave_one_out_cross_validation(babies,AnnotMatrix_each_patient,FeatureMatrix
        classpredictions=list()
        Probabilities=list()
        Performance=list()
-       ValidatedPerformance_macro=list()
        ValidatedPerformance_K=list()
-       ValidatedPerformance_micro=list()
-       ValidatedPerformance_weigth=list()  
        ValidatedPerformance_all=zeros(shape=(len(babies),len(label)))
        ValidatedFimportance=zeros(shape=(len(babies),len(FeatureMatrix_each_patient[0][1])))
        Validatedscoring=list()        
@@ -46,44 +43,48 @@ def leave_one_out_cross_validation(babies,AnnotMatrix_each_patient,FeatureMatrix
        for V in range(len(babies)):
            print('**************************')
            if dispinfo:
-                  print('Validating on patient: %i' %(V+1) ) 
+                  print('Validating on patient: %i' %(V+1) )
            
-           selected_babies=list(delete(babies,babies[V]))# Babies to train and test on ; j-1 as index starts with 0
-           selected_test=babies[V]# Babies to validate on 
-           #### Create Matrices for selected babies
+           # Using only the Patients choosen in the wrapper
+           FeatureMatrix_for_choosen_patients=[FeatureMatrix_each_patient[k] for k in babies]          # get the feature values for selected babies                  
+           AnnotMatrix_for_choosen_patients=[AnnotMatrix_each_patient[k] for k in babies]              # get the annotation values for selected babies
+           # Using only the labels choosen in the wrapper
+           idx=[in1d(AnnotMatrix_each_patient[sb],label) for sb in babies]#.values()]     # which are the idices for AnnotMatrix_each_patient == label
+           idx=[nonzero(idx[sb])[0] for sb in range(len(babies))]#.values()]              # get the indices where True
+           X_labeled=[val[idx[sb],:] for sb, val in enumerate(FeatureMatrix_for_choosen_patients)]   #selecting the datapoints in label
+           y_labeled=[val[idx[sb],:] for sb, val in enumerate(AnnotMatrix_for_choosen_patients)] #get the values for y from idx and label    
+                          
+           # Selecting what becomes testing and what train and validation
+           selected_babies_train=list(delete(babies,babies[V]))# Babies to train and test on ; j-1 as index starts with 0
+           selected_babies_test=babies[V]# Babies to validate on 
            
-           AnnotMatrix_auswahl=[AnnotMatrix_each_patient[k] for k in selected_babies]              # get the annotation values for selected babies
-           FeatureMatrix_auswahl=[FeatureMatrix_each_patient[k] for k in selected_babies]          # get the feature values for selected babies
-           idx=[in1d(AnnotMatrix_each_patient[sb],label) for sb in selected_babies]#.values()]     # which are the idices for AnnotMatrix_each_patient == label
-           idx=[nonzero(idx[sb])[0] for sb in range(len(selected_babies))]#.values()]              # get the indices where True
-           Xfeat=[val[idx[sb],:] for sb, val in enumerate(FeatureMatrix_auswahl)]   #selecting the datapoints in label
-           y_each_patient=[val[idx[sb],:] for sb, val in enumerate(AnnotMatrix_auswahl) if sb in range(len(selected_babies))] #get the values for y from idx and label    
-
+           X_train_val=[X_labeled[k] for k in selected_babies_train]          # get the feature values for selected babies           
+           y_train_val=[y_labeled[k] for k in selected_babies_train]              # get the annotation values for selected babies
+           
+           X_test=X_labeled[selected_babies_test]          # get the feature values for selected babies
+           y_test=y_labeled[selected_babies_test]               # get the annotation values for selected babies
+           
+                    
         
-           #creating another Set where all PAtients are included. In the Random Forest function one is selected for training. otherwise dimension missmatch   
-           AnnotMatrix_auswahl_test=[AnnotMatrix_each_patient[k] for k in babies]              # get the annotation values for selected babies
-           FeatureMatrix_auswahl_test=[FeatureMatrix_each_patient[k] for k in babies]
-           idx_test=[in1d(AnnotMatrix_each_patient[sb],label) for sb in babies]#.values()]     # which are the idices for AnnotMatrix_each_patient == label
-           idx_test=[nonzero(idx_test[sb])[0] for sb in range(len(babies))]#.values()]              # get the indices where True
-           Xfeat_test=[val[idx_test[sb],:] for sb, val in enumerate(FeatureMatrix_auswahl_test)]  
-           y_each_patient_test=[val[idx_test[sb],:] for sb, val in enumerate(AnnotMatrix_auswahl_test) if sb in range(len(babies))] #get the values for y from idx and label
-            
-       
+#           #creating another Set where all PAtients are included. In the Random Forest function one is selected for training. otherwise dimension missmatch   
+#           AnnotMatrix_auswahl_test=[AnnotMatrix_each_patient[k] for k in babies]              # get the annotation values for selected babies
+#           FeatureMatrix_auswahl_test=[FeatureMatrix_each_patient[k] for k in babies]
+#           idx_test=[in1d(AnnotMatrix_each_patient[sb],label) for sb in babies]#.values()]     # which are the idices for AnnotMatrix_each_patient == label
+#           idx_test=[nonzero(idx_test[sb])[0] for sb in range(len(babies))]#.values()]              # get the indices where True
+#           Xfeat_test=[val[idx_test[sb],:] for sb, val in enumerate(FeatureMatrix_auswahl_test)]  
+#           y_each_patient_test=[val[idx_test[sb],:] for sb, val in enumerate(AnnotMatrix_auswahl_test) if sb in range(len(babies))] #get the values for y from idx and label
+#            
+           fold=3
            #Validate with left out patient 
            # Run the classifier with the selected FEature subset in selecteF
-           resultsK,resultsF1_all,prediction,loss_and_metrics \
-           =kEras(Xfeat_test, Xfeat,y_each_patient_test, y_each_patient, selected_babies, \
-                              selected_test, label, classweight, Used_classifier, lst, ChoosenKind,\
-                              SamplingMeth)
-       
-       #    =Classifier_random_forest(Xfeat,y_each_patient,selected_babies,label,classweight)       
-       #    sys.exit('Jan werth 222')
-#           classpredictions[V]=prediction
+           resultsK,prediction,all_mean_mea,all_mae_histroy,mean_k \
+           =KeraS(X_train_val, y_train_val,X_test, y_test, selected_babies_train, \
+                               label, fold)
            
            classpredictions.append(prediction)
-           ValidatedPerformance_K.append(resultsK)
-           ValidatedPerformance_all[V]=resultsF1_all
-           Validatedscoring.append(loss_and_metrics)
+           Performance_K.append(mean_k)
+           mea_history_all[V]=all_mae_histroy
+           Performance_mea.append(all_mean_mea)
        
            if plotting:
                   t_a.append(np.linspace(0,len(y_each_patient_test[V])*30/60,len(y_each_patient_test[V])))
@@ -100,18 +101,13 @@ def leave_one_out_cross_validation(babies,AnnotMatrix_each_patient,FeatureMatrix
        """
        ENDING stuff
        """
-       
-       ValidatedPerformance_K.append(mean(ValidatedPerformance_K)) 
-       ValidatedPerformance_all_mean=array(mean(ValidatedPerformance_all,0))
-       
-       
-           
-       return y_each_patient_test,\
+
+       return y_labeled,\
               classpredictions,\
-              ValidatedPerformance_K,\
-              ValidatedPerformance_all,\
-              ValidatedPerformance_all_mean,\
-              Validatedscoring
+              Performance_K,\
+              Performance_mea,\
+              mea_history_all
+              
               
   
 
