@@ -40,29 +40,22 @@ def Loading_data_all(dataset, selectedbabies, lst, FeatureSet, Rpeakmethod,ux, \
        """
        START *************************************************************************
        """
-       if Rpeakmethod == 'R':
-              if 'ECG'== dataset:
-                     if ux:
-                            folder=('/home/310122653/Pyhton_Folder/cECG/Matrices/')
-                     else:
-#                            folder=('E:/cECG_study/C_Processed_Data/DNN-Matrices/Matrices/ECG/')
-                            folder=('C:/Users/310122653/Documents/PhD/cECG Data/cECG_data_copy/Matrices/ECG/')
-              if 'cECG'==dataset:
-                     if ux:  
-                            folder=('/home/310122653/Pyhton_Folder/cECG/cMatrices/')
-                     else:
-                            folder=('E:/cECG_study/C_Processed_Data/DNN-Matrices/cMatrices/')
-       elif Rpeakmethod == 'M':
-              if 'ECG'== dataset:
-                     if ux:
-                            folder=('/home/310122653/Pyhton_Folder/cECG/MatricesM/')
-                     else:
-                            folder=('C:/Users/310122653/Dropbox/PHD/python/cECG/MatricesM/')
-              if 'cECG'==dataset:
-                     if ux:  
-                            folder=('/home/310122653/Pyhton_Folder/cECG/cMatricesM/')
-                     else:
-                            folder=('C:/Users/310122653/Dropbox/PHD/python/cECG/cMatricesM/')              
+       if 'ECG'== dataset:
+              if ux:
+                     Sessionfolder=('/home/310122653/Pyhton_Folder/cECG/Matrices/')
+              else:
+                     Sessionfolder=('C:/Users/310122653/Dropbox/PHD/python/cECG/Matrices/')
+       if 'cECG'==dataset:
+              if ux:
+                     Sessionfolder=('/home/310122653/Pyhton_Folder/cECG/cMatrices/')
+              else:
+                     Sessionfolder=('C:/Users/310122653/Dropbox/PHD/python/cECG/cMatrices/')
+       if 'MMC'== dataset:        
+              if ux:
+                     Sessionfolder=('/home/310122653/Pyhton_Folder/DNN/Matrices/')
+              else:
+                     Sessionfolder=('C:/Users\310122653/Documents/PhD/Article_4_(MMC)/DNN-Matrices/Matrices_Features/')              
+             
            
               
        # ONLY 5 MIN FEATURES AND ANNOTATIONS
@@ -128,7 +121,7 @@ def Loading_data_all(dataset, selectedbabies, lst, FeatureSet, Rpeakmethod,ux, \
 def Loading_data_perSession(ddataset, selectedbabies, lst, FeatureSet, Rpeakmethod,ux, \
                             merge34, Movingwindow, preaveraging, postaveraging, exceptNOF, onlyNOF, FEAT,\
                             dispinfo):    
-       
+             
        """
        Creating Feature Matrix per session
        """
@@ -145,18 +138,27 @@ def Loading_data_perSession(ddataset, selectedbabies, lst, FeatureSet, Rpeakmeth
                      Sessionfolder=('/home/310122653/Pyhton_Folder/cECG/cMatrices/Sessions/')
               else:
                      Sessionfolder=('C:/Users/310122653/Dropbox/PHD/python/cECG/cMatrices/Sessions/')
+       if 'MMC'== dataset:        
+              if ux:
+                     Sessionfolder=('/home/310122653/Pyhton_Folder/DNN/Matrices/Sessions/')
+              else:
+                     Sessionfolder=('C:/Users\310122653/Documents/PhD/Article_4_(MMC)/DNN-Matrices/Matrices_Features/Sessions/')              
 
-       # ONLY 5 MIN FEATURES AND ANNOTATIONS
+ 
        dateien_each_patient="FeatureMatrix_","Annotations_" #non scaled values. The values should be scaled over all patient and not per patient. Therfore this is better
        windowlength="30"
-       Neonate_all='4','5','6','7','9','10','11','12','13'
+       if 'ECG'== dataset or 'cECG'== dataset:
+           Neonate_all='4','5','6','7','9','10','11','12','13'
+       if 'MMC'== dataset:
+           Neonate_all='1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20','21','22'          
+           
        babies=[i for i in range(len(selectedbabies))]# return to main function
        
        Neonate=[(Neonate_all[i]) for i in selectedbabies];Neonate=tuple(Neonate)
        FeatureMatrix_each_patient_all=[0]*len(Neonate)
        AnnotMatrix_each_patient=[0]*len(Neonate)
        t_a=[0]*len(Neonate)                     
-       
+#IMPORTING FILES
        import os
        import glob
        from pathlib import Path           
@@ -199,15 +201,15 @@ def Loading_data_perSession(ddataset, selectedbabies, lst, FeatureSet, Rpeakmeth
                      del FeatureMatrix_Session_each_patient[index]
 #              FeatureMatrix_Session_each_patient=[m for n, m in enumerate(FeatureMatrix_Session_each_patient) if n not in WelcheSindLeer] #remove empty session
 
-                            
+
               FeatureMatrix_each_patient_fromSession[K]=np.concatenate(FeatureMatrix_Session_each_patient)
-       if FeatureSet=='FET':              
+              
+       if FeatureSet=='Features':             # only the Feature set has features to choose from :-) 
               FeatureMatrix_each_patient_fromSession=[val[:,lst] for sb, val in enumerate(FeatureMatrix_each_patient_fromSession)] # selecting only the features used iin lst
               
               
        for K in range(len(Neonate)):           
-              
-              if postaveraging:             
+                 if postaveraging:             
                      NOF=np.arange(0,(np.size(FeatureMatrix_each_patient_fromSession[K],1))) # create range from 0-29 (lenth of features)
                      if exceptNOF:
                             NOF= np.delete(NOF,FEAT)

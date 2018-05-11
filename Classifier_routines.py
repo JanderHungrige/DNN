@@ -20,7 +20,6 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.cross_validation import StratifiedKFold
 from sklearn.cross_validation import cross_val_score
 from sklearn.cross_validation import KFold
-from sklearn import tree
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.ensemble import ExtraTreesClassifier
 from sklearn.ensemble import GradientBoostingClassifier

@@ -3,6 +3,11 @@
 Created on Thu Mar  8 09:37:59 2018
 
 @author: 310122653
+
+The data is already standard scaled (z-scale mean=1 std=0) in MAtlab. For each session separatelly. Nan is removed from the Matrices.
+11.5.2018
+
+
 """
 
 from platform import python_version
@@ -14,7 +19,8 @@ print ('Python version: ', sep=' ', end='', flush=True);print( python_version())
 #FeatureMatrix_each_patient_fromSession, lst
 from Classifier_routines import Classifier_random_forest
 from Loading_5min_mat_files_DNN import Loading_data_all,Loading_data_perSession,Feature_names,Loading_Annotations
-from LOOCV import leave_one_out_cross_validation
+from LOOCV_DNN import leave_one_out_cross_validation
+from create_Tensor import create_Tensor_with_lookback
 
 import itertools
 from matplotlib import *
@@ -58,11 +64,15 @@ Loading data declaration & Wrapper variables
 0,1,2 = ECG
 3,4,5,6,7,8,9,10,11,12,13,14,15,16,17= HRV time domain
 18,19,20,21,22,23,24,25,26,27,28 = HRV freq domain
-29,30,31,32,33
+29,30,31,32,33= HRV nonlinear
 **************************************************************************
 """
-FeatureSet='ECG'
+FeatureSet='Features' #Features ECG, EDR, HRV
 lstQS= [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33] 
+
+#Loockback for the LSTM. The data is separated samples with timestep=loockback; 
+#Loockback of 1337 mean all data per patient. Otherwise five it in nr of 30s epochs. e.g. 60=30min  120=1h 10=5min
+Loockback=  1337
 
 #AVERAGING
 FensterQS=20 
@@ -80,9 +90,12 @@ NQS=100; mslQS=5 #100 2
 
 
 Rpeakmethod='R' #R or M
-dataset='ECG'  # Either ECG or cECG and later maybe MMC or InnerSense
+dataset='MMC'  #ECG cECG or MMC 
 #***************
-selectedbabies =[0,1,2,3,5,6,7,8] #0-8 ('4','5','6','7','9','10','11','12','13')
+if dataset=='ECG' or 'cECG':
+       selectedbabies =[0,1,2,3,5,6,7,8] #0-8 ('4','5','6','7','9','10','11','12','13')
+if dataset == 'MMC':
+       selecetedbabies=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21] #0-21
 
 #selectedbabies=[0,1,2,3,5,6,7,8]
 #label=[1,2,3,4,6] # 1=AS 2=QS 3=Wake 4=Care-taking 5=NA 6= transition
@@ -153,9 +166,12 @@ if WhichMix not in Whichmix:
 Loading Data
 """
 Class_dict, features_dict, features_indx=Feature_names()
-
+#%%
 # CHOOSING WHICH FEATURE MATRIX IS USED
 def loadingdata(whichMix):
+       """
+       LOAD DATA
+       """
        if WhichMix=='perSession':            
               babies, AnnotMatrix_each_patient,FeatureMatrix_each_patient\
               =Loading_data_perSession(dataset, selectedbabies, lst, FeatureSet, Rpeakmethod,ux, \
@@ -166,29 +182,30 @@ def loadingdata(whichMix):
               babies, AnnotMatrix_each_patient, FeatureMatrix_each_patient\
               =Loading_data_all(dataset, selectedbabies, lst, FeatureSet, Rpeakmethod,ux, \
                             merge34, Movingwindow, preaveraging, postaveraging, exceptNOF, onlyNOF, FEAT,\
-                            dispinfo)
-              
+                            dispinfo)                   
        """
-       LOOCV ************************************************************************
+       LOOCV 
        """                
 
-       y_each_patient,\
-       classpredictions,\
-       Performance_Kappa,\
-       Performance_MEA,\
-       Performance_MEA_history\
+       y_each_patient, Performance_Kappa, mean_train_metric, mean_train_loss, mean_val_metric, mean_val_loss, mean_test_metric, mean_test_loss,\
        =leave_one_out_cross_validation(babies,AnnotMatrix_each_patient,FeatureMatrix_each_patient,\
-                label,classweight, Used_classifier, drawing, lst,ChoosenKind,SamplingMeth,probability_threshold,ASprobLimit,plotting,compare,saving,\
-                N,crit,msl,deciding_performance_measure,dispinfo)
+                label,classweight, Used_classifier, drawing, lst,ChoosenKind,SamplingMeth,probability_threshold,\
+                ASprobLimit,plotting,compare,saving,N,crit,msl,deciding_performance_measure,dispinfo,loockback)
        
-       RES_F1_all_IS_mean=array(mean(F1_all,0))          
        
-       return  babies, y_each_patient, classpredictions, Performance_Kappa,Performance_MEA,Performance_MEA_history
+       return  babies, y_each_patient, Performance_Kappa, mean_train_metric, mean_train_loss, mean_val_metric, mean_val_loss, mean_test_metric, mean_test_loss
+#%%
 
-
-babies, y_each_patient, classpredictions,Kappa,Performance_MEA,Performance_MEA_history\
+babies, y_each_patient, Performance_Kappa_pp, mean_train_metric_pp, mean_train_loss_pp, mean_val_metric_pp, mean_val_loss_pp, mean_test_metric_pp, mean_test_loss_pp\
 = loadingdata(WhichMix)                  
 
+mean_test_metric=np.mean(mean_test_metric_pp) # Kappa is not calculated per epoch but just per fold. Therefor we generate on mean Kappa
+mean_train_metric=np.mean(mean_train_metric_pp,axis=0)
+mean_val_metric=np.mean(mean_val_metric_pp,axis=0)    
+mean_test_loss=mean(mean_test_loss_pp,axis=0)    
+mean_train_loss=np.mean(mean_train_loss_pp,axis=0)
+mean_val_loss=np.mean(mean_val_loss_pp,axis=0)      
+Performance_Kappa=np.mean(Performance_Kappa_pp)
 
 #
 ## Kappa over all annotations and predictions merged together

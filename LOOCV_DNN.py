@@ -25,26 +25,30 @@ import pdb # use pdb.set_trace() as breakpoint
 def leave_one_out_cross_validation(babies,AnnotMatrix_each_patient,FeatureMatrix_each_patient,\
          label,classweight, Used_classifier, drawing, lst,ChoosenKind,SamplingMeth,probability_threshold,ASprobLimit,\
          plotting,compare,saving,\
-         N,crit,msl,deciding_performance_measure,dispinfo):
+         N,crit,msl,deciding_performance_measure,dispinfo,loockback):
        
        t_a=list()
-#       classpredictions=list()
-#        
-#       for F in babies:
-#              classpredictions=list((zeros(shape=(len(babies),len(FeatureMatrix_each_patient[F])))))
        classpredictions=list()
        Probabilities=list()
        Performance=list()
        ValidatedPerformance_K=list()
-       ValidatedPerformance_all=zeros(shape=(len(babies),len(label)))
-       ValidatedFimportance=zeros(shape=(len(babies),len(FeatureMatrix_each_patient[0][1])))
-       Validatedscoring=list()        
+       y_labeled=list()
+       classpredictions=list()
+       Performance_K=list()
+       mean_train_metric=list()
+       mean_train_loss=list()
+       mean_val_metric=list()
+       mean_val_loss=list()
+       mean_test_metric=list()
+       mean_test_loss=list()
        
        for V in range(len(babies)):
            print('**************************')
+           print('Validating on patient: %i' %(V+1) )
            if dispinfo:
                   print('Validating on patient: %i' %(V+1) )
-           
+
+#SPLITTING DATA INTO TRAIN+VALIDATION AND TEST SETS          
            # Using only the Patients choosen in the wrapper
            FeatureMatrix_for_choosen_patients=[FeatureMatrix_each_patient[k] for k in babies]          # get the feature values for selected babies                  
            AnnotMatrix_for_choosen_patients=[AnnotMatrix_each_patient[k] for k in babies]              # get the annotation values for selected babies
@@ -64,27 +68,29 @@ def leave_one_out_cross_validation(babies,AnnotMatrix_each_patient,FeatureMatrix
            X_test=X_labeled[selected_babies_test]          # get the feature values for selected babies
            y_test=y_labeled[selected_babies_test]               # get the annotation values for selected babies
            
-                    
+#CREATING TENSOR FOR INPUT INCOPORATING LOOCKBACK FOR LSTM                    
         
-#           #creating another Set where all PAtients are included. In the Random Forest function one is selected for training. otherwise dimension missmatch   
-#           AnnotMatrix_auswahl_test=[AnnotMatrix_each_patient[k] for k in babies]              # get the annotation values for selected babies
-#           FeatureMatrix_auswahl_test=[FeatureMatrix_each_patient[k] for k in babies]
-#           idx_test=[in1d(AnnotMatrix_each_patient[sb],label) for sb in babies]#.values()]     # which are the idices for AnnotMatrix_each_patient == label
-#           idx_test=[nonzero(idx_test[sb])[0] for sb in range(len(babies))]#.values()]              # get the indices where True
-#           Xfeat_test=[val[idx_test[sb],:] for sb, val in enumerate(FeatureMatrix_auswahl_test)]  
-#           y_each_patient_test=[val[idx_test[sb],:] for sb, val in enumerate(AnnotMatrix_auswahl_test) if sb in range(len(babies))] #get the values for y from idx and label
-#            
+
+           X_train_val, y_train_val=create_Tensor_with_lookback(X_train_val,y_train_val,loockback)   
+           X_test, y_test=create_Tensor_with_lookback(X_test,y_test,loockback)   
+   
            fold=3
+#FORWARD SETS TO KERAS WHERE THE MODEL IS BUILT, TRAINED, VALIDATED AND TESTED           
            #Validate with left out patient 
            # Run the classifier with the selected FEature subset in selecteF
-           resultsK,prediction,all_mean_mea,all_mae_histroy,mean_k \
+           resultsK_fold, mean_k_fold, mean_train_metric_fold, mean_val_metric_fold, mean_train_loss_fold, mean_val_loss_fold, mean_test_metric_fold, mean_test_loss_fold\
            =KeraS(X_train_val, y_train_val,X_test, y_test, selected_babies_train, \
                                label, fold)
-           
-           classpredictions.append(prediction)
-           Performance_K.append(mean_k)
-           mea_history_all[V]=all_mae_histroy
-           Performance_mea.append(all_mean_mea)
+
+#GATHERING THE RESULTS OF THE TESTING           
+#           classpredictions.append(prediction)
+           Performance_K.append(mean_k_fold)
+           mean_train_metric.append(mean_train_metric_fold)
+           mean_train_loss.append(mean_train_loss_fold)
+           mean_val_metric.append(mean_val_metric_fold)
+           mean_val_loss.append(mean_val_loss_fold)
+           mean_test_metric.append(mean_test_metric_fold)
+           mean_test_loss.append(mean_test_loss_fold)
        
            if plotting:
                   t_a.append(np.linspace(0,len(y_each_patient_test[V])*30/60,len(y_each_patient_test[V])))
@@ -103,10 +109,13 @@ def leave_one_out_cross_validation(babies,AnnotMatrix_each_patient,FeatureMatrix
        """
 
        return y_labeled,\
-              classpredictions,\
               Performance_K,\
-              Performance_mea,\
-              mea_history_all
+              mean_train_metric,\
+              mean_train_loss,\
+              mean_val_metric,\
+              mean_val_loss,\
+              mean_test_metric,\
+              mean_test_loss   
               
               
   
