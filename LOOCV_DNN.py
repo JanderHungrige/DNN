@@ -5,6 +5,7 @@ Created on Mon Nov 27 22:26:01 2017
 @author: 310122653
 """
 from DNN_routines import KeraS
+from create_Tensor  import create_Tensor_with_lookback
 
 import itertools
 from matplotlib import *
@@ -25,7 +26,7 @@ import pdb # use pdb.set_trace() as breakpoint
 def leave_one_out_cross_validation(babies,AnnotMatrix_each_patient,FeatureMatrix_each_patient,\
          label,classweight, Used_classifier, drawing, lst,ChoosenKind,SamplingMeth,probability_threshold,ASprobLimit,\
          plotting,compare,saving,\
-         N,crit,msl,deciding_performance_measure,dispinfo,loockback):
+         N,crit,msl,deciding_performance_measure,dispinfo,loockback,split,fold):
        
        t_a=list()
        classpredictions=list()
@@ -42,22 +43,44 @@ def leave_one_out_cross_validation(babies,AnnotMatrix_each_patient,FeatureMatrix
        mean_test_metric=list()
        mean_test_loss=list()
        
-       for V in range(len(babies)):
+       def percentage_split(seq, percentages): #Generator function: Create split based on percentage
+           assert sum(percentages) == 1.0
+           prv = 0
+           size = len(seq)
+           cum_percentage = 0
+           for p in percentages:
+               cum_percentage += p
+               nxt = int(cum_percentage * size)
+               yield seq[prv:nxt]
+               prv = nxt
+#               
+#      def percentage_split(seq, percentages):
+#          cdf = cumsum(percentages)
+#          assert cdf[-1] == 1.0
+#          stops = map(int, cdf * len(seq))
+#          return [seq[a:b] for a, b in zip([0]+stops, stops)]               
+        
+       
+       for V in range(fold-1):
            print('**************************')
-           print('Validating on patient: %i' %(V+1) )
-           if dispinfo:
-                  print('Validating on patient: %i' %(V+1) )
+           print('Validating on fold: %i' %(V+1) )
 
-#SPLITTING DATA INTO TRAIN+VALIDATION AND TEST SETS          
+
+#SPLITTING DATA INTO TRAIN+VALIDATION AND TEST SETS
            # Using only the Patients choosen in the wrapper
-           FeatureMatrix_for_choosen_patients=[FeatureMatrix_each_patient[k] for k in babies]          # get the feature values for selected babies                  
+           FeatureMatrix_for_choosen_patients=[FeatureMatrix_each_patient[k]for k in babies]          # get the feature values for selected babies                  
            AnnotMatrix_for_choosen_patients=[AnnotMatrix_each_patient[k] for k in babies]              # get the annotation values for selected babies
+           
+
            # Using only the labels choosen in the wrapper
            idx=[in1d(AnnotMatrix_each_patient[sb],label) for sb in babies]#.values()]     # which are the idices for AnnotMatrix_each_patient == label
            idx=[nonzero(idx[sb])[0] for sb in range(len(babies))]#.values()]              # get the indices where True
            X_labeled=[val[idx[sb],:] for sb, val in enumerate(FeatureMatrix_for_choosen_patients)]   #selecting the datapoints in label
            y_labeled=[val[idx[sb],:] for sb, val in enumerate(AnnotMatrix_for_choosen_patients)] #get the values for y from idx and label    
                           
+           X_Train_Val_Test=list(percentage_split(X_labeled,split))
+           Y_Train_Val_Test=list(percentage_split(y_labeled,split))
+
            # Selecting what becomes testing and what train and validation
            selected_babies_train=list(delete(babies,babies[V]))# Babies to train and test on ; j-1 as index starts with 0
            selected_babies_test=babies[V]# Babies to validate on 
@@ -74,7 +97,6 @@ def leave_one_out_cross_validation(babies,AnnotMatrix_each_patient,FeatureMatrix
            X_train_val, y_train_val=create_Tensor_with_lookback(X_train_val,y_train_val,loockback)   
            X_test, y_test=create_Tensor_with_lookback(X_test,y_test,loockback)   
    
-           fold=3
 #FORWARD SETS TO KERAS WHERE THE MODEL IS BUILT, TRAINED, VALIDATED AND TESTED           
            #Validate with left out patient 
            # Run the classifier with the selected FEature subset in selecteF

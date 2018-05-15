@@ -42,26 +42,29 @@ def Loading_data_all(dataset, selectedbabies, lst, FeatureSet, Rpeakmethod,ux, \
        """
        if 'ECG'== dataset:
               if ux:
-                     Sessionfolder=('/home/310122653/Pyhton_Folder/cECG/Matrices/')
+                     folder=('/home/310122653/Pyhton_Folder/cECG/Matrices/')
               else:
-                     Sessionfolder=('C:/Users/310122653/Dropbox/PHD/python/cECG/Matrices/')
+                    folder=('C:/Users/310122653/Dropbox/PHD/python/cECG/Matrices/')
        if 'cECG'==dataset:
               if ux:
-                     Sessionfolder=('/home/310122653/Pyhton_Folder/cECG/cMatrices/')
+                     folder=('/home/310122653/Pyhton_Folder/cECG/cMatrices/')
               else:
-                     Sessionfolder=('C:/Users/310122653/Dropbox/PHD/python/cECG/cMatrices/')
+                     folder=('C:/Users/310122653/Dropbox/PHD/python/cECG/cMatrices/')
        if 'MMC'== dataset:        
               if ux:
-                     Sessionfolder=('/home/310122653/Pyhton_Folder/DNN/Matrices/')
+                     folder=('/home/310122653/Pyhton_Folder/DNN/Matrices/')
               else:
-                     Sessionfolder=('C:/Users\310122653/Documents/PhD/Article_4_(MMC)/DNN-Matrices/Matrices_Features/')              
+                     folder=('C:/Users/310122653/Documents/PhD/Article_4_(MMC)/DNN-Matrices/Matrices_Features/')              
              
            
               
        # ONLY 5 MIN FEATURES AND ANNOTATIONS
        dateien_each_patient="FeatureMatrix_","Annotations_" #non scaled values. The values should be scaled over all patient and not per patient. Therfore this is better
-       windowlength="30"
-       Neonate_all='4','5','6','7','9','10','11','12','13'
+#       windowlength="30"
+       if 'ECG'== dataset or 'cECG'== dataset:
+           Neonate_all='4','5','6','7','9','10','11','12','13'
+       if 'MMC'== dataset:
+           Neonate_all='1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20','21','22'          
        babies=[i for i in range(len(selectedbabies))]# return to main function
        
        Neonate=[(Neonate_all[i]) for i in selectedbabies];Neonate=tuple(Neonate)
@@ -72,7 +75,9 @@ def Loading_data_all(dataset, selectedbabies, lst, FeatureSet, Rpeakmethod,ux, \
        # IMPORTING *.MAT FILES
        for j in range(len(dateien_each_patient)): # j=0 Features  j=1 Annotations
            for k in range(len(Neonate)):
-               Dateipfad=folder+dateien_each_patient[j]+Neonate[k]+"_win_"+windowlength+".mat" #Building foldername
+#               Dateipfad=folder+dateien_each_patient[j]+Neonate[k]+"_win_"+windowlength+".mat" #Building foldername
+               Dateipfad=folder+dateien_each_patient[j]+Neonate[k]+".mat" #Building foldername
+
                sio.absolute_import   
                matlabfile=sio.loadmat(r'{}'.format(Dateipfad)) 
            
@@ -93,6 +98,9 @@ def Loading_data_all(dataset, selectedbabies, lst, FeatureSet, Rpeakmethod,ux, \
        #            AnnotMatrix_each_patient[k]= np.delete(AnnotMatrix_each_patient[k],(1,2), axis=1) #Reduce AnnotationMatrix to Nx1
        #            AnnotMatrix_each_patient[k]=AnnotMatrix_each_patient[k][~np.isnan(AnnotMatrix_each_patient[k]).any(axis=1)]#deleting NAN and turning Matrix to datapoints,Features
        
+       if FeatureMatrix_each_patient_all[0].shape[0] < FeatureMatrix_each_patient_all[0].shape[1]: # We need [Data, Features]
+                  FeatureMatrix_each_patient_all=[FeatureMatrix_each_patient_all[k].conj().transpose() for k in babies] # if the featuer matrix is turned wrongly, transpose it.                              
+           
        if FeatureSet=='FET':
               FeatureMatrix_each_patient_all=[val[:,lst] for sb, val in enumerate(FeatureMatrix_each_patient_all)] # selecting only the features in lst                      
                                  
@@ -108,6 +116,7 @@ def Loading_data_all(dataset, selectedbabies, lst, FeatureSet, Rpeakmethod,ux, \
                                           
 
        AnnotMatrix_each_patient=AnnotationChanger(AnnotMatrix_each_patient,0,0,0,0,0,0,merge34)
+
        
                            
        return babies, AnnotMatrix_each_patient, FeatureMatrix_each_patient_all
@@ -118,7 +127,7 @@ def Loading_data_all(dataset, selectedbabies, lst, FeatureSet, Rpeakmethod,ux, \
        
        #%%
        
-def Loading_data_perSession(ddataset, selectedbabies, lst, FeatureSet, Rpeakmethod,ux, \
+def Loading_data_perSession(dataset, selectedbabies, lst, FeatureSet, Rpeakmethod,ux, \
                             merge34, Movingwindow, preaveraging, postaveraging, exceptNOF, onlyNOF, FEAT,\
                             dispinfo):    
              
@@ -142,11 +151,11 @@ def Loading_data_perSession(ddataset, selectedbabies, lst, FeatureSet, Rpeakmeth
               if ux:
                      Sessionfolder=('/home/310122653/Pyhton_Folder/DNN/Matrices/Sessions/')
               else:
-                     Sessionfolder=('C:/Users\310122653/Documents/PhD/Article_4_(MMC)/DNN-Matrices/Matrices_Features/Sessions/')              
+                     Sessionfolder=('C:/Users/310122653/Documents/PhD/Article_4_(MMC)/DNN-Matrices/Matrices_Features/Sessions/')              
 
  
        dateien_each_patient="FeatureMatrix_","Annotations_" #non scaled values. The values should be scaled over all patient and not per patient. Therfore this is better
-       windowlength="30"
+#       windowlength="300"
        if 'ECG'== dataset or 'cECG'== dataset:
            Neonate_all='4','5','6','7','9','10','11','12','13'
        if 'MMC'== dataset:
@@ -165,23 +174,25 @@ def Loading_data_perSession(ddataset, selectedbabies, lst, FeatureSet, Rpeakmeth
        
        FeatureMatrix_each_patient_fromSession=[None]*len(Neonate)
        FeatureMatrix_each_patient_fromSession_poly=[None]*len(Neonate)
-       
-       AnnotMatrix_each_patient=Loading_Annotations(dataset,selectedbabies,ux,plotting) # loading Annotations
+
+       AnnotMatrix_each_patient=Loading_Annotations(dataset,selectedbabies,ux,plotting=0) # loading Annotations
        
        for K in range(len(Neonate)):      
               Dateien=glob.glob(Sessionfolder +'FeatureMatrix_'+Neonate[K]+ '_**')
               FeatureMatrix_Session_each_patient=[None]*len(Dateien)
 
+
        
        # IMPORTING *.MAT FILES
-              for j in range(len(Dateien)): 
-                      sio.absolute_import   
-                      matlabfile=sio.loadmat(r'{}'.format(Dateien[j])) 
+              for j in range(len(Dateien)):
+                     sio.absolute_import   
+                     matlabfile=sio.loadmat(r'{}'.format(Dateien[j])) 
            
        # REWRITING FEATURES AND ANNOTATIONS    
            #NANs should already be deleted. Not scaled.
            #NANs can be in as there are only NaNs with NaN annotations. Nan al label is not used
-                      FeatureMatrix_Session_each_patient[j]=matlabfile.get('FeatureMatrix') 
+                     FeatureMatrix_Session_each_patient[j]=matlabfile.get('FeatureMatrix') 
+                     
 #                      FeatureMatrix_Session_each_patient[j]=FeatureMatrix_Session_each_patient[j].transpose() # transpose to datapoints,features
        # TRIMMING THEM IF SESSIONS ARE TO SHORT OR EMPTY               
 #              FeatureMatrix_Session_each_patient[1]=[];FeatureMatrix_Session_each_patient[5]=[]# just a test delete
@@ -194,7 +205,7 @@ def Loading_data_perSession(ddataset, selectedbabies, lst, FeatureSet, Rpeakmeth
                             WelcheSindzuKurz.append(j) #Just count how many Sessions do not have cECG values. If more than one different strategy is needed than the one below
                             
               if WelcheSindzuKurz:# deleting the ones that are too short in Annotation MAtrix. Apparently if there is no data(leer), then the Annotations are already shortened. Therefore only corretion for the once which are a bit to short
-                     AnnotMatrix_each_patient=correcting_Annotations_length(K,WelcheSindzuKurz,ux,selectedbabies,AnnotMatrix_each_patient,FeatureMatrix_Session_each_patient)
+                     AnnotMatrix_each_patient=correcting_Annotations_length(dataset,K,WelcheSindzuKurz,ux,selectedbabies,AnnotMatrix_each_patient,FeatureMatrix_Session_each_patient)
                      WelcheSindLeer.extend(WelcheSindzuKurz)# delete the ones that are zero and the once that are too short
                      
               for index in sorted(WelcheSindLeer, reverse=True):
@@ -279,18 +290,27 @@ def Loading_Annotations(dataset,selectedbabies,ux,plotting):
               if ux:
                      folder=('/home/310122653/Pyhton_Folder/cECG/Matrices/')
               else:
-                     folder=('C:/Users/310122653/Dropbox/PHD/python/cECG/Matrices/')
+                    folder=('C:/Users/310122653/Dropbox/PHD/python/cECG/Matrices/')
        if 'cECG'==dataset:
-              if ux:  
+              if ux:
                      folder=('/home/310122653/Pyhton_Folder/cECG/cMatrices/')
               else:
                      folder=('C:/Users/310122653/Dropbox/PHD/python/cECG/cMatrices/')
+       if 'MMC'== dataset:        
+              if ux:
+                     folder=('/home/310122653/Pyhton_Folder/DNN/Matrices/')
+              else:
+                     folder=('C:/Users/310122653/Documents/PhD/Article_4_(MMC)/DNN-Matrices/Matrices_Features/') 
+
            
        # ONLY 5 MIN FEATURES AND ANNOTATIONS
        dateien_each_patient="FeatureMatrix_","Annotations_" #non scaled values. The values should be scaled over all patient and not per patient. Therfore this is better
-       windowlength="30"
-       Neonate_all='4','5','6','7','9','10','11','12','13'
-       babies=[i for i in range(len(selectedbabies))]# return to main function
+#       windowlength="30"
+       if 'ECG'== dataset or 'cECG'== dataset:
+           Neonate_all='4','5','6','7','9','10','11','12','13'
+       if 'MMC'== dataset:
+           Neonate_all='1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20','21','22'          
+           babies=[i for i in range(len(selectedbabies))]# return to main function
        
        Neonate=[(Neonate_all[i]) for i in selectedbabies];Neonate=tuple(Neonate)
        FeatureMatrix_each_patient_all=[0]*len(Neonate)
@@ -298,17 +318,16 @@ def Loading_Annotations(dataset,selectedbabies,ux,plotting):
        t_a=[0]*len(Neonate)
        
        # IMPORTING *.MAT FILES
-       for j in range(len(dateien_each_patient)): # j=0 Features  j=1 Annotations
-           for k in range(len(Neonate)):
-               Dateipfad=folder+dateien_each_patient[j]+Neonate[k]+"_win_"+windowlength+".mat" #Building foldername
-               sio.absolute_import   
-               matlabfile=sio.loadmat(r'{}'.format(Dateipfad)) 
-           
-
-               if j==1:
-                   AnnotMatrix_each_patient[k]=matlabfile.get('Annotations')  
-                   AnnotMatrix_each_patient[k]=AnnotMatrix_each_patient[k].transpose() # transpose to datapoints,annotations
-                   t_a[k]=np.linspace(0,len(AnnotMatrix_each_patient[k])*30/60,len(AnnotMatrix_each_patient[k]))  
+       for k in range(len(Neonate)):
+#               Dateipfad=folder+dateien_each_patient[j]+Neonate[k]+"_win_"+windowlength+".mat" #Building foldername
+           Dateipfad=folder+dateien_each_patient[1]+Neonate[k]+ ".mat" #Building foldername
+        
+           sio.absolute_import   
+           matlabfile=sio.loadmat(r'{}'.format(Dateipfad)) 
+    
+           AnnotMatrix_each_patient[k]=matlabfile.get('Annotations')  
+           AnnotMatrix_each_patient[k]=AnnotMatrix_each_patient[k].transpose() # transpose to datapoints,annotations
+           t_a[k]=np.linspace(0,len(AnnotMatrix_each_patient[k])*30/60,len(AnnotMatrix_each_patient[k]))  
 #                   if plotting:
 #                        plt.figure(k) 
 #                        plt.plot(t_a[k],AnnotMatrix_each_patient[k])
@@ -317,19 +336,32 @@ def Loading_Annotations(dataset,selectedbabies,ux,plotting):
        return AnnotMatrix_each_patient
        
 #%%
-def correcting_Annotations_missing(K,WelcheSindLeer,ux,selectedbabies,AnnotMatrix_each_patient):
+def correcting_Annotations_missing(dataset,K,WelcheSindLeer,ux,selectedbabies,AnnotMatrix_each_patient,FeatureMatrix_Session_each_patient):
 # This function is needed to load the ECG if the cECG Is loaded to compare the length of missing cECG value. The missing length can then be deleted from the annotations      
-       if ux:
-              Sessionfolder=('/home/310122653/Pyhton_Folder/cECG/Matrices/Sessions/')
-       else:
-              Sessionfolder=('C:/Users/310122653/Dropbox/PHD/python/cECG/Matrices/Sessions/')
+       if 'ECG'== dataset:
+              if ux:
+                     folder=('/home/310122653/Pyhton_Folder/cECG/Matrices/Sessions/')
+              else:
+                    folder=('C:/Users/310122653/Dropbox/PHD/python/cECG/Matrices/Sessions/')
+       if 'cECG'==dataset:
+              if ux:
+                     folder=('/home/310122653/Pyhton_Folder/cECG/cMatrices/Sessions/')
+              else:
+                     folder=('C:/Users/310122653/Dropbox/PHD/python/cECG/cMatrices/Sessions/')
+       if 'MMC'== dataset:        
+              if ux:
+                     folder=('/home/310122653/Pyhton_Folder/DNN/Matrices/Sessions/')
+              else:
+                     folder=('C:/Users/310122653/Documents/PhD/Article_4_(MMC)/DNN-Matrices/Matrices_Features/Sessions/') 
 
 
        # ONLY 5 MIN FEATURES AND ANNOTATIONS
        dateien_each_patient="FeatureMatrix_","Annotations_" #non scaled values. The values should be scaled over all patient and not per patient. Therfore this is better
-       windowlength="30"
-       Neonate_all='4','5','6','7','9','10','11','12','13'
-       babies=[i for i in range(len(selectedbabies))]# return to main function
+       if 'ECG'== dataset or 'cECG'== dataset:
+           Neonate_all='4','5','6','7','9','10','11','12','13'
+       if 'MMC'== dataset:
+           Neonate_all='1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20','21','22'          
+           babies=[i for i in range(len(selectedbabies))]# return to main function
        
        Neonate=[(Neonate_all[i]) for i in selectedbabies];Neonate=tuple(Neonate)
        FeatureMatrixECG=[0]*len(Neonate)

@@ -20,7 +20,6 @@ print ('Python version: ', sep=' ', end='', flush=True);print( python_version())
 from Classifier_routines import Classifier_random_forest
 from Loading_5min_mat_files_DNN import Loading_data_all,Loading_data_perSession,Feature_names,Loading_Annotations
 from LOOCV_DNN import leave_one_out_cross_validation
-from create_Tensor import create_Tensor_with_lookback
 
 import itertools
 from matplotlib import *
@@ -69,15 +68,19 @@ Loading data declaration & Wrapper variables
 """
 FeatureSet='Features' #Features ECG, EDR, HRV
 lstQS= [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33] 
+label=[1,2,3,4,6] # 1=AS 2=QS 3=Wake 4=Care-taking 5=NA 6= transition
 
 #Loockback for the LSTM. The data is separated samples with timestep=loockback; 
 #Loockback of 1337 mean all data per patient. Otherwise five it in nr of 30s epochs. e.g. 60=30min  120=1h 10=5min
+# HOw to split the dataset in [Train, Validation, Test] e.g.70:15:15  or 50:25:25 ,... 
+# The split is done for each fold. Just for the chekout[phase use fold one. Later calculate how often the test split fits into the total data, that is the fold. e.g. 30 patients with 15% test -> 4.5 (round to 5) patients per fold. Now see how many times the 30 can be folded with 5 patients in the test set to cover all patients. 30/5=6 -> 6 fold
 Loockback=  1337
+split=[0.70,0.16,0.14];
+fold=1
 
 #AVERAGING
 FensterQS=20 
 ExFeatQS=1; 
-
 FEATaQS=[lstQS.index(0),lstQS.index(25),lstQS.index(33)]# 9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26
 
 #POLY
@@ -95,11 +98,10 @@ dataset='MMC'  #ECG cECG or MMC
 if dataset=='ECG' or 'cECG':
        selectedbabies =[0,1,2,3,5,6,7,8] #0-8 ('4','5','6','7','9','10','11','12','13')
 if dataset == 'MMC':
-       selecetedbabies=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21] #0-21
+       selectedbabies=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21] #0-21
 
 #selectedbabies=[0,1,2,3,5,6,7,8]
 #label=[1,2,3,4,6] # 1=AS 2=QS 3=Wake 4=Care-taking 5=NA 6= transition
-label=[1,2,3,4]
 #---------------------------
 # Feature list
 lst = lstQS
@@ -190,7 +192,7 @@ def loadingdata(whichMix):
        y_each_patient, Performance_Kappa, mean_train_metric, mean_train_loss, mean_val_metric, mean_val_loss, mean_test_metric, mean_test_loss,\
        =leave_one_out_cross_validation(babies,AnnotMatrix_each_patient,FeatureMatrix_each_patient,\
                 label,classweight, Used_classifier, drawing, lst,ChoosenKind,SamplingMeth,probability_threshold,\
-                ASprobLimit,plotting,compare,saving,N,crit,msl,deciding_performance_measure,dispinfo,loockback)
+                ASprobLimit,plotting,compare,saving,N,crit,msl,deciding_performance_measure,dispinfo,Loockback,split,fold)
        
        
        return  babies, y_each_patient, Performance_Kappa, mean_train_metric, mean_train_loss, mean_val_metric, mean_val_loss, mean_test_metric, mean_test_loss
