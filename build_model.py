@@ -16,11 +16,11 @@ from keras.utils import np_utils
 
 
 
-def basic_dense_model(X_train,y_train):   
+def basic_dense_model(X_train,Y_train):   
     model = models.Sequential()
     model.add(layers.Dense(16, activation='relu',input_shape=(X_train.shape[1],)))             
     model.add(layers.Dense(16, activation='relu'))           
-    model.add(layers.Dense(y_train.shape[1], activation='softmax'))
+    model.add(layers.Dense(Y_train.shape[1], activation='softmax'))
 
     model.compile(loss='categorical_crossentropy',
                   optimizer='rmsprop',#'Adadelta',
@@ -29,12 +29,17 @@ def basic_dense_model(X_train,y_train):
 
     return model
 #%%
-def RNN_model(X_train,y_train):
-    model = models.Sequential()
-    
-    model=build_model()
+def LSTM_model_1(X_train,Y_train,X_val,Y_val,hidden_units,use_dropout,dropout):
+   model = Sequential()
+   model.add(LSTM(hidden_units, activation='tanh', input_shape=(X_train.shape)))
+   model.add(LSTM(hidden_units, return_sequences=True))
+   model.add(LSTM(hidden_units, return_sequences=True))
+   if use_dropout:
+       model.add(Dropout(dropout))
+   model.add(Activation('softmax'))
 
-        
-    return model
+   model.compile(loss='mean_square_error', optimizer='adam',metrics=['categorical_accuracy'])
+     
+   return model
 
 #%%       

@@ -71,12 +71,13 @@ lstQS= [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,2
 label=[1,2,3,4,6] # 1=AS 2=QS 3=Wake 4=Care-taking 5=NA 6= transition
 
 #Loockback for the LSTM. The data is separated samples with timestep=loockback; 
-#Loockback of 1337 mean all data per patient. Otherwise five it in nr of 30s epochs. e.g. 60=30min  120=1h 10=5min
+#Loockback of 1337 mean all data per patient. Otherwise it is in nr of 30s epochs. e.g. 60=30min  120=1h 10=5min
 # HOw to split the dataset in [Train, Validation, Test] e.g.70:15:15  or 50:25:25 ,... 
-# The split is done for each fold. Just for the chekout[phase use fold one. Later calculate how often the test split fits into the total data, that is the fold. e.g. 30 patients with 15% test -> 4.5 (round to 5) patients per fold. Now see how many times the 30 can be folded with 5 patients in the test set to cover all patients. 30/5=6 -> 6 fold
-Loockback=  1337
+# The split is done for each fold. Just for the chekout phase use fold one. Later calculate how often the test split fits into the total data, that is the fold. e.g. 30 patients with 15% test -> 4.5 (round to 5) patients per fold. Now see how many times the 30 can be folded with 5 patients in the test set to cover all patients. 30/5=6 -> 6 fold
+Lookback= 1337# 1337 or anything else
 split=[0.70,0.16,0.14];
 fold=1
+batchsize=8  # LSTM needs [batchsize, timestep, feature] your batch size divides nb_samples from the original tensor. So batchsize should be smaller than samples
 
 #AVERAGING
 FensterQS=20 
@@ -192,7 +193,7 @@ def loadingdata(whichMix):
        y_each_patient, Performance_Kappa, mean_train_metric, mean_train_loss, mean_val_metric, mean_val_loss, mean_test_metric, mean_test_loss,\
        =leave_one_out_cross_validation(babies,AnnotMatrix_each_patient,FeatureMatrix_each_patient,\
                 label,classweight, Used_classifier, drawing, lst,ChoosenKind,SamplingMeth,probability_threshold,\
-                ASprobLimit,plotting,compare,saving,N,crit,msl,deciding_performance_measure,dispinfo,Loockback,split,fold)
+                ASprobLimit,plotting,compare,saving,N,crit,msl,deciding_performance_measure,dispinfo,Lookback,split,fold, batchsize)
        
        
        return  babies, y_each_patient, Performance_Kappa, mean_train_metric, mean_train_loss, mean_val_metric, mean_val_loss, mean_test_metric, mean_test_loss
