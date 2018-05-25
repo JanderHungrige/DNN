@@ -123,13 +123,9 @@ def leave_one_out_cross_validation(babies,AnnotMatrix_each_patient,FeatureMatrix
            
 
 #FORWARD SETS TO KERAS WHERE THE MODEL IS BUILT, TRAINED, VALIDATED AND TESTED           
-           #Validate with left out patient 
-           # Run the classifier with the selected FEature subset in selecteF
-           
 
-           
            resultsK_fold, mean_k_fold, mean_train_metric_fold, mean_val_metric_fold, mean_train_loss_fold, mean_val_loss_fold, mean_test_metric_fold, mean_test_loss_fold\
-           =KeraS(X_train, Y_train, X_val, Y_val, X_test, Y_test, batchsize)
+           =KeraS(X_train, Y_train, X_val, Y_val, X_test, Y_test, batchsize,label)
 
 #GATHERING THE RESULTS OF THE TESTING           
 #           classpredictions.append(prediction)

@@ -15,6 +15,13 @@ from keras import callbacks
 from keras.utils import np_utils
 
 
+from keras.models import Sequential
+
+from keras.layers import Dense, Activation
+from keras.layers import LSTM, Activation
+from keras.layers import Masking, Activation
+
+
 
 def basic_dense_model(X_train,Y_train):   
     model = models.Sequential()
@@ -29,17 +36,31 @@ def basic_dense_model(X_train,Y_train):
 
     return model
 #%%
-def LSTM_model_1(X_train,Y_train,X_val,Y_val,hidden_units,use_dropout,dropout):
+def LSTM_model_1(X_train,Y_train,X_val,Y_val,hidden_units,dropout):
    model = Sequential()
-   model.add(LSTM(hidden_units, activation='tanh', input_shape=(X_train.shape)))
+#   model.add(Masking(mask_value=666, input_shape=X_train.shape))
+   model.add(LSTM(hidden_units, input_shape=(X_train.shape[1],X_train.shape[2]),activation='tanh', return_sequences=True, dropout=dropout))
    model.add(LSTM(hidden_units, return_sequences=True))
    model.add(LSTM(hidden_units, return_sequences=True))
-   if use_dropout:
-       model.add(Dropout(dropout))
-   model.add(Activation('softmax'))
+   model.add(Dense(Y_train.shape[-1], activation='softmax'))
 
-   model.compile(loss='mean_square_error', optimizer='adam',metrics=['categorical_accuracy'])
+#   model.add(Activation('softmax'))
+
+   model.compile(loss='mean_squared_error', optimizer='adam',metrics=['categorical_accuracy'])
      
    return model
 
-#%%       
+#%%
+def LSTM_model_2(X_train,Y_train,X_val,Y_val,hidden_units,dropout):
+   model = Sequential()
+   model.add(Masking(mask_value=666, input_shape=X_train.shape))
+   model.add(layers.Bidirectional(layers.LSTM(hidden_units, activation='tanh', return_sequences=True, dropout=dropout[0])))
+   model.add(LSTM(hidden_units, return_sequences=True))
+   model.add(LSTM(hidden_units, return_sequences=True))
+   model.add(Dense(Y_test.shape[-1]), activation='softmax')
+
+#   model.add(Activation('softmax'))
+
+   model.compile(loss='mean_squared_error', optimizer='adam',metrics=['categorical_accuracy'])
+     
+   return model    

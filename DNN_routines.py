@@ -23,7 +23,6 @@ from keras import models
 from keras import layers
 from keras import callbacks 
 
-
 from keras.utils import np_utils
 
 from build_model import basic_dense_model
@@ -34,7 +33,7 @@ from build_model import LSTM_model_1
 import pdb# use pdb.set_trace() as breakpoint
 
         
-def KeraS(X_train, Y_train, X_val, Y_val, X_test, Y_test, batchsize):
+def KeraS(X_train, Y_train, X_val, Y_val, X_test, Y_test, batchsize,label):
        
 #selecte_babies are the babies without test baby
 #### CREATING THE sampleweight FOR SELECTED BABIES  
@@ -106,32 +105,41 @@ def KeraS(X_train, Y_train, X_val, Y_val, X_test, Y_test, batchsize):
 #                y_test=y_test[:,:,newaxis]  
 #            
 #%% 
-        # Build model 
-    model=basic_dense_model(X_train,Y_train)
-    model=LSTM_model_1(X_train,Y_train,X_val,Y_val,use_dropout,dropout)
+ 
+        
+    hidden_units=2 # 2-64 or even 1000 as used by sleepnet best: multible of 32
+    dropout=0 #0.5; 0.9  dropout can be between 0-1  as %  DROPOUT CAN BE ADDED TO EACH LAYER
+
+#BUILT MODEL    
+#    model=basic_dense_model(X_train,Y_train)
+    model=LSTM_model_1(X_train,Y_train,X_val,Y_val,hidden_units,dropout)
 
 
-#       # Train the model (in silent mode, verbose=0)       
+# TRAIN MODEL (in silent mode, verbose=0)       
     history=model.fit(X_train,
                        Y_train,
                        epochs=10,
                        batch_size=batchsize,
-                       validation_data=(X_val,Y_val))
+                       validation_data=(X_val,Y_val),
+                       shuffle=False)
 
- # Evaluate the model on the validation data        
-    test_loss,test_metric=model.evaluate(X_test,y_test,batch_size=batchsize)        
+#EVALUATE MODEL      
+    test_loss,test_metric=model.evaluate(X_test,Y_test,batch_size=batchsize)        
     prediction = model.predict(X_test, batch_size=batchsize) 
- #make prediction a simple array to match y_train_base      
+    #make prediction a simple array to match y_train_base      
     indEx = np.unravel_index(np.argmax(prediction, axis=1), prediction.shape)
     prediction_base=indEx[1]
-    indEy = np.unravel_index(np.argmax(y_test, axis=1), prediction.shape)
-    y_test=indEy[1]        
-    resultsK.append(cohen_kappa_score(y_test.ravel(),prediction_base,labels=label))        
+    indEy = np.unravel_index(np.argmax(Y_test, axis=1), prediction.shape)
+    Y_test_Result=indEy[1]   
+
+#       print(history.history.keys())     
+    
+#COLLECTING RESULTS    
+    resultsK.append(cohen_kappa_score(Y_test_Result.ravel(),prediction_base,labels=label))        
 
     all_test_metric.append(test_metric)
     all_test_loss.append(test_loss)
 
-#       print(history.history.keys())
     train_metric=history.history['categorical_accuracy']
     train_loss = history.history['loss']
     val_metric = history.history['val_categorical_accuracy']         
