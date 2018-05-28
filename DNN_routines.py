@@ -33,7 +33,7 @@ from build_model import LSTM_model_1
 import pdb# use pdb.set_trace() as breakpoint
 
         
-def KeraS(X_train, Y_train, X_val, Y_val, X_test, Y_test, batchsize,label):
+def KeraS(X_train, Y_train, X_val, Y_val, X_test, Y_test, batchsize,Epochs,label):
        
 #selecte_babies are the babies without test baby
 #### CREATING THE sampleweight FOR SELECTED BABIES  
@@ -118,7 +118,7 @@ def KeraS(X_train, Y_train, X_val, Y_val, X_test, Y_test, batchsize,label):
 # TRAIN MODEL (in silent mode, verbose=0)       
     history=model.fit(X_train,
                        Y_train,
-                       epochs=10,
+                       epochs=Epochs,
                        batch_size=batchsize,
                        validation_data=(X_val,Y_val),
                        shuffle=False)
@@ -126,11 +126,16 @@ def KeraS(X_train, Y_train, X_val, Y_val, X_test, Y_test, batchsize,label):
 #EVALUATE MODEL      
     test_loss,test_metric=model.evaluate(X_test,Y_test,batch_size=batchsize)        
     prediction = model.predict(X_test, batch_size=batchsize) 
+    stackedpred=np.concatenate(prediction, axis=0)
     #make prediction a simple array to match y_train_base      
-    indEx = np.unravel_index(np.argmax(prediction, axis=1), prediction.shape)
-    prediction_base=indEx[1]
-    indEy = np.unravel_index(np.argmax(Y_test, axis=1), prediction.shape)
-    Y_test_Result=indEy[1]   
+#    indEx = np.unravel_index(np.argmax(prediction, axis=1), prediction.shape)
+    indEx = (np.argmax(stackedpred, axis=1), stackedpred.shape)
+    prediction_base=indEx[0]
+#    indEy = np.unravel_index(np.argmax(Y_test, axis=1), prediction.shape)
+    stackedTest=np.concatenate(Y_test, axis=0)   
+    indEy = (np.argmax(stackedTest, axis=1), stackedTest.shape)
+
+    Y_test_Result=indEy[0]   
 
 #       print(history.history.keys())     
     

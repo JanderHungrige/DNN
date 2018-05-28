@@ -25,7 +25,7 @@ import pdb # use pdb.set_trace() as breakpoint
 def leave_one_out_cross_validation(babies,AnnotMatrix_each_patient,FeatureMatrix_each_patient,\
          label,classweight, Used_classifier, drawing, lst,ChoosenKind,SamplingMeth,probability_threshold,ASprobLimit,\
          plotting,compare,saving,\
-         N,crit,msl,deciding_performance_measure,dispinfo,lookback,split,fold, batchsize):
+         N,crit,msl,deciding_performance_measure,dispinfo,lookback,split,fold,batchsize,Epochs):
        
        t_a=list()
        classpredictions=list()
@@ -125,7 +125,7 @@ def leave_one_out_cross_validation(babies,AnnotMatrix_each_patient,FeatureMatrix
 #FORWARD SETS TO KERAS WHERE THE MODEL IS BUILT, TRAINED, VALIDATED AND TESTED           
 
            resultsK_fold, mean_k_fold, mean_train_metric_fold, mean_val_metric_fold, mean_train_loss_fold, mean_val_loss_fold, mean_test_metric_fold, mean_test_loss_fold\
-           =KeraS(X_train, Y_train, X_val, Y_val, X_test, Y_test, batchsize,label)
+           =KeraS(X_train, Y_train, X_val, Y_val, X_test, Y_test, batchsize,Epochs,label)
 
 #GATHERING THE RESULTS OF THE TESTING           
 #           classpredictions.append(prediction)

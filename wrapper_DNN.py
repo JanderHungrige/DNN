@@ -78,6 +78,7 @@ Lookback= 1337# 1337 or anything else
 split=[0.70,0.16,0.14];
 fold=1
 batchsize=8  # LSTM needs [batchsize, timestep, feature] your batch size divides nb_samples from the original tensor. So batchsize should be smaller than samples
+Epochs=20
 
 #AVERAGING
 FensterQS=20 
@@ -193,7 +194,7 @@ def loadingdata(whichMix):
        y_each_patient, Performance_Kappa, mean_train_metric, mean_train_loss, mean_val_metric, mean_val_loss, mean_test_metric, mean_test_loss,\
        =leave_one_out_cross_validation(babies,AnnotMatrix_each_patient,FeatureMatrix_each_patient,\
                 label,classweight, Used_classifier, drawing, lst,ChoosenKind,SamplingMeth,probability_threshold,\
-                ASprobLimit,plotting,compare,saving,N,crit,msl,deciding_performance_measure,dispinfo,Lookback,split,fold, batchsize)
+                ASprobLimit,plotting,compare,saving,N,crit,msl,deciding_performance_measure,dispinfo,Lookback,split,fold, batchsize,Epochs)
        
        
        return  babies, y_each_patient, Performance_Kappa, mean_train_metric, mean_train_loss, mean_val_metric, mean_val_loss, mean_test_metric, mean_test_loss
