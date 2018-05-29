@@ -22,10 +22,14 @@ from sklearn import svm, cross_validation
 import sys #to add strings together
 import pdb # use pdb.set_trace() as breakpoint
 
-def leave_one_out_cross_validation(babies,AnnotMatrix_each_patient,FeatureMatrix_each_patient,\
-         label,classweight, Used_classifier, drawing, lst,ChoosenKind,SamplingMeth,probability_threshold,ASprobLimit,\
-         plotting,compare,saving,\
-         N,crit,msl,deciding_performance_measure,dispinfo,lookback,split,fold,batchsize,Epochs):
+from keras.utils import np_utils
+
+def leave_one_out_cross_validation(\
+         babies,AnnotMatrix_each_patient,FeatureMatrix_each_patient,\
+         label,classweight, Used_classifier, drawing, lst,ChoosenKind,\
+         SamplingMeth,probability_threshold,ASprobLimit, plotting,compare,\
+         saving, N,crit,msl,deciding_performance_measure,dispinfo,\
+         lookback,split,fold,batchsize,Epochs,dropout,hidden_units):
        
        t_a=list()
        classpredictions=list()
@@ -58,11 +62,11 @@ def leave_one_out_cross_validation(babies,AnnotMatrix_each_patient,FeatureMatrix
                      yield data[i:i + time_step]
                      
      
-       def data_with_lookback(Data_Train_Val_Test,lookback):
+       def data_with_lookback(Data_Train_Val_Test,lookback,Wert):
               Data_tmp=concatenate(Data_Train_Val_Test,axis=0)
               Data_Tensor=list(create_timesteps(Data_tmp, lookback))
               if Data_Tensor[-1].shape < Data_Tensor[-2].shape:  #make the last one the same length as the others, zeropad                       
-                         Data_Tensor[-1]=np.pad(Data_Tensor[-1],pad_width=((0,Data_Tensor[-2].shape[0]-Data_Tensor[-1].shape[0]),(0,0)),mode='constant')
+                         Data_Tensor[-1]=np.pad(Data_Tensor[-1],pad_width=((0,Data_Tensor[-2].shape[0]-Data_Tensor[-1].shape[0]),(0,0)),mode='constant',constant_values=Wert)
               Data_Tensor = np.stack((Data_Tensor), axis=0) 
               return Data_Tensor                      
 #               
@@ -89,6 +93,10 @@ def leave_one_out_cross_validation(babies,AnnotMatrix_each_patient,FeatureMatrix
            idx=[nonzero(idx[sb])[0] for sb in range(len(babies))]#.values()]              # get the indices where True
            X_labeled=[val[idx[sb],:] for sb, val in enumerate(FeatureMatrix_for_choosen_patients)]   #selecting the datapoints in label
            y_labeled=[val[idx[sb],:] for sb, val in enumerate(AnnotMatrix_for_choosen_patients)] #get the values for y from idx and label    
+           
+# One hot encoding of y-lables     
+           y_labeled = [np_utils.to_categorical(y_labeled[i]) for i in range(len(y_labeled)) ]           
+           
 #ZEROPADDING IF TOTAL SET IS USED AS TIMESTEP           
            if lookback==1337:
                   list_len = [len(i) for i in X_labeled] # zero pad all sessions/patientsets to have same length
@@ -101,31 +109,31 @@ def leave_one_out_cross_validation(babies,AnnotMatrix_each_patient,FeatureMatrix
            Y_Train_Val_Test=list(percentage_split(y_labeled,split))
 #CREATE LOOCKBACK 3D TENSOR           
            if lookback!=1337:
-                  X_Train=data_with_lookback(X_Train_Val_Test[0],lookback) # function defined above. Split data into loockback steps and create 3D tensor
-                  Y_Train=data_with_lookback(Y_Train_Val_Test[0],lookback)
+                  X_Train=data_with_lookback(X_Train_Val_Test[0],lookback,666) # function defined above. Split data into loockback steps and create 3D tensor
+                  Y_Train=data_with_lookback(Y_Train_Val_Test[0],lookback,0)
                   
-                  X_Val=data_with_lookback(X_Train_Val_Test[1],lookback)
-                  Y_Val=data_with_lookback(Y_Train_Val_Test[1],lookback)
+                  X_Val=data_with_lookback(X_Train_Val_Test[1],lookback,666)
+                  Y_Val=data_with_lookback(Y_Train_Val_Test[1],lookback,0)
 
-                  X_Test=data_with_lookback(X_Train_Val_Test[2],lookback)
-                  Y_Test=data_with_lookback(Y_Train_Val_Test[2],lookback)
+                  X_Test=data_with_lookback(X_Train_Val_Test[2],lookback,666)
+                  Y_Test=data_with_lookback(Y_Train_Val_Test[2],lookback,0)
                   
 #CREATE 3D TENSOR FOR TOTAL SET (LOOKBACK= TOTAL SESSION/DATA LENGTH)
            if lookback==1337: # for any lookbackstep smaler than the total session/set
-               X_train=X_Train_Val_Test[0]  ;  X_train = np.stack((X_train), axis=0)              
-               Y_train=Y_Train_Val_Test[0]  ;  Y_train = np.stack((Y_train), axis=0)          
+               X_Train=X_Train_Val_Test[0]  ;  X_Train = np.stack((X_Train), axis=0)        # here again as we first had to zeropad, then split, then stack       
+               Y_Train=Y_Train_Val_Test[0]  ;  Y_Train = np.stack((Y_Train), axis=0)          
            
-               X_val=X_Train_Val_Test[1]    ;  X_val   = np.stack((X_val), axis=0)             
-               Y_val=Y_Train_Val_Test[1]    ;  Y_val   = np.stack((Y_val), axis=0)           
+               X_Val=X_Train_Val_Test[1]    ;  X_Val   = np.stack((X_Val), axis=0)             
+               Y_Val=Y_Train_Val_Test[1]    ;  Y_Val   = np.stack((Y_Val), axis=0)           
            
-               X_test=X_Train_Val_Test[2]   ;  X_test  = np.stack((X_test), axis=0)         
-               Y_test=Y_Train_Val_Test[2]   ;  Y_test  = np.stack((Y_test), axis=0)           
+               X_Test=X_Train_Val_Test[2]   ;  X_Test  = np.stack((X_Test), axis=0)         
+               Y_Test=Y_Train_Val_Test[2]   ;  Y_Test  = np.stack((Y_Test), axis=0)           
            
 
 #FORWARD SETS TO KERAS WHERE THE MODEL IS BUILT, TRAINED, VALIDATED AND TESTED           
 
            resultsK_fold, mean_k_fold, mean_train_metric_fold, mean_val_metric_fold, mean_train_loss_fold, mean_val_loss_fold, mean_test_metric_fold, mean_test_loss_fold\
-           =KeraS(X_train, Y_train, X_val, Y_val, X_test, Y_test, batchsize,Epochs,label)
+           =KeraS(X_Train, Y_Train, X_Val, Y_Val, X_Test, Y_Test, batchsize,Epochs,dropout,hidden_units,label)
 
 #GATHERING THE RESULTS OF THE TESTING           
 #           classpredictions.append(prediction)

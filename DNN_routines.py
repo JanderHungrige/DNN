@@ -32,8 +32,7 @@ from build_model import LSTM_model_1
 
 import pdb# use pdb.set_trace() as breakpoint
 
-        
-def KeraS(X_train, Y_train, X_val, Y_val, X_test, Y_test, batchsize,Epochs,label):
+def KeraS(X_train, Y_train, X_val, Y_val, X_test, Y_test, batchsize,Epochs,dropout,hidden_units,label):
        
 #selecte_babies are the babies without test baby
 #### CREATING THE sampleweight FOR SELECTED BABIES  
@@ -43,76 +42,14 @@ def KeraS(X_train, Y_train, X_val, Y_val, X_test, Y_test, batchsize,Epochs,label
     F1_all_collect=[];K_collect=[]
     all_test_metric=[];all_test_loss=[];all_train_metric=[];all_train_loss=[];all_val_metric=[];all_val_loss=[]
     resultsK=[];mean_test_metric=[];mean_train_metric=[]
-    
-   
-#    validation_amount=floor(len(selected_babies_train)/fold) # always one fold validation rest folds training
-#    if validation_amount <1:
-#         sys.exit('Error in DNN_routines! choose differnt fold. Validation below 1 patient ')
-#    if (len(selected_babies_train)/fold) % 1> 0.6: # if we have more than 0.6 as division rest that means that we cut of quite some data at the rest to include in the validation fold
-#        print('modulu large (>0.6). To lose less of the data for validation use higher or lower fold')     
-#        
-#    for Fold in range(fold):
-#        disp(["progressing fold: " ,Fold+1,"of" ,fold])
-#                      
-#        a=int(Fold*validation_amount)
-#        b=int(Fold*validation_amount+validation_amount)
-#
-#        X_val_per_patient=X_train_val[a:b]
-#        X_train_per_patient=X_train_val[:] # make a copy of the data not to change the original
-#        del X_train_per_patient[a:b] #remove the patients which are used for validation 
-#        
-#        y_val_per_patient=y_train_val[a:b] 
-#        y_train_per_patient=y_train_val[:] # make a copy of the data not to change the original
-#        del y_train_per_patient[a:b] #remove the patients which are used for validation 
-#                
-##creating one big array per               
-#        X_train=np.vstack(X_train_per_patient)
-#        y_train=np.vstack(y_train_per_patient)
-#
-#        if len(X_val_per_patient)>1:
-#               X_val=np.vstack(X_val_per_patient)
-#               y_val=np.vstack(y_val_per_patient)
-#
-#               
-#        else:
-#               X_val=X_val_per_patient[0]
-#               y_val=y_val_per_patient[0]
-# One hot encoding of y-lables               
-
-    Y_train = np_utils.to_categorical(Y_train)  
-    Y_val = np_utils.to_categorical(Y_val)              
-    Y_test = np_utils.to_categorical(Y_test)  
-# from 2D to 3D               
-#        if len(X_train.shape)<3:
-#            X_train=X_train[:,:,newaxis]               
-#        if len(X_val.shape)<3:
-#            X_val=X_val[:,:,newaxis]        
-#        if len(X_test.shape)<3:
-#            X_test=X_test[:,:,newaxis]  
-
-        
-#        if len(y_train.shape)<3:
-#            y_train=y_train[:,:,newaxis]
-#            if len(y_train.shape)<3: #if y was only one dimensional before we need to add another axis to gain 3D
-#                y_train=y_train[:,:,newaxis]  
-#        if len(y_val.shape)<3:
-#            y_val=y_val[:,:,newaxis] 
-#            if len(y_val.shape)<3:
-#                y_val=y_val[:,:,newaxis] 
-#        if len(y_test.shape)<3:
-#            y_test=y_test[:,:,newaxis]  
-#            if len(y_test.shape)<3:
-#                y_test=y_test[:,:,newaxis]  
-#            
+              
 #%% 
  
         
-    hidden_units=2 # 2-64 or even 1000 as used by sleepnet best: multible of 32
-    dropout=0 #0.5; 0.9  dropout can be between 0-1  as %  DROPOUT CAN BE ADDED TO EACH LAYER
 
 #BUILT MODEL    
 #    model=basic_dense_model(X_train,Y_train)
-    model=LSTM_model_1(X_train,Y_train,X_val,Y_val,hidden_units,dropout)
+    model=LSTM_model_1(X_train,Y_train,dropout,hidden_units)
 
 
 # TRAIN MODEL (in silent mode, verbose=0)       

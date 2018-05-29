@@ -36,10 +36,13 @@ def basic_dense_model(X_train,Y_train):
 
     return model
 #%%
-def LSTM_model_1(X_train,Y_train,X_val,Y_val,hidden_units,dropout):
+def LSTM_model_1(X_train,Y_train,Dropout,hidden_units):
+       
    model = Sequential()
 #   model.add(Masking(mask_value=666, input_shape=X_train.shape))
-   model.add(LSTM(hidden_units, input_shape=(X_train.shape[1],X_train.shape[2]),activation='tanh', return_sequences=True, dropout=dropout))
+#   model.add(LSTM(hidden_units, input_shape=(X_train.shape[1],X_train.shape[2]),activation='tanh', return_sequences=True, dropout=Dropout))   
+   model.add(Masking(mask_value=666, input_shape=(X_train.shape[1],X_train.shape[2])))
+   model.add(LSTM(hidden_units, activation='tanh', return_sequences=True, dropout=Dropout))   
    model.add(LSTM(hidden_units, return_sequences=True))
    model.add(LSTM(hidden_units, return_sequences=True))
    model.add(Dense(Y_train.shape[-1], activation='softmax'))
@@ -51,7 +54,7 @@ def LSTM_model_1(X_train,Y_train,X_val,Y_val,hidden_units,dropout):
    return model
 
 #%%
-def LSTM_model_2(X_train,Y_train,X_val,Y_val,hidden_units,dropout):
+def LSTM_model_2(X_train,Y_train,hidden_units,dropout):
    model = Sequential()
    model.add(Masking(mask_value=666, input_shape=X_train.shape))
    model.add(layers.Bidirectional(layers.LSTM(hidden_units, activation='tanh', return_sequences=True, dropout=dropout[0])))
