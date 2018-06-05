@@ -36,6 +36,21 @@ def basic_dense_model(X_train,Y_train):
 
     return model
 #%%
+def LSTM_model_1_gen(lookback,Nr_Features,Nr_labels,Dropout,hidden_units,MaskWert):
+       
+   model = Sequential()
+   model.add(Masking(mask_value=MaskWert, input_shape=(lookback,Nr_Features)))
+   model.add(LSTM(hidden_units, activation='tanh', return_sequences=True, dropout=Dropout))   
+   model.add(LSTM(hidden_units, return_sequences=True))
+   model.add(LSTM(hidden_units, return_sequences=True))
+   model.add(Dense(Nr_labels, activation='softmax'))
+
+#   model.add(Activation('softmax'))
+
+   model.compile(loss='mean_squared_error', optimizer='adam',metrics=['categorical_accuracy'])
+     
+   return model
+#%%
 def LSTM_model_1(X_train,Y_train,Dropout,hidden_units):
        
    model = Sequential()

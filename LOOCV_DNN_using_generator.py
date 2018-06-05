@@ -5,6 +5,7 @@ Created on Mon Nov 27 22:26:01 2017
 @author: 310122653
 """
 from DNN_routines import KeraS
+from DNN_routines import KeraS_Gen
 
 import itertools
 from matplotlib import *
@@ -62,19 +63,6 @@ def leave_one_out_cross_validation(\
                yield seq[prv:nxt]
                prv = nxt
                
-       def create_timesteps(data, time_step):
-              for i in range(0, len(data), time_step): #Yield successive n-sized chunks from l
-                     yield data[i:i + time_step]
-                     
-     
-       def data_with_lookback(Data_Train_Val_Test,lookback,Wert):
-              Data_tmp=concatenate(Data_Train_Val_Test,axis=0)
-              Data_Tensor=list(create_timesteps(Data_tmp, lookback))
-              if Data_Tensor[-1].shape < Data_Tensor[-2].shape:  #make the last one the same length as the others, zeropad                       
-                         Data_Tensor[-1]=np.pad(Data_Tensor[-1],pad_width=((0,Data_Tensor[-2].shape[0]-Data_Tensor[-1].shape[0]),(0,0)),mode='constant',constant_values=Wert)
-              Data_Tensor = np.stack((Data_Tensor), axis=0) 
-              return Data_Tensor                      
-#               
 
            
 #      def percentage_split(seq, percentages):
@@ -104,38 +92,10 @@ def leave_one_out_cross_validation(\
 # ONE HOT ENCODING OF Y-LABELS      
            y_labeled = [np_utils.to_categorical(y_labeled[i]) for i in range(len(y_labeled)) ]           
            
-#ZEROPADDING IF TOTAL SET IS USED AS TIMESTEP           
-           if lookback==1337:
-                  list_len = [len(i) for i in X_labeled] # zero pad all sessions/patientsets to have same length
-                  X_labeled=[np.pad(X_labeled[i],pad_width=((0,max(list_len)-len(X_labeled[i])),(0,0)),mode ='constant',constant_values=666) for i in range(len(X_labeled))] #padwith=((before axe0, after axe0),(before axe1, before axe1)))
-                  y_labeled=[np.pad(y_labeled[i],pad_width=((0,max(list_len)-len(y_labeled[i])),(0,0)),mode ='constant') for i in range(len(y_labeled))] #padwith=((before axe0, after axe0),(before axe1, before axe1)))
-                  
 # SPLIT DATASET                     
            X_Train_Val_Test=list(percentage_split(X_labeled,split)) # Splitting the data into Train-Val-Test after the split percentages
            Y_Train_Val_Test=list(percentage_split(y_labeled,split))
-           
-#CREATE LOOCKBACK 3D TENSOR           
-           if lookback!=1337:
-                  X_Train=data_with_lookback(X_Train_Val_Test[0],lookback,666) # function defined above. Split data into loockback steps and create 3D tensor
-                  Y_Train=data_with_lookback(Y_Train_Val_Test[0],lookback,0)
-                  
-                  X_Val=data_with_lookback(X_Train_Val_Test[1],lookback,666)
-                  Y_Val=data_with_lookback(Y_Train_Val_Test[1],lookback,0)
-                  
-                  X_Test=data_with_lookback(X_Train_Val_Test[2],lookback,666)
-                  Y_Test=data_with_lookback(Y_Train_Val_Test[2],lookback,0)
-                  
-#CREATE 3D TENSOR FOR TOTAL SET (LOOKBACK= TOTAL SESSION/DATA LENGTH)
-           if lookback==1337: # for any lookbackstep smaler than the total session/set
-               X_Train=X_Train_Val_Test[0]  ;  X_Train = np.stack((X_Train), axis=0)        # here again as we first had to zeropad, then split, then stack       
-               Y_Train=Y_Train_Val_Test[0]  ;  Y_Train = np.stack((Y_Train), axis=0)          
-           
-               X_Val=X_Train_Val_Test[1]    ;  X_Val   = np.stack((X_Val), axis=0)             
-               Y_Val=Y_Train_Val_Test[1]    ;  Y_Val   = np.stack((Y_Val), axis=0)           
-           
-               X_Test=X_Train_Val_Test[2]   ;  X_Test  = np.stack((X_Test), axis=0)         
-               Y_Test=Y_Train_Val_Test[2]   ;  Y_Test  = np.stack((Y_Test), axis=0) 
-               
+                                          
 #CALCULATE CLASS_WEIGHTS TO BALANCE CLASS IMBALANCE               
            stackedTrain=np.concatenate(Y_Train_Val_Test[0], axis=0)  # make one hot encodd back to integer values representing the labels 
            indEy = (np.argmax(stackedTrain, axis=1), stackedTrain.shape)
@@ -146,10 +106,16 @@ def leave_one_out_cross_validation(\
            for i in range(len(label)):
                   class_weights_one_hot[label[i]]=class_weights[i] 
            class_weights_one_hot=dict(enumerate(class_weights_one_hot)) # it seems that Keras likes dicts. I am not 100% sure if that is the latest info or if an array also works
+           
 #FORWARD SETS TO KERAS WHERE THE MODEL IS BUILT, TRAINED, VALIDATED AND TESTED           
-
+           steps_per_epoch = ceil( len(X_Train_Val_Test[0])/ batchsize)
+           
            resultsK_fold, mean_k_fold, mean_train_metric_fold, mean_val_metric_fold, mean_train_loss_fold, mean_val_loss_fold, mean_test_metric_fold, mean_test_loss_fold\
-           =KeraS(X_Train, Y_Train, X_Val, Y_Val, X_Test, Y_Test, batchsize,Epochs,dropout,hidden_units,label,class_weights_one_hot)
+           =KeraS_Gen(X_Train_Val_Test, Y_Train_Val_Test,
+                      steps_per_epoch, Epochs,dropout,hidden_units,label,class_weights_one_hot,lookback)
+           resultsK_fold, mean_k_fold, mean_train_metric_fold, mean_val_metric_fold, mean_train_loss_fold, mean_val_loss_fold, mean_test_metric_fold, mean_test_loss_fold\           
+           =KeraS(X_train, Y_train, X_val, Y_val, X_test, Y_test, batchsize,Epochs,dropout,hidden_units,label,class_weight):
+
 
 #GATHERING THE RESULTS OF THE TESTING           
 #           classpredictions.append(prediction)

@@ -17,9 +17,10 @@ print ('Python version: ', sep=' ', end='', flush=True);print( python_version())
 #from Loading_5min_mat_files_cECG import \
 #babies, AnnotMatrix_each_patient, FeatureMatrix_each_patient_all, Class_dict, features_dict, features_indx, \
 #FeatureMatrix_each_patient_fromSession, lst
-from Classifier_routines import Classifier_random_forest
+#from Classifier_routines import Classifier_random_forest
 from Loading_5min_mat_files_DNN import Loading_data_all,Loading_data_perSession,Feature_names,Loading_Annotations
 from LOOCV_DNN import leave_one_out_cross_validation
+#from LOOCV_DNN_using_generator import leave_one_out_cross_validation
 
 import itertools
 from matplotlib import *
@@ -68,7 +69,6 @@ Loading data declaration & Wrapper variables
 """
 FeatureSet='Features' #Features ECG, EDR, HRV
 lstQS= [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33] 
-lstQS= [0,1,2,3,4,5,6,7,25,26,27,28,29,30,31,32,33] 
 
 label=[1,2,3,4,6] # 1=AS 2=QS 3=Wake 4=Care-taking 5=NA 6= transition
 
@@ -76,12 +76,13 @@ label=[1,2,3,4,6] # 1=AS 2=QS 3=Wake 4=Care-taking 5=NA 6= transition
 #Loockback of 1337 mean all data per patient. Otherwise it is in nr of 30s epochs. e.g. 60=30min  120=1h 10=5min
 # HOw to split the dataset in [Train, Validation, Test] e.g.70:15:15  or 50:25:25 ,... 
 # The split is done for each fold. Just for the chekout phase use fold one. Later calculate how often the test split fits into the total data, that is the fold. e.g. 30 patients with 15% test -> 4.5 (round to 5) patients per fold. Now see how many times the 30 can be folded with 5 patients in the test set to cover all patients. 30/5=6 -> 6 fold
-Lookback= 50# 1337 or anything else . 
-split=[0.70,0.15,0.15];
-fold=1
-batchsize=1  # LSTM needs [batchsize, timestep, feature] your batch size divides nb_samples from the original tensor. So batchsize should be smaller than samples
-Epochs=10
-hidden_units=64 # 2-64 or even 1000 as used by sleepnet best: multible of 32
+Lookback= 1000# 1337 or anything else . 
+split=[0.60,0.2,0.2];
+#split=[0.70,0.30];
+fold=3
+batchsize=10  # LSTM needs [batchsize, timestep, feature] your batch size divides nb_samples from the original tensor. So batchsize should be smaller than samples
+Epochs=100
+hidden_units=32 # 2-64 or even 1000 as used by sleepnet best: multible of 32
 dropout=0 #0.5; 0.9  dropout can be between 0-1  as %  DROPOUT CAN BE ADDED TO EACH LAYER
 
 
