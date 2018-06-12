@@ -150,7 +150,7 @@ def KeraS_Gen(X_Train_Val_Test,Y_Train_Val_Test,
     
     return resultsK, mean_k, mean_train_metric, mean_val_metric, mean_train_loss, mean_val_loss, mean_test_metric, mean_test_loss
 #%%
-def KeraS(X_train, Y_train, X_val, Y_val, X_test, Y_test, batchsize,Epochs,dropout,hidden_units,label,class_weight):
+def KeraS(X_train, Y_train, X_val, Y_val, X_test, Y_test, batchsize,Epochs,dropout,hidden_units,label,class_weights):
        
 #selecte_babies are the babies without test baby
 #### CREATING THE sampleweight FOR SELECTED BABIES  
@@ -175,6 +175,7 @@ def KeraS(X_train, Y_train, X_val, Y_val, X_test, Y_test, batchsize,Epochs,dropo
                        Y_train,
                        epochs=Epochs,
                        batch_size=batchsize,
+                       sample_weight=class_weights,
                        validation_data=(X_val,Y_val),
                        shuffle=False)
 

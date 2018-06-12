@@ -47,7 +47,7 @@ def LSTM_model_1_gen(lookback,Nr_Features,Nr_labels,Dropout,hidden_units,MaskWer
 
 #   model.add(Activation('softmax'))
 
-   model.compile(loss='mean_squared_error', optimizer='adam',metrics=['categorical_accuracy'])
+   model.compile(loss='mean_squared_error', optimizer='adam',metrics=['categorical_accuracy'],sample_weight_mode="temporal")
      
    return model
 #%%
@@ -64,10 +64,24 @@ def LSTM_model_1(X_train,Y_train,Dropout,hidden_units):
 
 #   model.add(Activation('softmax'))
 
-   model.compile(loss='mean_squared_error', optimizer='adam',metrics=['categorical_accuracy'])
+   model.compile(loss='mean_squared_error', optimizer='adam',metrics=['categorical_accuracy'],sample_weight_mode="temporal")
      
    return model
 
+#%%
+def LSTM_model_2_advanced(X_train,Y_train,Dropout,hidden_units):   
+   model = Sequential()
+   model.add(Masking(input_shape=(max_length,)))
+   model.add(Dropout(0.2, noise_shape=(batch_size, 1, n_frames)))
+   model.add(Dense(32, asctivation='sigmoid', kernel_constraint=maxnorm(max_norm)))
+   model.add(Bidirectional(LSTM(64, return_sequences=True, kernel_constraint=maxnorm(max_norm), dropout=0.5, recurrent_dropout=0.5), merge_mode='concat'))
+   model.add(Dropout(0.5, noise_shape=(batch_size, 1, 128)))
+   model.add(Dense(n_classes, activation='softmax', kernel_constraint=maxnorm(max_norm)))
+   model.summary()
+   
+   model.compile(loss='mean_squared_error', optimizer='adam',metrics=['categorical_accuracy'],sample_weight_mode="temporal")
+                       
+   
 #%%
 def LSTM_model_2(X_train,Y_train,hidden_units,dropout):
    model = Sequential()
@@ -79,6 +93,6 @@ def LSTM_model_2(X_train,Y_train,hidden_units,dropout):
 
 #   model.add(Activation('softmax'))
 
-   model.compile(loss='mean_squared_error', optimizer='adam',metrics=['categorical_accuracy'])
+   model.compile(loss='mean_squared_error', optimizer='adam',metrics=['categorical_accuracy'],sample_weight_mode="temporal")
      
    return model    

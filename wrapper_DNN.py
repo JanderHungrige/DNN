@@ -56,8 +56,6 @@ Whichmix=['perSession', 'all']
 description='_123456_cECG_lst_micro_'
 consoleinuse='4'
 dispinfo=0
-savepath='/home/310122653/Pyhton_Folder/cECG/Results/'
-histogram=1
 """
 **************************************************************************
 Loading data declaration & Wrapper variables
@@ -201,7 +199,7 @@ def loadingdata(whichMix):
        """    
        laenge=[sum(len(FeatureMatrix_each_patient[i]) for i in range(len(FeatureMatrix_each_patient))) ]
        print('Total amount of epochs: {}'.format(laenge))
-       y_each_patient, Performance_Kappa, mean_train_metric, mean_train_loss, mean_val_metric, mean_val_loss, mean_test_metric, mean_test_loss,\
+       y_each_patient, Performance_Kappa, mean_train_metric, mean_train_loss, mean_val_metric, mean_val_loss, mean_test_metric, mean_test_loss\
        =leave_one_out_cross_validation(babies,AnnotMatrix_each_patient,FeatureMatrix_each_patient,\
                 label,classweight, Used_classifier, drawing, lst,ChoosenKind,SamplingMeth,probability_threshold,\
                 ASprobLimit,plotting,compare,saving,N,crit,msl,deciding_performance_measure,dispinfo,Lookback,split,fold,batchsize,Epochs,dropout,hidden_units)
