@@ -76,12 +76,12 @@ label=[1,2,3,4,6] # 1=AS 2=QS 3=Wake 4=Care-taking 5=NA 6= transition
 # The split is done for each fold. Just for the chekout phase use fold one. Later calculate how often the test split fits into the total data, that is the fold. e.g. 30 patients with 15% test -> 4.5 (round to 5) patients per fold. Now see how many times the 30 can be folded with 5 patients in the test set to cover all patients. 30/5=6 -> 6 fold
 Lookback= 1000# 1337 or anything else . 
 split=[0.60,0.2,0.2];
-#split=[0.70,0.30];
-fold=3
+split=[0.70,0.30];
+fold=1
 batchsize=10  # LSTM needs [batchsize, timestep, feature] your batch size divides nb_samples from the original tensor. So batchsize should be smaller than samples
 Epochs=100
 hidden_units=32 # 2-64 or even 1000 as used by sleepnet best: multible of 32
-dropout=0 #0.5; 0.9  dropout can be between 0-1  as %  DROPOUT CAN BE ADDED TO EACH LAYER
+dropout=0.5 #0.5; 0.9  dropout can be between 0-1  as %  DROPOUT CAN BE ADDED TO EACH LAYER
 
 
 if Lookback==1337: # The problem is that the patients have different lenght. Then we need to zero pad. Instead of zeropadding we can use diffent length when batchsize==1
@@ -211,13 +211,15 @@ def loadingdata(whichMix):
 babies, y_each_patient, Performance_Kappa_pp, mean_train_metric_pp, mean_train_loss_pp, mean_val_metric_pp, mean_val_loss_pp, mean_test_metric_pp, mean_test_loss_pp\
 = loadingdata(WhichMix)                  
 
-mean_test_metric=np.mean(mean_test_metric_pp) # Kappa is not calculated per epoch but just per fold. Therefor we generate on mean Kappa
-mean_train_metric=np.mean(mean_train_metric_pp,axis=0)
-mean_val_metric=np.mean(mean_val_metric_pp,axis=0)    
-mean_test_loss=mean(mean_test_loss_pp,axis=0)    
-mean_train_loss=np.mean(mean_train_loss_pp,axis=0)
-mean_val_loss=np.mean(mean_val_loss_pp,axis=0)      
-Performance_Kappa=np.mean(Performance_Kappa_pp)
+
+if fold>1:
+       mean_test_metric=np.mean(mean_test_metric_pp) # Kappa is not calculated per epoch but just per fold. Therefor we generate on mean Kappa
+       mean_train_metric=np.mean(mean_train_metric_pp,axis=0)
+       mean_val_metric=np.mean(mean_val_metric_pp,axis=0)    
+       mean_test_loss=mean(mean_test_loss_pp,axis=0)    
+       mean_train_loss=np.mean(mean_train_loss_pp,axis=0)
+       mean_val_loss=np.mean(mean_val_loss_pp,axis=0)      
+       Performance_Kappa=np.mean(Performance_Kappa_pp)
 
 #
 ## Kappa over all annotations and predictions merged together
@@ -245,7 +247,10 @@ Performance_Kappa=np.mean(Performance_Kappa_pp)
 """
 END
 """
+disp('-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  - ')
 
+if len(split)<3:
+       disp('don`t give a f** about Kappa. Data is only plit for train and val' )
 import time
 t=time.localtime()
 zeit=time.asctime()

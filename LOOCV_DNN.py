@@ -36,7 +36,6 @@ def leave_one_out_cross_validation(\
          saving, N,crit,msl,deciding_performance_measure,dispinfo,\
          lookback,split,fold,batchsize,Epochs,dropout,hidden_units):
        
-       weigth=list()
        t_a=list()
        classpredictions=list()
        Probabilities=list()
@@ -123,7 +122,7 @@ def leave_one_out_cross_validation(\
                   list_len = [len(i) for i in X_labeled] # zero pad all sessions/patientsets to have same length
                   X_labeled=[np.pad(X_labeled[i],pad_width=((0,max(list_len)-len(X_labeled[i])),(0,0)),mode ='constant',constant_values=666) for i in range(len(X_labeled))] #padwith=((before axe0, after axe0),(before axe1, before axe1)))
                   y_labeled=[np.pad(y_labeled[i],pad_width=((0,max(list_len)-len(y_labeled[i])),(0,0)),mode ='constant') for i in range(len(y_labeled))] #padwith=((before axe0, after axe0),(before axe1, before axe1)))
-                  
+                  Weights_all=[np.pad(Weights_all[i],pad_width=((0,max(list_len)-len(Weights_all[i])),(0,0)),mode ='constant') for i in range(len(Weights_all))] #padwith=((before axe0, after axe0),(before axe1, before axe1)))
 # SPLIT DATASET                     
            X_Train_Val_Test=list(percentage_split(X_labeled,split)) # Splitting the data into Train-Val-Test after the split percentages
            Y_Train_Val_Test=list(percentage_split(y_labeled,split))
@@ -133,25 +132,33 @@ def leave_one_out_cross_validation(\
            if lookback!=1337:
                   X_Train=data_with_lookback(X_Train_Val_Test[0],lookback,666) # function defined above. Split data into loockback steps and create 3D tensor
                   Y_Train=data_with_lookback(Y_Train_Val_Test[0],lookback,0)
-                  Weigths=data_with_lookback(Weigths_split[0],lookback,0)
+                  Weigths=data_with_lookback(Weigths_split[0],lookback,0);Weigths=np.squeeze(Weigths, axis=(2,)) # Wheights need to be in shape (samples, sequence_length) for temporal mode
                   
                   X_Val=data_with_lookback(X_Train_Val_Test[1],lookback,666)
                   Y_Val=data_with_lookback(Y_Train_Val_Test[1],lookback,0)
                   
-                  X_Test=data_with_lookback(X_Train_Val_Test[2],lookback,666)
-                  Y_Test=data_with_lookback(Y_Train_Val_Test[2],lookback,0)
+                  if len(X_Train_Val_Test)==3:
+                         X_Test=data_with_lookback(X_Train_Val_Test[2],lookback,666)
+                         Y_Test=data_with_lookback(Y_Train_Val_Test[2],lookback,0)
+                  else: 
+                         X_Test=X_Val
+                         Y_Test=Y_Val                         
                   
 #CREATE 3D TENSOR FOR TOTAL SET (LOOKBACK= TOTAL SESSION/DATA LENGTH)
            if lookback==1337: # for any lookbackstep smaler than the total session/set
-               X_Train=X_Train_Val_Test[0]  ;  X_Train = np.stack((X_Train), axis=0)        # here again as we first had to zeropad, then split, then stack       
-               Y_Train=Y_Train_Val_Test[0]  ;  Y_Train = np.stack((Y_Train), axis=0)          
-               Weigths=Weigths_split[0]
+                  X_Train=X_Train_Val_Test[0]  ;  X_Train = np.stack((X_Train), axis=0)        # here again as we first had to zeropad, then split, then stack       
+                  Y_Train=Y_Train_Val_Test[0]  ;  Y_Train = np.stack((Y_Train), axis=0)          
+                  Weigths=Weigths_split[0] ; Weigths=np.squeeze(Weigths, axis=(2,)) # Wheights need to be in shape (samples, sequence_length) for temporal mode
                
-               X_Val=X_Train_Val_Test[1]    ;  X_Val   = np.stack((X_Val), axis=0)             
-               Y_Val=Y_Train_Val_Test[1]    ;  Y_Val   = np.stack((Y_Val), axis=0)           
-           
-               X_Test=X_Train_Val_Test[2]   ;  X_Test  = np.stack((X_Test), axis=0)         
-               Y_Test=Y_Train_Val_Test[2]   ;  Y_Test  = np.stack((Y_Test), axis=0) 
+                  X_Val=X_Train_Val_Test[1]    ;  X_Val   = np.stack((X_Val), axis=0)             
+                  Y_Val=Y_Train_Val_Test[1]    ;  Y_Val   = np.stack((Y_Val), axis=0)           
+              
+                  if len(X_Train_Val_Test)==3:
+                         X_Test=X_Train_Val_Test[2]   ;  X_Test  = np.stack((X_Test), axis=0)         
+                         Y_Test=Y_Train_Val_Test[2]   ;  Y_Test  = np.stack((Y_Test), axis=0) 
+                  else: 
+                         X_Test=X_Val
+                         Y_Test=Y_Val
                
                
 #CALCULATE CLASS_WEIGHTS TO BALANCE CLASS IMBALANCE               
