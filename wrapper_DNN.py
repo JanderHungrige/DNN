@@ -74,14 +74,16 @@ label=[1,2,3,4,6] # 1=AS 2=QS 3=Wake 4=Care-taking 5=NA 6= transition
 #Loockback of 1337 mean all data per patient. Otherwise it is in nr of 30s epochs. e.g. 60=30min  120=1h 10=5min
 # HOw to split the dataset in [Train, Validation, Test] e.g.70:15:15  or 50:25:25 ,... 
 # The split is done for each fold. Just for the chekout phase use fold one. Later calculate how often the test split fits into the total data, that is the fold. e.g. 30 patients with 15% test -> 4.5 (round to 5) patients per fold. Now see how many times the 30 can be folded with 5 patients in the test set to cover all patients. 30/5=6 -> 6 fold
-Lookback= 1000# 1337 or anything else . 
+Lookback= 1337# 1337 or anything else . 
 split=[0.60,0.2,0.2];
 split=[0.70,0.30];
-fold=1
 batchsize=10  # LSTM needs [batchsize, timestep, feature] your batch size divides nb_samples from the original tensor. So batchsize should be smaller than samples
 Epochs=100
-hidden_units=32 # 2-64 or even 1000 as used by sleepnet best: multible of 32
-dropout=0.5 #0.5; 0.9  dropout can be between 0-1  as %  DROPOUT CAN BE ADDED TO EACH LAYER
+hidden_units=64 # 2-64 or even 1000 as used by sleepnet best: multible of 32
+dropout=0.2 #0.5; 0.9  dropout can be between 0-1  as %  DROPOUT CAN BE ADDED TO EACH LAYER
+
+fold=1
+
 
 
 if Lookback==1337: # The problem is that the patients have different lenght. Then we need to zero pad. Instead of zeropadding we can use diffent length when batchsize==1
@@ -198,6 +200,8 @@ def loadingdata(whichMix):
        LOOCV 
        """    
        laenge=[sum(len(FeatureMatrix_each_patient[i]) for i in range(len(FeatureMatrix_each_patient))) ]
+       
+       
        print('Total amount of epochs: {}'.format(laenge))
        y_each_patient, Performance_Kappa, mean_train_metric, mean_train_loss, mean_val_metric, mean_val_loss, mean_test_metric, mean_test_loss\
        =leave_one_out_cross_validation(babies,AnnotMatrix_each_patient,FeatureMatrix_each_patient,\

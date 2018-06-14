@@ -172,7 +172,7 @@ def leave_one_out_cross_validation(\
 #                  class_weights_one_hot[label[i]]=class_weights[i] 
 #           class_weights_one_hot=dict(enumerate(class_weights_one_hot)) # it seems that Keras likes dicts. I am not 100% sure if that is the latest info or if an array also works
 #FORWARD SETS TO KERAS WHERE THE MODEL IS BUILT, TRAINED, VALIDATED AND TESTED           
-
+           print ('Training data shape is:[%i, %i, %i]' %(X_Train.shape))
            resultsK_fold, mean_k_fold, mean_train_metric_fold, mean_val_metric_fold, mean_train_loss_fold, mean_val_loss_fold, mean_test_metric_fold, mean_test_loss_fold\
            =KeraS(X_Train, Y_Train, X_Val, Y_Val, X_Test, Y_Test, batchsize,Epochs,dropout,hidden_units,label,Weigths)
 
