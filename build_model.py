@@ -5,7 +5,10 @@ Created on Mon Apr  9 16:16:22 2018
 @author: 310122653
 """       
 
-import keras
+import keras 
+import keras.backend as K
+import tensorflow as tf
+
 from keras import optimizers 
 from keras import losses
 from keras import metrics
@@ -21,8 +24,11 @@ from keras.layers import LSTM
 from keras.layers import Masking
 from keras.layers import Dropout
 from keras.layers import Activation
+from keras.layers import Lambda
 
 from keras.constraints import max_norm
+
+
 
 #%%
 def basic_dense_model(X_train,Y_train):   
@@ -65,15 +71,14 @@ def LSTM_model_1(X_train,Y_train,dropout,hidden_units,MaskWert):
    model.compile(loss='mean_squared_error', optimizer='adam',metrics=['categorical_accuracy'],sample_weight_mode="temporal")    
    return model
 #%%
-def LSTM_model_2(X_train,Y_train,dropout,hidden_units,MaskWert,batchsize):
-       
+def LSTM_model_2(X_train,Y_train,dropout,hidden_units,MaskWert):       
    model = Sequential()
    model.add(Masking(mask_value=MaskWert, input_shape=(X_train.shape[1],X_train.shape[2]) ))
-   model.add(Dropout(dropout, noise_shape=(batchsize, 1, X_train.shape[2]) ))   
-   model.add(Dense(32, activation='sigmoid', kernel_constraint=max_norm(max_value=4.) ))   
-   model.add(LSTM(hidden_units, return_sequences=True, dropout=dropout))  
-   model.add(LSTM(hidden_units, return_sequences=True, dropout=dropout))
-   model.add(LSTM(hidden_units, return_sequences=True, dropout=dropout))
+   model.add(Dropout(dropout, noise_shape=(None, 1, X_train.shape[2]) ))   
+   model.add(Dense(32, activation='tanh', kernel_constraint=max_norm(max_value=4.) ))   
+   model.add(LSTM(hidden_units, return_sequences=True, dropout=dropout, recurrent_dropout=dropout))  
+   model.add(LSTM(hidden_units, return_sequences=True, dropout=dropout, recurrent_dropout=dropout))
+#   model.add(LSTM(hidden_units, return_sequences=True, dropout=dropout, recurrent_dropout=dropout))
    model.add(Dense(Y_train.shape[-1], activation='softmax'))
 
    model.compile(loss='mean_squared_error', optimizer='adam',metrics=['categorical_accuracy'],sample_weight_mode="temporal")    
@@ -83,8 +88,8 @@ def LSTM_model_2(X_train,Y_train,dropout,hidden_units,MaskWert,batchsize):
 #%%
 def LSTM_model_3(X_train,Y_train,dropout,hidden_units,MaskWert):
    model = Sequential()
-   model.add(Masking(mask_value=MaskWert, input_shape=X_train.shape))
-   model.add(layers.Bidirectional(layers.LSTM(hidden_units, activation='tanh', return_sequences=True, dropout=dropout[0])))
+#   model.add(Masking(mask_value=MaskWert, input_shape=X_train.shape))
+   model.add(layers.Bidirectional(layers.LSTM(hidden_units, activation='tanh', return_sequences=True, dropout=dropout)))
    model.add(LSTM(hidden_units, return_sequences=True))
    model.add(LSTM(hidden_units, return_sequences=True))
    model.add(Dense(Y_test.shape[-1]), activation='softmax')

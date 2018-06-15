@@ -171,7 +171,7 @@ def KeraS(X_train, Y_train, X_val, Y_val, X_test, Y_test, batchsize,Epochs,dropo
 #    model=basic_dense_model(X_train,Y_train)
 #    model=LSTM_model_1(X_train,Y_train,dropout,hidden_units,MaskWert)
     
-    model=LSTM_model_2(X_train,Y_train,dropout,hidden_units,MaskWert,batchsize)
+    model=LSTM_model_2(X_train,Y_train,dropout,hidden_units,MaskWert)
 
 
 # TRAIN MODEL (in silent mode, verbose=0)       
