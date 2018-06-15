@@ -78,7 +78,7 @@ def LSTM_model_2(X_train,Y_train,dropout,hidden_units,MaskWert):
    model.add(Dense(32, activation='tanh', kernel_constraint=max_norm(max_value=4.) ))   
    model.add(LSTM(hidden_units, return_sequences=True, dropout=dropout, recurrent_dropout=dropout))  
    model.add(LSTM(hidden_units, return_sequences=True, dropout=dropout, recurrent_dropout=dropout))
-#   model.add(LSTM(hidden_units, return_sequences=True, dropout=dropout, recurrent_dropout=dropout))
+   model.add(LSTM(hidden_units, return_sequences=True, dropout=dropout, recurrent_dropout=dropout))
    model.add(Dense(Y_train.shape[-1], activation='softmax'))
 
    model.compile(loss='mean_squared_error', optimizer='adam',metrics=['categorical_accuracy'],sample_weight_mode="temporal")    

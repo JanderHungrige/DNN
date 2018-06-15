@@ -35,7 +35,7 @@ from sklearn.kernel_approximation import RBFSampler
 
 def Loading_data_all(dataset, selectedbabies, lst, FeatureSet, Rpeakmethod,ux, \
                             merge34, Movingwindow, preaveraging, postaveraging, exceptNOF, onlyNOF, FEAT,\
-                            dispinfo):
+                            dispinfo,usedPC):
 
        """
        START *************************************************************************
@@ -44,7 +44,8 @@ def Loading_data_all(dataset, selectedbabies, lst, FeatureSet, Rpeakmethod,ux, \
               if ux:
                      folder=('/home/310122653/Pyhton_Folder/cECG/Matrices/')
               else:
-                    folder=('C:/Users/310122653/Dropbox/PHD/python/cECG/Matrices/')
+                     folder=('C:/Users/310122653/Dropbox/PHD/python/cECG/Matrices/')
+     
        if 'cECG'==dataset:
               if ux:
                      folder=('/home/310122653/Pyhton_Folder/cECG/cMatrices/')
@@ -54,9 +55,10 @@ def Loading_data_all(dataset, selectedbabies, lst, FeatureSet, Rpeakmethod,ux, \
               if ux:
                      folder=('/home/310122653/Pyhton_Folder/DNN/Matrices/')
               else:
-                     folder=('C:/Users/310122653/Documents/PhD/Article_4_(MMC)/Processed_data/DNN_Matrices/Matrices_Features/')              
-             
-           
+                     if usedPC=='Philips':
+                            folder=('C:/Users/310122653/Documents/PhD/Article_4_(MMC)/Processed_data/DNN_Matrices/Matrices_Features/')              
+                     if usedPC=='c3po':
+                            folder=('C:/Users/C3PO/Desktop/Processed data/DNN_Matrices/Matrices_Features/') 
               
        # ONLY 5 MIN FEATURES AND ANNOTATIONS
        dateien_each_patient="FeatureMatrix_","Annotations_" #non scaled values. The values should be scaled over all patient and not per patient. Therfore this is better
@@ -129,7 +131,7 @@ def Loading_data_all(dataset, selectedbabies, lst, FeatureSet, Rpeakmethod,ux, \
        
 def Loading_data_perSession(dataset, selectedbabies, lst, FeatureSet, Rpeakmethod,ux, \
                             merge34, Movingwindow, preaveraging, postaveraging, exceptNOF, onlyNOF, FEAT,\
-                            dispinfo):    
+                            dispinfo,usedPC):    
              
        """
        Creating Feature Matrix per session
@@ -151,7 +153,10 @@ def Loading_data_perSession(dataset, selectedbabies, lst, FeatureSet, Rpeakmetho
               if ux:
                      Sessionfolder=('/home/310122653/Pyhton_Folder/DNN/Matrices/Sessions/')
               else:
-                     Sessionfolder=('C:/Users/310122653/Documents/PhD/Article_4_(MMC)/DNN-Matrices/Matrices_Features/Sessions/')              
+                     if usedPC=='Philips':
+                            folder=('C:/Users/310122653/Documents/PhD/Article_4_(MMC)/Processed_data/DNN_Matrices/Matrices_Features/')              
+                     if usedPC=='c3po':
+                            folder=('C:/Users/C3PO/Desktop/Processed data/DNN_Matrices/Matrices_Features/')       
 
  
        dateien_each_patient="FeatureMatrix_","Annotations_" #non scaled values. The values should be scaled over all patient and not per patient. Therfore this is better
@@ -175,7 +180,7 @@ def Loading_data_perSession(dataset, selectedbabies, lst, FeatureSet, Rpeakmetho
        FeatureMatrix_each_patient_fromSession=[None]*len(Neonate)
        FeatureMatrix_each_patient_fromSession_poly=[None]*len(Neonate)
 
-       AnnotMatrix_each_patient=Loading_Annotations(dataset,selectedbabies,ux,plotting=0) # loading Annotations
+       AnnotMatrix_each_patient=Loading_Annotations(dataset,selectedbabies,ux,usedPC,plotting=0) # loading Annotations
        
        for K in range(len(Neonate)):      
               Dateien=glob.glob(Sessionfolder +'FeatureMatrix_'+Neonate[K]+ '_**')
@@ -285,7 +290,7 @@ def Feature_names():
        features_indx = dict((y,x) for x,y in features_dict.items())       
        return Class_dict, features_dict, features_indx
 #%%
-def Loading_Annotations(dataset,selectedbabies,ux,plotting):
+def Loading_Annotations(dataset,selectedbabies,ux,usedPC,plotting):
        if 'ECG'== dataset:
               if ux:
                      folder=('/home/310122653/Pyhton_Folder/cECG/Matrices/')
@@ -300,7 +305,10 @@ def Loading_Annotations(dataset,selectedbabies,ux,plotting):
               if ux:
                      folder=('/home/310122653/Pyhton_Folder/DNN/Matrices/')
               else:
-                     folder=('C:/Users/310122653/Documents/PhD/Article_4_(MMC)/DNN-Matrices/Matrices_Features/') 
+                     if usedPC=='Philips':
+                            folder=('C:/Users/310122653/Documents/PhD/Article_4_(MMC)/Processed_data/DNN_Matrices/Matrices_Features/')               
+                     if usedPC=='c3po':
+                            folder=('C:/Users/C3PO/Desktop/Processed data/DNN_Matrices/Matrices_Features/') 
 
            
        # ONLY 5 MIN FEATURES AND ANNOTATIONS
@@ -352,7 +360,7 @@ def correcting_Annotations_missing(dataset,K,WelcheSindLeer,ux,selectedbabies,An
               if ux:
                      folder=('/home/310122653/Pyhton_Folder/DNN/Matrices/Sessions/')
               else:
-                     folder=('C:/Users/310122653/Documents/PhD/Article_4_(MMC)/DNN-Matrices/Matrices_Features/Sessions/') 
+                     folder=('C:/Users/310122653/Documents/PhD/Article_4_(MMC)/Processed_data/DNN_Matrices/Matrices_Features//Sessions/') 
 
 
        # ONLY 5 MIN FEATURES AND ANNOTATIONS

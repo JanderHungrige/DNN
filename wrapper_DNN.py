@@ -69,7 +69,7 @@ FeatureSet='Features' #Features ECG, EDR, HRV
 lstQS= [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33] 
 
 label=[1,2,3,4,6] # 1=AS 2=QS 3=Wake 4=Care-taking 5=NA 6= transition
-
+usedPC='Philips' #Philips or c3po
 #Loockback for the LSTM. The data is separated samples with timestep=loockback; 
 #Loockback of 1337 mean all data per patient. Otherwise it is in nr of 30s epochs. e.g. 60=30min  120=1h 10=5min
 # HOw to split the dataset in [Train, Validation, Test] e.g.70:15:15  or 50:25:25 ,... 
@@ -189,13 +189,13 @@ def loadingdata(whichMix):
               babies, AnnotMatrix_each_patient,FeatureMatrix_each_patient\
               =Loading_data_perSession(dataset, selectedbabies, lst, FeatureSet, Rpeakmethod,ux, \
                             merge34, Movingwindow, preaveraging, postaveraging, exceptNOF, onlyNOF, FEAT,\
-                            dispinfo)       
+                            dispinfo,usedPC)       
               
        elif WhichMix=='all':              
               babies, AnnotMatrix_each_patient, FeatureMatrix_each_patient\
               =Loading_data_all(dataset, selectedbabies, lst, FeatureSet, Rpeakmethod,ux, \
                             merge34, Movingwindow, preaveraging, postaveraging, exceptNOF, onlyNOF, FEAT,\
-                            dispinfo)                   
+                            dispinfo,usedPC)                   
        """
        LOOCV 
        """    
