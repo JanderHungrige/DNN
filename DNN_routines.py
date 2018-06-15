@@ -30,7 +30,7 @@ from build_model import LSTM_model_1
 from build_model import LSTM_model_1_gen
 from build_model import LSTM_model_2
 from build_model import LSTM_model_3
-
+from build_model import LSTM_model_3_advanced
 
 
 
@@ -170,9 +170,8 @@ def KeraS(X_train, Y_train, X_val, Y_val, X_test, Y_test, batchsize,Epochs,dropo
 #BUILT MODEL    
 #    model=basic_dense_model(X_train,Y_train)
 #    model=LSTM_model_1(X_train,Y_train,dropout,hidden_units,MaskWert)
-    
-    model=LSTM_model_2(X_train,Y_train,dropout,hidden_units,MaskWert)
-
+#    model=LSTM_model_2(X_train,Y_train,dropout,hidden_units,MaskWert)
+    model=LSTM_model_3_advanced(X_train,Y_train,dropout,hidden_units,MaskWert)
 
 # TRAIN MODEL (in silent mode, verbose=0)       
     history=model.fit(X_train,

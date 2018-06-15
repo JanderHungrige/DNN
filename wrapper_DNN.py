@@ -74,15 +74,15 @@ usedPC='Philips' #Philips or c3po
 #Loockback of 1337 mean all data per patient. Otherwise it is in nr of 30s epochs. e.g. 60=30min  120=1h 10=5min
 # HOw to split the dataset in [Train, Validation, Test] e.g.70:15:15  or 50:25:25 ,... 
 # The split is done for each fold. Just for the chekout phase use fold one. Later calculate how often the test split fits into the total data, that is the fold. e.g. 30 patients with 15% test -> 4.5 (round to 5) patients per fold. Now see how many times the 30 can be folded with 5 patients in the test set to cover all patients. 30/5=6 -> 6 fold
-Lookback= 100# 1337 or anything else . 
+Lookback= 1337# 1337 or anything else . 
 split=[0.60,0.2,0.2];
 split=[0.70,0.30];
 batchsize=2  # LSTM needs [batchsize, timestep, feature] your batch size divides nb_samples from the original tensor. So batchsize should be smaller than samples
-Epochs=100
-hidden_units=64 # 2-64 or even 1000 as used by sleepnet best: multible of 32
-dropout=0.2 #0.5; 0.9  dropout can be between 0-1  as %  DROPOUT CAN BE ADDED TO EACH LAYER
+Epochs=1000
+hidden_units=32 # 2-64 or even 1000 as used by sleepnet best: multible of 32
+dropout=0.5 #0.5; 0.9  dropout can be between 0-1  as %  DROPOUT CAN BE ADDED TO EACH LAYER
 
-fold=1
+fold=4
 
 
 
@@ -181,7 +181,7 @@ Loading Data
 Class_dict, features_dict, features_indx=Feature_names()
 #%%
 # CHOOSING WHICH FEATURE MATRIX IS USED
-def loadingdata(whichMix):
+def loading_and_DNN(whichMix):
        """
        LOAD DATA
        """
@@ -213,7 +213,7 @@ def loadingdata(whichMix):
 #%%
 
 babies, y_each_patient, Performance_Kappa_pp, mean_train_metric_pp, mean_train_loss_pp, mean_val_metric_pp, mean_val_loss_pp, mean_test_metric_pp, mean_test_loss_pp\
-= loadingdata(WhichMix)                  
+= loading_and_DNN(WhichMix)                  
 
 
 if fold>1:

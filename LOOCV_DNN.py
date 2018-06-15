@@ -29,6 +29,9 @@ import pdb # use pdb.set_trace() as breakpoint
 from keras.utils import np_utils
 from sklearn.utils import class_weight
 
+from collections import deque
+
+
 def leave_one_out_cross_validation(\
          babies,AnnotMatrix_each_patient,FeatureMatrix_each_patient,\
          label,classweight, Used_classifier, drawing, lst,ChoosenKind,\
@@ -90,33 +93,51 @@ def leave_one_out_cross_validation(\
               
                   results.append(weight_matrix)
               return results
-
        
-       for V in range(fold):
-           print('**************************')
-           print('Validating on fold: %i' %(V+1) )
-
+       def shiftRbyn(arr, n=0): #circular shift for fold generation
+              return arr[n:len(arr):] + arr[0:n:]   
+ 
 
 #SPLITTING DATA INTO TRAIN+VALIDATION AND TEST SETS
-           # Using only the Patients choosen in the wrapper
-           FeatureMatrix_for_choosen_patients=[FeatureMatrix_each_patient[k]for k in babies]          # get the feature values for selected babies                  
-           AnnotMatrix_for_choosen_patients=[AnnotMatrix_each_patient[k].astype(int) for k in babies]              # get the annotation values for selected babies
+       # Using only the Patients choosen in the wrapper
+       FeatureMatrix_for_choosen_patients=[FeatureMatrix_each_patient[k]for k in babies]          # get the feature values for selected babies                  
+       AnnotMatrix_for_choosen_patients=[AnnotMatrix_each_patient[k].astype(int) for k in babies]              # get the annotation values for selected babies
            
 
-           # Using only the labels choosen in the wrapper
-           idx=[in1d(AnnotMatrix_each_patient[sb],label) for sb in babies]#.values()]     # which are the idices for AnnotMatrix_each_patient == label
-           idx=[nonzero(idx[sb])[0] for sb in range(len(babies))]#.values()]              # get the indices where True
-           X_labeled=[val[idx[sb],:] for sb, val in enumerate(FeatureMatrix_for_choosen_patients)]   #selecting the datapoints in label
-           y_labeled=[val[idx[sb],:] for sb, val in enumerate(AnnotMatrix_for_choosen_patients)] #get the values for y from idx and label
+       # Using only the labels choosen in the wrapper
+       idx=[in1d(AnnotMatrix_each_patient[sb],label) for sb in babies]#.values()]     # which are the idices for AnnotMatrix_each_patient == label
+       idx=[nonzero(idx[sb])[0] for sb in range(len(babies))]#.values()]              # get the indices where True
+       X_labeled=[val[idx[sb],:] for sb, val in enumerate(FeatureMatrix_for_choosen_patients)]   #selecting the datapoints in label
+       y_labeled=[val[idx[sb],:] for sb, val in enumerate(AnnotMatrix_for_choosen_patients)] #get the values for y from idx and label
            
 #CALCULATE CLASS WEIGHTS   
-           Weights_dict=sample_weight_calc_per_class(y_labeled)
-           Weights_all=create_sample_Weigth(y_labeled,Weights_dict,label) 
-#           weights_all=[[weights_dict.get(x, 0) for x in sublist.flatten()] for sublist in y_labeled]
+       Weights_dict=sample_weight_calc_per_class(y_labeled)
+       Weights_all=create_sample_Weigth(y_labeled,Weights_dict,label) 
+#        weights_all=[[weights_dict.get(x, 0) for x in sublist.flatten()] for sublist in y_labeled]
 
 # ONE HOT ENCODING OF Y-LABELS      
-           y_labeled = [np_utils.to_categorical(y_labeled[i]) for i in range(len(y_labeled)) ]           
+       y_labeled = [np_utils.to_categorical(y_labeled[i]) for i in range(len(y_labeled)) ]      
+
+#PREPARING SHIFT FOR FOLD       
+       Testing_Train_Val_Test=list(percentage_split(X_labeled,split)) 
+       vallength=len(Testing_Train_Val_Test[1]); print('possible Val folds: %i' %(floor(len(Testing_Train_Val_Test[0])/vallength) ))       
+       if len(Testing_Train_Val_Test)==3:
+              testength=len(Testing_Train_Val_Test[2]);print('possible Test folds: %i' %(floor(len(Testing_Train_Val_Test[0])/testength) ))
+              
            
+       for V in range(fold):
+           print('**************************')
+           print('Validating on fold: %i' %(V+1) )           
+# SHIFT FOR EACH FOLD
+           if V > 0: 
+                  X_labeled=shiftRbyn(X_labeled,vallength)
+                  y_labeled=shiftRbyn(y_labeled,vallength)
+                  Weights_all=shiftRbyn(Weights_all,vallength)
+                  
+                  if len(TESTING_Train_Val_Test)==3:
+                         X_labeled=shiftRbyn(X_labeled,testength)
+                         y_labeled=shiftRbyn(y_labeled,testength)
+                         Weights_all=shiftRbyn(Weights_all,testength)                         
 #ZEROPADDING IF TOTAL SET IS USED AS TIMESTEP           
            if lookback==1337:
                   list_len = [len(i) for i in X_labeled] # zero pad all sessions/patientsets to have same length
