@@ -96,7 +96,9 @@ def KeraS_Gen(X_Train_Val_Test,Y_Train_Val_Test,
 #BUILT MODEL    
 #    model=basic_dense_model(X_train,Y_train)
     model=LSTM_model_1_gen(lookback,Nr_Features,Nr_labels,dropout,hidden_units,MaskWert)
-    
+    model.optimizer.lr=0.0001 #0.0001 to 0.01 default =0.001
+    model.optimizer.decay=0.0    
+    model.metrics='recall'
 
 # TRAIN MODEL (in silent mode, verbose=0)       
     history=model.fit_generator(
