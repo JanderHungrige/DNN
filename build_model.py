@@ -26,6 +26,7 @@ from keras.layers import Dropout
 from keras.layers import Activation
 from keras.layers import Lambda
 from keras.layers import Bidirectional
+from keras.layers import BatchNormalization
 
 from keras.constraints import max_norm
 
@@ -117,9 +118,27 @@ def LSTM_model_3_advanced(X_train,Y_train,dropout,hidden_units,MaskWert):
    model.add(Dense(Y_train.shape[-1], activation='softmax', kernel_constraint=max_norm(max_value=3.)))
    model.summary()
    
-   model.compile(loss='mean_squared_error', optimizer='adam',metrics=['categorical_accuracy'],sample_weight_mode="temporal")
+   model.compile(loss='mean_squared_error', optimizer='adam',metrics=['recall'],sample_weight_mode="temporal")
    return model  
 
+#%%
+def LSTM_model_4_advanced(X_train,Y_train,dropout,hidden_units,MaskWert):   
+   maxnorm=3.
+   batch_size=X_train.shape[0]
+   n_frames=X_train.shape[2]
+   model = Sequential()
+   model.add(Masking(mask_value=MaskWert, input_shape=(X_train.shape[1],X_train.shape[2])))
+   model.add(Dropout(0.2, noise_shape=(None, 1, X_train.shape[2]) ))   
+   model.add(Dense(32, activation='sigmoid', kernel_constraint=max_norm(max_value=3.)))
+   BatchNormalization(axis=1)
+   model.add(Bidirectional(LSTM(hidden_units, return_sequences=True, kernel_constraint=max_norm(max_value=3.), dropout=dropout, recurrent_dropout=dropout)))
+   model.add(Bidirectional(LSTM(hidden_units, return_sequences=True, kernel_constraint=max_norm(max_value=3.), dropout=dropout, recurrent_dropout=dropout)))   
+   model.add(Dropout(0.5, noise_shape=(None, 1, 64)))
+   model.add(Dense(Y_train.shape[-1], activation='softmax', kernel_constraint=max_norm(max_value=3.)))
+   model.summary()
+   
+   model.compile(loss='mean_squared_error', optimizer='adam',metrics=['categorical_accuracy'],sample_weight_mode="temporal")
+   return model  
 
 
 
