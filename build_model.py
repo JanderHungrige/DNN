@@ -118,7 +118,7 @@ def LSTM_model_3_advanced(X_train,Y_train,dropout,hidden_units,MaskWert):
    model.add(Dense(Y_train.shape[-1], activation='softmax', kernel_constraint=max_norm(max_value=3.)))
    model.summary()
    
-   model.compile(loss='mean_squared_error', optimizer='adam',metrics=['recall'],sample_weight_mode="temporal")
+   model.compile(loss='mean_squared_error', optimizer='adam',metrics=['categorical_accuracy'],sample_weight_mode="temporal")
    return model  
 
 #%%
