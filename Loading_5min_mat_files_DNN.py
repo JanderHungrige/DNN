@@ -116,10 +116,20 @@ def Loading_data_all(dataset, selectedbabies, lst, FeatureSet, Rpeakmethod,ux, \
                      FeatureMatrix_each_patient_all[K][:,F]=\
                      np.convolve(FeatureMatrix_each_patient_all[K][:,F], np.ones((Movingwindow,))/Movingwindow, mode='same')                
                                           
-
-       AnnotMatrix_each_patient=AnnotationChanger(AnnotMatrix_each_patient,0,0,0,0,0,0,merge34)
-
+      
        
+       AnnotMatrix_each_patient=AnnotationChanger(AnnotMatrix_each_patient,0,0,0,0,0,0,merge34)
+       
+       
+#       def f(column):
+#              scaler.fit_transform(np.reshape(column,(-1,1)))
+#              return column
+#       
+#       x=FeatureMatrix_each_patient_all
+#       data=list()
+#       scaler = MinMaxScaler(feature_range=(0, 1))
+#
+#       data = [hstack(LoL,f(column)) for matrix in x for column in matrix.T]
                            
        return babies, AnnotMatrix_each_patient, FeatureMatrix_each_patient_all
        

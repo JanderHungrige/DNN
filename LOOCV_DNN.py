@@ -37,7 +37,7 @@ def leave_one_out_cross_validation(\
          label,classweight, Used_classifier, drawing, lst,ChoosenKind,\
          SamplingMeth,probability_threshold,ASprobLimit, plotting,compare,\
          saving, N,crit,msl,deciding_performance_measure,dispinfo,\
-         lookback,split,fold,batchsize,Epochs,dropout,hidden_units):
+         lookback,split,fold,batchsize,Epochs,dropout,hidden_units,learning_rate,learning_rate_decay):
        
        t_a=list()
        classpredictions=list()
@@ -195,7 +195,8 @@ def leave_one_out_cross_validation(\
 #FORWARD SETS TO KERAS WHERE THE MODEL IS BUILT, TRAINED, VALIDATED AND TESTED           
            print ('Training data shape is:[%i, %i, %i]' %(X_Train.shape))
            resultsK_fold, mean_k_fold, mean_train_metric_fold, mean_val_metric_fold, mean_train_loss_fold, mean_val_loss_fold, mean_test_metric_fold, mean_test_loss_fold\
-           =KeraS(X_Train, Y_Train, X_Val, Y_Val, X_Test, Y_Test, batchsize,Epochs,dropout,hidden_units,label,Weigths)
+           =KeraS(X_Train, Y_Train, X_Val, Y_Val, X_Test, Y_Test, 
+                  batchsize,Epochs,dropout,hidden_units,label,Weigths,learning_rate,learning_rate_decay)
 
 #GATHERING THE RESULTS OF THE TESTING           
 #           classpredictions.append(prediction)

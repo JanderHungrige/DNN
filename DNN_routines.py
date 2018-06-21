@@ -155,7 +155,7 @@ def KeraS_Gen(X_Train_Val_Test,Y_Train_Val_Test,
     
     return resultsK, mean_k, mean_train_metric, mean_val_metric, mean_train_loss, mean_val_loss, mean_test_metric, mean_test_loss
 #%%
-def KeraS(X_train, Y_train, X_val, Y_val, X_test, Y_test, batchsize,Epochs,dropout,hidden_units,label,class_weights):
+def KeraS(X_train, Y_train, X_val, Y_val, X_test, Y_test, batchsize,Epochs,dropout,hidden_units,label,class_weights,learning_rate,learning_rate_decay):
        
 #selecte_babies are the babies without test baby
 #### CREATING THE sampleweight FOR SELECTED BABIES  
@@ -175,8 +175,8 @@ def KeraS(X_train, Y_train, X_val, Y_val, X_test, Y_test, batchsize,Epochs,dropo
 #    model=LSTM_model_1(X_train,Y_train,dropout,hidden_units,MaskWert)
 #    model=LSTM_model_2(X_train,Y_train,dropout,hidden_units,MaskWert)
     model=LSTM_model_3_advanced(X_train,Y_train,dropout,hidden_units,MaskWert)
-    model.optimizer.lr=0.0001 #0.0001 to 0.01 default =0.001
-    model.optimizer.decay=0.0
+    model.optimizer.lr=learning_rate #0.0001 to 0.01 default =0.001
+    model.optimizer.decay=learning_rate_decay
 
 
 # TRAIN MODEL (in silent mode, verbose=0)       

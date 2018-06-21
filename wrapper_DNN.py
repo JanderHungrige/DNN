@@ -69,7 +69,7 @@ FeatureSet='Features' #Features ECG, EDR, HRV
 lstQS= [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33] 
 
 label=[1,2] # 1=AS 2=QS 3=Wake 4=Care-taking 5=NA 6= transition
-usedPC='c3po' #Philips or c3po
+usedPC='Philips' #Philips or c3po
 #Loockback for the LSTM. The data is separated samples with timestep=loockback; 
 #Loockback of 1337 mean all data per patient. Otherwise it is in nr of 30s epochs. e.g. 60=30min  120=1h 10=5min
 # HOw to split the dataset in [Train, Validation, Test] e.g.70:15:15  or 50:25:25 ,... 
@@ -83,6 +83,7 @@ hidden_units=32 # 2-64 or even 1000 as used by sleepnet best: multible of 32
 dropout=0.5 #0.5; 0.9  dropout can be between 0-1  as %  DROPOUT CAN BE ADDED TO EACH LAYER
 learning_rate=0.0001 #0.0001 to 0.01 default =0.001
 learning_rate_decay=0.0 #0.0 default
+
 fold=4
 
 
