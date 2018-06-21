@@ -1,0 +1,12 @@
+{'label': [1, 6],
+ 'Features': 'all',
+ 'Lookback': 1337,
+ 'split': [0.7, 0.3],
+ 'batchsize': 1,
+ 'Epochs': 700,
+ 'hidden_units': 32,
+ 'dropout': 0.5,
+ 'learning_rate': 0.0001,
+ 'learning_rate_decay': 0.0,
+
+model 3_ advanced

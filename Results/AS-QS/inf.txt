@@ -1,12 +1,12 @@
 Lookback= 1337# 1337 or anything else . 
 split=[0.70,0.30];
-batchsize=1  # LSTM needs [batchsize, timestep, feature] your batch size divides nb_samples from the original tensor. So batchsize should be smaller than samples
+batchsize=1 
 Epochs=1000
-hidden_units=32 # 2-64 or even 1000 as used by sleepnet best: multible of 32
-dropout=0.5 #0.5; 0.9  dropout can be between 0-1  as %  DROPOUT CAN BE ADDED TO EACH LAYER
+hidden_units=32 
+dropout=0.5 
 
 fold=4
 
 model LSTM_model_3_advanced
 
-all states. all babies. all features
+AS QS. all babies. all features
