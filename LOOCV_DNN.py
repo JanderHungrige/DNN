@@ -134,7 +134,7 @@ def leave_one_out_cross_validation(\
                   y_labeled=shiftRbyn(y_labeled,vallength)
                   Weights_all=shiftRbyn(Weights_all,vallength)
                   
-                  if len(TESTING_Train_Val_Test)==3:
+                  if len(Testing_Train_Val_Test)==3:
                          X_labeled=shiftRbyn(X_labeled,testength)
                          y_labeled=shiftRbyn(y_labeled,testength)
                          Weights_all=shiftRbyn(Weights_all,testength)                         

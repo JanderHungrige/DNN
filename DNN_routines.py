@@ -176,7 +176,7 @@ def KeraS(X_train, Y_train, X_val, Y_val, X_test, Y_test, batchsize,Epochs,dropo
 #    model=LSTM_model_2(X_train,Y_train,dropout,hidden_units,MaskWert)
     model=LSTM_model_3_advanced(X_train,Y_train,dropout,hidden_units,MaskWert)
     model.optimizer.lr=0.0001 #0.0001 to 0.01 default =0.001
-    model.optimizer.decay=0.0   
+    model.optimizer.decay=0.0
 
 
 # TRAIN MODEL (in silent mode, verbose=0)       
@@ -188,7 +188,6 @@ def KeraS(X_train, Y_train, X_val, Y_val, X_test, Y_test, batchsize,Epochs,dropo
                        validation_data=(X_val,Y_val),
                        shuffle=False)
 #EVALUATE MODEL     
-    metrics.get_data()     
     
     test_loss,test_metric=model.evaluate(X_test,Y_test,batch_size=batchsize)        
     prediction = model.predict(X_test, batch_size=batchsize) 
