@@ -33,9 +33,10 @@ from sklearn.kernel_approximation import RBFSampler
 
 
 
-def Loading_data_all(dataset, selectedbabies, lst, FeatureSet, Rpeakmethod,ux, \
+def Loading_data_all(dataset, selectedbabies, lst, FeatureSet, Rpeakmethod,ux, scaler, \
                             merge34, Movingwindow, preaveraging, postaveraging, exceptNOF, onlyNOF, FEAT,\
                             dispinfo,usedPC):
+       
 
        """
        START *************************************************************************
@@ -120,17 +121,25 @@ def Loading_data_all(dataset, selectedbabies, lst, FeatureSet, Rpeakmethod,ux, \
        
        AnnotMatrix_each_patient=AnnotationChanger(AnnotMatrix_each_patient,0,0,0,0,0,0,merge34)
        
+# NORMALIZATION PER fEATURE (COLUMN) 
        
-#       def f(column):
-#              scaler.fit_transform(np.reshape(column,(-1,1)))
-#              return column
-#       
-#       x=FeatureMatrix_each_patient_all
-#       data=list()
-#       scaler = MinMaxScaler(feature_range=(0, 1))
-#
-#       data = [hstack(LoL,f(column)) for matrix in x for column in matrix.T]
-                           
+       def Normaliz(values,scaler):
+              values=scaler.fit_transform(np.reshape(values,(-1,1)))
+              return values
+      
+       data =[0]*len(Neonate)         
+       for matrix,i in zip(FeatureMatrix_each_patient_all,range(len(FeatureMatrix_each_patient_all))):  # iterate through every matrix in the list           
+           for column in matrix.transpose():  # iterate through every column in the matrix
+               NormCol=Normaliz(column,scaler) # call normalization function
+               if 'Matrx' in locals():
+                      Matrx=np.hstack((Matrx,NormCol)) 
+               else:
+                      Matrx=NormCol  
+           data[i]=Matrx 
+           del Matrx         
+       FeatureMatrix_each_patient_all=data 
+       
+       
        return babies, AnnotMatrix_each_patient, FeatureMatrix_each_patient_all
        
                      

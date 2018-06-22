@@ -85,7 +85,7 @@ learning_rate=0.0001 #0.0001 to 0.01 default =0.001
 learning_rate_decay=0.0 #0.0 default
 
 fold=4
-
+scaler = MinMaxScaler(feature_range=(0, 1)) #define function 
 
 if Lookback==1337: # The problem is that the patients have different lenght. Then we need to zero pad. Instead of zeropadding we can use diffent length when batchsize==1
        batchsize=1
@@ -190,13 +190,13 @@ def loading_and_DNN(whichMix):
        """
        if WhichMix=='perSession':            
               babies, AnnotMatrix_each_patient,FeatureMatrix_each_patient\
-              =Loading_data_perSession(dataset, selectedbabies, lst, FeatureSet, Rpeakmethod,ux, \
+              =Loading_data_perSession(dataset, selectedbabies, lst, FeatureSet, Rpeakmethod,ux,scaler, \
                             merge34, Movingwindow, preaveraging, postaveraging, exceptNOF, onlyNOF, FEAT,\
                             dispinfo,usedPC)       
               
        elif WhichMix=='all':              
               babies, AnnotMatrix_each_patient, FeatureMatrix_each_patient\
-              =Loading_data_all(dataset, selectedbabies, lst, FeatureSet, Rpeakmethod,ux, \
+              =Loading_data_all(dataset, selectedbabies, lst, FeatureSet, Rpeakmethod,ux,scaler, \
                             merge34, Movingwindow, preaveraging, postaveraging, exceptNOF, onlyNOF, FEAT,\
                             dispinfo,usedPC)                   
        """
@@ -209,7 +209,8 @@ def loading_and_DNN(whichMix):
        y_each_patient, Performance_Kappa, mean_train_metric, mean_train_loss, mean_val_metric, mean_val_loss, mean_test_metric, mean_test_loss\
        =leave_one_out_cross_validation(babies,AnnotMatrix_each_patient,FeatureMatrix_each_patient,\
                 label,classweight, Used_classifier, drawing, lst,ChoosenKind,SamplingMeth,probability_threshold,\
-                ASprobLimit,plotting,compare,saving,N,crit,msl,deciding_performance_measure,dispinfo,Lookback,split,fold,batchsize,Epochs,dropout,hidden_units)
+                ASprobLimit,plotting,compare,saving,N,crit,msl,deciding_performance_measure,dispinfo,\
+                Lookback,split,fold,batchsize,Epochs,dropout,hidden_units,learning_rate,learning_rate_decay)
        
        
        return  babies, y_each_patient, Performance_Kappa, mean_train_metric, mean_train_loss, mean_val_metric, mean_val_loss, mean_test_metric, mean_test_loss
