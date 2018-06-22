@@ -66,7 +66,7 @@ Loading data declaration & Wrapper variables
 **************************************************************************
 """
 FeatureSet='Features' #Features ECG, EDR, HRV
-lstQS= [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33] 
+lst= [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33] 
 
 label=[1,2] # 1=AS 2=QS 3=Wake 4=Care-taking 5=NA 6= transition
 usedPC='Philips' #Philips or c3po
@@ -83,19 +83,21 @@ hidden_units=32 # 2-64 or even 1000 as used by sleepnet best: multible of 32
 dropout=0.5 #0.5; 0.9  dropout can be between 0-1  as %  DROPOUT CAN BE ADDED TO EACH LAYER
 learning_rate=0.0001 #0.0001 to 0.01 default =0.001
 learning_rate_decay=0.0 #0.0 default
-
 fold=4
-scaler = MinMaxScaler(feature_range=(0, 1)) #define function 
+scalerange=(0, 1) #(0,1) or (-1,1) #If you are using sigmoid activation functions, rescale your data to values between 0-and-1. If you’re using the Hyperbolic Tangent (tanh), rescale to values between -1 and 1.
+scaler = MinMaxScaler(feature_range=scalerange) #define function 
 
 if Lookback==1337: # The problem is that the patients have different lenght. Then we need to zero pad. Instead of zeropadding we can use diffent length when batchsize==1
        batchsize=1
+       
+       
 info={'label':label,'Features':'all','Lookback':Lookback,'split':split,'batchsize':batchsize,'Epochs':Epochs,'hidden_units':hidden_units, 
       'dropout':dropout,'learning_rate':learning_rate,'learning_rate_decay':learning_rate_decay, 'fold':fold }
-
+#---------------------------
 #AVERAGING
 FensterQS=20 
 ExFeatQS=1; 
-FEATaQS=[lstQS.index(0),lstQS.index(25),lstQS.index(33)]# 9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26
+FEATaQS=[lst.index(0),lst.index(25),lst.index(33)]# 9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26
 
 #POLY
 PolyTQS=0; 
@@ -103,8 +105,6 @@ FEATpQS=[11,14,29,30,31]#[lstIS.index(11),lstIS.index(12),lstIS.index(13),lstIS.
 
 ASQS= [0,0.69]#[0.65,0]#[0.63,0.7]
 NQS=100; mslQS=5 #100 2
-
-
 
 Rpeakmethod='R' #R or M
 dataset='MMC'  #ECG cECG or MMC 
@@ -114,14 +114,10 @@ if dataset=='ECG' or 'cECG':
 if dataset == 'MMC':
        selectedbabies=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21] #0-21
 
-#selectedbabies=[0,1,2,3,5,6,7,8]
-#label=[1,2,3,4,6] # 1=AS 2=QS 3=Wake 4=Care-taking 5=NA 6= transition
-#---------------------------
-# Feature list
-lst = lstQS
+
+
 #---------------------------
 ux=0 # if using this on Linux cluster use 1 to change adresses
-scaling='Z' # Scaling Z or MM 
 #---------------------------
 Movingwindow=FensterQS # WIndow size for moving average
 preaveraging=0
@@ -142,41 +138,11 @@ ChoosenKind=0   # 0-3['regular','borderline1','borderline2','svm'] only when usi
 probability_threshold=1 # 1 to use different probabilities tan 0.5 to decide on the class. At the moment it is >=0.2 for any other calss then AS
 ASprobLimit=ASQS# Determine the AS lower limit for the probability for which another class is chosen than AS. For: [3 labels, >3 labels]
 WhichMix='all' #perSession or all  # determine how the data was scaled. PEr session or just per patient
-#--------------------
-Used_classifier='RF' #RF=random forest ; ERF= extreme random forest; TR= Decission tree; GB= Gradient boosting
-N=NQS # Estimators for the trees
-crit='gini' #gini or entropy method for trees 
-msl=mslQS  #min_sample_leafe
-deciding_performance_measure='F1_second_label' #Kappa , F1_second_label, F1_third_label, F1_fourth_label
-drawing=0 # draw a the tree structure
 
-#Abstellgleis
-#----------------------------
-classweight=1 # If classweights should be automatically ('balanced') determined and used for trainnig use: 0; IF they should be calculated by own function use 1
-saving=0     
-plotting=0 # plot annotations over time per patient
-compare=0 # additional plot  
-#---------------------------
-LoosingAnnot5=0# exchange state 5 if inbetween another state with this state (also only if length <= x)
-LoosingAnnot6=0  #Exchange state 6 with the following or previouse state (depending on direction)
-LoosingAnnot6_2=0 # as above, but chooses always 2 when 6 was lead into with 1
-direction6=0 # if State 6 should be replaced with the state before, use =1; odtherwise with after, use =0. Annotators used before.
-Smoothing_short=0 # # short part of any annotation are smoothed out. 
-Pack4=0 # State 4 is often split in multible short parts. Merge them together as thebaby does not calm downin 1 min
 merge34=1
 if merge34 and 3 in label:
               label.remove(3)
        
-"""
-CHECKUP
-"""
-####Cheking for miss spelling
-if Used_classifier not in Klassifier:
-       sys.exit('Misspelling in Used_classifier')    
-if SamplingMeth not in SampMeth:
-       sys.exit('Misspelling in SamplingMeth')   
-if WhichMix not in Whichmix:
-       sys.exit('Misspelling in WhichMix')         
   
 """
 Loading Data
@@ -208,9 +174,9 @@ def loading_and_DNN(whichMix):
        print('Total amount of epochs: {}'.format(laenge))
        y_each_patient, Performance_Kappa, mean_train_metric, mean_train_loss, mean_val_metric, mean_val_loss, mean_test_metric, mean_test_loss\
        =leave_one_out_cross_validation(babies,AnnotMatrix_each_patient,FeatureMatrix_each_patient,\
-                label,classweight, Used_classifier, drawing, lst,ChoosenKind,SamplingMeth,probability_threshold,\
-                ASprobLimit,plotting,compare,saving,N,crit,msl,deciding_performance_measure,dispinfo,\
-                Lookback,split,fold,batchsize,Epochs,dropout,hidden_units,learning_rate,learning_rate_decay)
+                label, lst,ChoosenKind,SamplingMeth,probability_threshold,\
+                ASprobLimit,dispinfo,\
+                Lookback,split,fold,batchsize,Epochs,dropout,hidden_units,learning_rate,learning_rate_decay,scalerange)
        
        
        return  babies, y_each_patient, Performance_Kappa, mean_train_metric, mean_train_loss, mean_val_metric, mean_val_loss, mean_test_metric, mean_test_loss

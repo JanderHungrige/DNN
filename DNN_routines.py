@@ -33,6 +33,7 @@ from build_model import LSTM_model_2
 from build_model import LSTM_model_3
 from build_model import LSTM_model_3_advanced
 
+import __main__  
 
 
 import pdb# use pdb.set_trace() as breakpoint
@@ -155,7 +156,7 @@ def KeraS_Gen(X_Train_Val_Test,Y_Train_Val_Test,
     
     return resultsK, mean_k, mean_train_metric, mean_val_metric, mean_train_loss, mean_val_loss, mean_test_metric, mean_test_loss
 #%%
-def KeraS(X_train, Y_train, X_val, Y_val, X_test, Y_test, batchsize,Epochs,dropout,hidden_units,label,class_weights,learning_rate,learning_rate_decay):
+def KeraS(X_train, Y_train, X_val, Y_val, X_test, Y_test, batchsize,Epochs,dropout,hidden_units,label,class_weights,learning_rate,learning_rate_decay,scalerange):
        
 #selecte_babies are the babies without test baby
 #### CREATING THE sampleweight FOR SELECTED BABIES  
@@ -166,15 +167,19 @@ def KeraS(X_train, Y_train, X_val, Y_val, X_test, Y_test, batchsize,Epochs,dropo
     all_test_metric=[];all_test_loss=[];all_train_metric=[];all_train_loss=[];all_val_metric=[];all_val_loss=[]
     resultsK=[];mean_test_metric=[];mean_train_metric=[]
               
- 
- 
-    MaskWert=666    
+# DETERMINE WHICH ACTIVATION FUNCTION SHOULD BE USED BASED ON INPUT RANGE   
+    if scalerange==(0,1) :
+        activationF='sigmoid'
+    elif scalerange==(-1,1):
+        activationF='tanh'    
+    else:
+        activationF='sigmoid'
 
 #BUILT MODEL    
 #    model=basic_dense_model(X_train,Y_train)
 #    model=LSTM_model_1(X_train,Y_train,dropout,hidden_units,MaskWert)
 #    model=LSTM_model_2(X_train,Y_train,dropout,hidden_units,MaskWert)
-    model=LSTM_model_3_advanced(X_train,Y_train,dropout,hidden_units,MaskWert)
+    model=LSTM_model_3_advanced(X_train,Y_train,dropout,hidden_units,activationF)
     model.optimizer.lr=learning_rate #0.0001 to 0.01 default =0.001
     model.optimizer.decay=learning_rate_decay
 
@@ -187,8 +192,8 @@ def KeraS(X_train, Y_train, X_val, Y_val, X_test, Y_test, batchsize,Epochs,dropo
                        sample_weight=class_weights,
                        validation_data=(X_val,Y_val),
                        shuffle=False)
-#EVALUATE MODEL     
     
+#EVALUATE MODEL     
     test_loss,test_metric=model.evaluate(X_test,Y_test,batch_size=batchsize)        
     prediction = model.predict(X_test, batch_size=batchsize) 
     stackedpred=np.concatenate(prediction, axis=0)
