@@ -208,17 +208,17 @@ def leave_one_out_cross_validation(\
            mean_test_metric.append(mean_test_metric_fold)
            mean_test_loss.append(mean_test_loss_fold)
        
-           if plotting:
-                  t_a.append(np.linspace(0,len(y_each_patient_test[V])*30/60,len(y_each_patient_test[V])))
-                  if not compare:
-                         plt.figure(V) 
-#                         plt.plot(t_a[V],y_each_patient_test[V])
-                         plt.plot(t_a[V],classpredictions[V]+0.04)
-                         plt.title([V])    
-                  if compare:
-                         plt.figure(V) 
-                         plt.plot(t_a[V],classpredictions[V]+0.07)
-                         plt.title([V])
+#           if plotting:
+#                  t_a.append(np.linspace(0,len(y_each_patient_test[V])*30/60,len(y_each_patient_test[V])))
+#                  if not compare:
+#                         plt.figure(V) 
+##                         plt.plot(t_a[V],y_each_patient_test[V])
+#                         plt.plot(t_a[V],classpredictions[V]+0.04)
+#                         plt.title([V])    
+#                  if compare:
+#                         plt.figure(V) 
+#                         plt.plot(t_a[V],classpredictions[V]+0.07)
+#                         plt.title([V])
                    
        """
        ENDING stuff
