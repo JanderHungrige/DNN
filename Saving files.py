@@ -5,10 +5,8 @@ Created on Thu Jun 21 12:08:23 2018
 @author: R2D2
 """
 info={'label':label,'Features':'all','Lookback':Lookback,'split':split,'batchsize':batchsize,'Epochs':Epochs,'hidden_units':hidden_units, 
-      'dropout':dropout,'learning_rate':learning_rate,'learning_rate_decay':learning_rate_decay, 'fold':fold, 'model':'LSTM_model_3_advanced' }
+      'dropout':dropout,'learning_rate':learning_rate,'learning_rate_decay':learning_rate_decay, 'fold':fold, 'model':'LSTM_model_3_advanced', 'Data-scale':scalerange }
 
-info={'label':label,'Features':'all','Lookback':Lookback,'split':split,'batchsize':batchsize,'Epochs':Epochs,'hidden_units':hidden_units, 
-      'dropout':dropout,'learning_rate':0.001,'learning_rate_decay':0.01, 'fold':fold, 'model':'LSTM_model_3_advanced'}
 
 
 savedic={'mean_train_metric':mean_train_metric,'mean_train_metric_pp':mean_train_metric_pp,'mean_val_metric':mean_val_metric,'mean_val_metric_pp':mean_val_metric_pp,
