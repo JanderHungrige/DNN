@@ -74,17 +74,17 @@ usedPC='c3po' #Philips or c3po
 #Loockback of 1337 mean all data per patient. Otherwise it is in nr of 30s epochs. e.g. 60=30min  120=1h 10=5min
 # HOw to split the dataset in [Train, Validation, Test] e.g.70:15:15  or 50:25:25 ,... 
 # The split is done for each fold. Just for the chekout phase use fold one. Later calculate how often the test split fits into the total data, that is the fold. e.g. 30 patients with 15% test -> 4.5 (round to 5) patients per fold. Now see how many times the 30 can be folded with 5 patients in the test set to cover all patients. 30/5=6 -> 6 fold
-Lookback= 100# 1337 or anything else . 
+Lookback= 200# 1337 or anything else . 
 split=[0.60,0.2,0.2];
 split=[0.70,0.30];
 batchsize=5  # LSTM needs [batchsize, timestep, feature] your batch size divides nb_samples from the original tensor. So batchsize should be smaller than samples
-Epochs=1200
+Epochs=2200
 hidden_units=32 # 2-64 or even 1000 as used by sleepnet best: multible of 32
-dropout=0.5 #0.5; 0.9  dropout can be between 0-1  as %  DROPOUT CAN BE ADDED TO EACH LAYER
+dropout=0.9 #0.5; 0.9  dropout can be between 0-1  as %  DROPOUT CAN BE ADDED TO EACH LAYER
 learning_rate=0.0001 #0.0001 to 0.01 default =0.001
 learning_rate_decay=0.0 #0.0 default
-fold=4
-scalerange=(-1, 1) #(0,1) or (-1,1) #If you are using sigmoid activation functions, rescale your data to values between 0-and-1. If you’re using the Hyperbolic Tangent (tanh), rescale to values between -1 and 1.
+fold=6
+scalerange=(0, 1) #(0,1) or (-1,1) #If you are using sigmoid activation functions, rescale your data to values between 0-and-1. If you’re using the Hyperbolic Tangent (tanh), rescale to values between -1 and 1.
 scaler = MinMaxScaler(feature_range=scalerange) #define function 
 
 if Lookback==1337: # The problem is that the patients have different lenght. Then we need to zero pad. Instead of zeropadding we can use diffent length when batchsize==1
@@ -92,7 +92,7 @@ if Lookback==1337: # The problem is that the patients have different lenght. The
        
        
 info={'label':label,'Features':'all','Lookback':Lookback,'split':split,'batchsize':batchsize,'Epochs':Epochs,'hidden_units':hidden_units, 
-      'dropout':dropout,'learning_rate':learning_rate,'learning_rate_decay':learning_rate_decay, 'fold':fold }
+      'dropout':dropout,'learning_rate':learning_rate,'learning_rate_decay':learning_rate_decay, 'fold':fold, 'Scale':scalerange }
 #---------------------------
 #AVERAGING
 FensterQS=20 
