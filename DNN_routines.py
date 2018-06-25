@@ -156,7 +156,7 @@ def KeraS_Gen(X_Train_Val_Test,Y_Train_Val_Test,
     
     return resultsK, mean_k, mean_train_metric, mean_val_metric, mean_train_loss, mean_val_loss, mean_test_metric, mean_test_loss
 #%%
-def KeraS(X_train, Y_train, X_val, Y_val, X_test, Y_test, batchsize,Epochs,dropout,hidden_units,label,class_weights,learning_rate,learning_rate_decay,scalerange):
+def KeraS(X_train, Y_train, X_val, Y_val, X_test, Y_test, batchsize,Epochs,dropout,hidden_units,label,class_weights,learning_rate,learning_rate_decay,activationF, Loss_Function, Perf_Metric):
        
 #selecte_babies are the babies without test baby
 #### CREATING THE sampleweight FOR SELECTED BABIES  
@@ -167,22 +167,20 @@ def KeraS(X_train, Y_train, X_val, Y_val, X_test, Y_test, batchsize,Epochs,dropo
     all_test_metric=[];all_test_loss=[];all_train_metric=[];all_train_loss=[];all_val_metric=[];all_val_loss=[]
     resultsK=[];mean_test_metric=[];mean_train_metric=[]
               
-# DETERMINE WHICH ACTIVATION FUNCTION SHOULD BE USED BASED ON INPUT RANGE   
-    if scalerange==(0,1) :
-        activationF='sigmoid'
-    elif scalerange==(-1,1):
-        activationF='tanh'    
-    else:
-        activationF='sigmoid'
 
 #BUILT MODEL    
 #    model=basic_dense_model(X_train,Y_train)
 #    model=LSTM_model_1(X_train,Y_train,dropout,hidden_units,MaskWert)
 #    model=LSTM_model_2(X_train,Y_train,dropout,hidden_units,MaskWert)
     model=LSTM_model_3_advanced(X_train,Y_train,dropout,hidden_units,activationF)
+
+#MODEL PARAMETERS    
+    model.compile(loss=Loss_Function, 
+                  optimizer='adam',
+                  metrics=Perf_Metric,
+                  sample_weight_mode="temporal")       
     model.optimizer.lr=learning_rate #0.0001 to 0.01 default =0.001
     model.optimizer.decay=learning_rate_decay
-
 
 # TRAIN MODEL (in silent mode, verbose=0)       
     history=model.fit(X_train,
@@ -233,6 +231,11 @@ def KeraS(X_train, Y_train, X_val, Y_val, X_test, Y_test, batchsize,Epochs,dropo
     mean_train_loss=np.mean(all_train_loss,axis=0)
     mean_val_loss=np.mean(all_val_loss,axis=0)      
     mean_k=np.mean(resultsK)
-      
+    
+#    from sklearn.metrics import classification_report
+#    target_names = ['AS', 'QS', 'CTW','IS']
+#    Report=(classification_report(Y_test_Result.ravel(), prediction_base, target_names=target_names))
+#
+#      
     
     return resultsK, mean_k, mean_train_metric, mean_val_metric, mean_train_loss, mean_val_loss, mean_test_metric, mean_test_loss

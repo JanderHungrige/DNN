@@ -38,9 +38,9 @@ def basic_dense_model(X_train,Y_train):
     model.add(layers.Dense(16, activation='relu'))           
     model.add(layers.Dense(Y_train.shape[1], activation='softmax'))
 
-    model.compile(loss='categorical_crossentropy',
-                  optimizer='rmsprop',#'Adadelta',
-                  metrics=['categorical_accuracy'])#['accuracy'])
+#    model.compile(loss='categorical_crossentropy',
+#                  optimizer='rmsprop',#'Adadelta',
+#                  metrics=['categorical_accuracy'])#['accuracy'])
 
     return model
 #%%
@@ -53,7 +53,6 @@ def LSTM_model_1_gen(lookback,Nr_Features,Nr_labels,dropout,hidden_units,activat
    model.add(LSTM(hidden_units, return_sequences=True))
    model.add(Dense(Nr_labels, activation='softmax'))
 
-   model.compile(loss='mean_squared_error', optimizer='adam',metrics=['categorical_accuracy'],sample_weight_mode="temporal")    
    return model
 
 #%%
@@ -69,7 +68,6 @@ def LSTM_model_1(X_train,Y_train,dropout,hidden_units,activationF):
    model.add(LSTM(hidden_units, return_sequences=True))
    model.add(Dense(Y_train.shape[-1], activation='softmax'))
 
-   model.compile(loss='mean_squared_error', optimizer='adam',metrics=['categorical_accuracy'],sample_weight_mode="temporal")    
    return model
 #%%
 def LSTM_model_2(X_train,Y_train,dropout,hidden_units,activationF):       
@@ -82,7 +80,6 @@ def LSTM_model_2(X_train,Y_train,dropout,hidden_units,activationF):
 #   model.add(LSTM(hidden_units, return_sequences=True, dropout=dropout, recurrent_dropout=dropout))
    model.add(Dense(Y_train.shape[-1], activation='softmax'))
 
-   model.compile(loss='mean_squared_error', optimizer='adam',metrics=['categorical_accuracy'],sample_weight_mode="temporal")    
    return model
 
 
@@ -100,7 +97,6 @@ def LSTM_model_3(X_train,Y_train,dropout,hidden_units,activationF):
 
 #   model.add(Activation('softmax'))
 
-   model.compile(loss='mean_squared_error', optimizer='adam',metrics=['categorical_accuracy'],sample_weight_mode="temporal")     
    return model  
 #%%
 def LSTM_model_3_advanced(X_train,Y_train,dropout,hidden_units,activationF):   
@@ -117,7 +113,6 @@ def LSTM_model_3_advanced(X_train,Y_train,dropout,hidden_units,activationF):
    model.add(Dense(Y_train.shape[-1], activation='softmax', kernel_constraint=max_norm(max_value=3.)))
    model.summary()
    
-   model.compile(loss='mean_squared_error', optimizer='adam',metrics=['categorical_accuracy'],sample_weight_mode="temporal")
    return model  
 
 #%%
@@ -136,7 +131,6 @@ def LSTM_model_4_advanced(X_train,Y_train,dropout,hidden_units,activationF):
    model.add(Dense(Y_train.shape[-1], activation='softmax', kernel_constraint=max_norm(max_value=3.)))
    model.summary()
    
-   model.compile(loss='mean_squared_error', optimizer='adam',metrics=['categorical_accuracy'],sample_weight_mode="temporal")
    return model  
 
 
@@ -166,5 +160,5 @@ def LSTM_model_3_original(X_train,Y_train,dropout,hidden_units,MaskWert):
    model.add(Dense(n_classes, activation='softmax', kernel_constraint=maxnorm(max_norm)))
    model.summary()
    
-   model.compile(loss='mean_squared_error', optimizer='adam',metrics=['categorical_accuracy'],sample_weight_mode="temporal")
+#   model.compile(loss='mean_squared_error', optimizer='adam',metrics=['categorical_accuracy'],sample_weight_mode="temporal")
    return model
