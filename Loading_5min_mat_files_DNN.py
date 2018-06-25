@@ -122,22 +122,22 @@ def Loading_data_all(dataset, selectedbabies, lst, FeatureSet, Rpeakmethod,ux, s
        AnnotMatrix_each_patient=AnnotationChanger(AnnotMatrix_each_patient,0,0,0,0,0,0,merge34)
        
 # NORMALIZATION PER fEATURE (COLUMN) 
-       
-       def Normaliz(values,scaler):
-              values=scaler.fit_transform(np.reshape(values,(-1,1)))
-              return values
-      
-       data =[0]*len(Neonate)         
-       for matrix,i in zip(FeatureMatrix_each_patient_all,range(len(FeatureMatrix_each_patient_all))):  # iterate through every matrix in the list           
-           for column in matrix.transpose():  # iterate through every column in the matrix
-               NormCol=Normaliz(column,scaler) # call normalization function
-               if 'Matrx' in locals():
-                      Matrx=np.hstack((Matrx,NormCol)) 
-               else:
-                      Matrx=NormCol  
-           data[i]=Matrx 
-           del Matrx         
-       FeatureMatrix_each_patient_all=data 
+       if scaler==(0,1) or scaler==(-1,1):
+              def Normaliz(values,scaler):
+                     values=scaler.fit_transform(np.reshape(values,(-1,1)))
+                     return values
+             
+              data =[0]*len(Neonate)         
+              for matrix,i in zip(FeatureMatrix_each_patient_all,range(len(FeatureMatrix_each_patient_all))):  # iterate through every matrix in the list           
+                  for column in matrix.transpose():  # iterate through every column in the matrix
+                      NormCol=Normaliz(column,scaler) # call normalization function
+                      if 'Matrx' in locals():
+                             Matrx=np.hstack((Matrx,NormCol)) 
+                      else:
+                             Matrx=NormCol  
+                  data[i]=Matrx 
+                  del Matrx         
+              FeatureMatrix_each_patient_all=data 
        
        
        return babies, AnnotMatrix_each_patient, FeatureMatrix_each_patient_all
