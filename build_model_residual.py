@@ -31,56 +31,59 @@ from keras.layers import BatchNormalization
 
 from keras.constraints import max_norm
 
-   maxnorm=3.
-   batch_size=X_train.shape[0]
-   n_frames=X_train.shape[2]
+#%%   
+def ResNet_LSTM_1(X_train,Y_train,dropout,hidden_units,activationF,residual_blocks):   
 
-   
-def ResNet_LSTM_1(X_train,Y_train,dropout,hidden_units,activationF):   
-
-       def Unit(which,X_train,dropout,activationF,x,hidden_units,dropout):
-            def intro(X_train,activationF):
-                 x=layers.Masking(mask_value=666,input_shape=X_train.shape[1],X_train.shape[2])(x)
+       def Block_unit(which,X_train,dropout,activationF,x,hidden_units):
+            def intro(x,X_train,activationF):
+                 x=layers.Masking(mask_value=666,input_shape=(X_train.shape[1],X_train.shape[2]))(x)
                  x=layers.Dropout(dropout/2, noise_shape=(None, 1, X_train.shape[2]))(x)
-                 x=layers.Dense(32, activation=activationF, kernel_constraint=max_norm(max_value=3.))(x) 
+                 x=layers.Dense(34, activation=activationF, kernel_constraint=max_norm(max_value=3.))(x) 
                  x=BatchNormalization(axis=1)(x)         
                  return x
             
-            def residual_LSTM_block(x,hidden_units,dropout):
+            def residual_LSTM_block(x,X_train,hidden_units,dropout):
                  ident = x
                  x=layers.Bidirectional(LSTM(hidden_units, return_sequences=True, kernel_constraint=max_norm(max_value=3.), dropout=dropout, recurrent_dropout=dropout))(x)
                  x=layers.Bidirectional(LSTM(hidden_units, return_sequences=True, kernel_constraint=max_norm(max_value=3.), dropout=dropout, recurrent_dropout=dropout))(x)                   
-                 x=layers.Dropout(dropout, noise_shape=(None, 1, 64))(x) 
-                 x=layers.Dense(32, activation=activationF, kernel_constraint=max_norm(max_value=3.))(x)                                  
+                 x=layers.Dropout(dropout, noise_shape=(None, 1, hidden_units*2))(x) 
+                 x=layers.Dense(hidden_units, activation=activationF, kernel_constraint=max_norm(max_value=3.))(x)                                  
 #                 x = merge([ident,x],mode='sum')
                  return x
 
-            def outro(x,Y_train,hidden_units,dropout):
+            def outro(x,X_train,Y_train,hidden_units,dropout):
                  ident = x
                  x=layers.Bidirectional(LSTM(hidden_units, return_sequences=True, kernel_constraint=max_norm(max_value=3.), dropout=dropout, recurrent_dropout=dropout))(x)
                  x=layers.Bidirectional(LSTM(hidden_units, return_sequences=True, kernel_constraint=max_norm(max_value=3.), dropout=dropout, recurrent_dropout=dropout))(x)                   
-                 x=layers.Dropout(dropout, noise_shape=(None, 1, 64))(x) 
+                 x=layers.Dropout(dropout, noise_shape=(None, 1, hidden_units*2))(x) 
                  x=layers.Dense(Y_train.shape[-1],activation='softmax', kernel_constraint=max_norm(max_value=3.))(x)
 #                 x = merge([ident,x],mode='sum')
                  return x         
                              
             if which==0:
-                 out=intro(X_train,activationF)
+                 out=intro(x,X_train,activationF)
             if which == 1337:
-                 out=outro(x,Y_train,hidden_units,dropout)
+                 out=outro(x,X_train,Y_train,hidden_units,dropout)
             else:
-                out=residual_LSTM_block(x,hidden_units,dropout)                     
+                out=residual_LSTM_block(x,X_train,hidden_units,dropout)                     
 
             return out
             
        def cake(residual_blocks,hidden_units,X_train,dropout,activationF):
-            for i in range(residual_blocks):
-                   if i != len(range(residual_blocks)-1) : 
-                               x=Unit(i,X_train,dropout,activationF,x,hidden_units,dropout)(x)  
-                   else:
-                               x=Unit(1337,X_train,dropout,activationF,x,hidden_units,dropout)(x)
+              def unit(x):
+                     for i in range(residual_blocks):
+                            if residual_blocks==1:
+                                   x=Block_unit(i,X_train,dropout,activationF,x,hidden_units)(x)  
+                                   x=Block_unit(1,X_train,dropout,activationF,x,hidden_units)(x)                            
+                                   x=Block_unit(1337,X_train,dropout,activationF,x,hidden_units)(x)
+                            else:
+                                   if i!=(residual_blocks-1): 
+                                          x=Unit(i,X_train,dropout,activationF,x,hidden_units)(x)  
+                                   else:
+                                          x=Unit(1337,X_train,dropout,activationF,x,hidden_units)(x)
+                            return x
                            
-            return x
+              return unit
     
        
        inp = Input(shape=(X_train.shape[1],X_train.shape[2]))
@@ -101,7 +104,7 @@ def ResNet_LSTM_1(X_train,Y_train,dropout,hidden_units,activationF):
        
 def ResNeXt_LSTM_1(x):
        def Add_common_layers(y,activationF):
-              y=layers.Masking(mask_value=666,input_shape=y.shape[1],y.shape[2])(y)
+              y=layers.Masking(mask_value=666,input_shape=(y.shape[1],y.shape[2]))(y)
               y=layers.Dropout(0.2, noise_shape=(None, 1, y.shape[2]))(y)
               y=layers.Dense(32, activation=activationF, kernel_constraint=max_norm(max_value=3.))(y)
               return y
@@ -111,7 +114,7 @@ def ResNeXt_LSTM_1(x):
                      y=layers.Bidirectional(LSTM(hidden_units, return_sequences=True, kernel_constraint=max_norm(max_value=3.), dropout=dropout, recurrent_dropout=dropout))(y)
                      y=layers.Bidirectional(LSTM(hidden_units, return_sequences=True, kernel_constraint=max_norm(max_value=3.), dropout=dropout, recurrent_dropout=dropout))(y)
                      return y
-                      assert not NR_Wege % cardinality
+                     assert not NR_Wege % cardinality
               _d = NR_Wege // cardinality
 
         # in a grouped convolution layer, input and output channels are divided into `cardinality` groups,
@@ -130,6 +133,5 @@ def ResNeXt_LSTM_1(x):
               y=layers.Dense()
 
    
-   model.add(Masking(mask_value=666, input_shape=(X_train.shape[1],X_train.shape[2])))
-   model.add(Dropout(0.2, noise_shape=(None, 1, X_train.shape[2]) ))   
+  
           

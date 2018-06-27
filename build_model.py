@@ -106,10 +106,10 @@ def LSTM_model_3_advanced(X_train,Y_train,dropout,hidden_units,activationF):
    model = Sequential()
    model.add(Masking(mask_value=666, input_shape=(X_train.shape[1],X_train.shape[2])))
    model.add(Dropout(0.2, noise_shape=(None, 1, X_train.shape[2]) ))   
-   model.add(Dense(32, activation=activationF, kernel_constraint=max_norm(max_value=3.)))
+   model.add(Dense(34, activation=activationF, kernel_constraint=max_norm(max_value=3.)))
    model.add(Bidirectional(LSTM(hidden_units, return_sequences=True, kernel_constraint=max_norm(max_value=3.), dropout=dropout, recurrent_dropout=dropout)))
    model.add(Bidirectional(LSTM(hidden_units, return_sequences=True, kernel_constraint=max_norm(max_value=3.), dropout=dropout, recurrent_dropout=dropout)))   
-   model.add(Dropout(0.5, noise_shape=(None, 1, 64)))
+   model.add(Dropout(0.5, noise_shape=(None, 1, hidden_units*2)))
    model.add(Dense(Y_train.shape[-1], activation='softmax', kernel_constraint=max_norm(max_value=3.)))
    model.summary()
    
