@@ -43,7 +43,7 @@ from build_model_residual import ResNet_LSTM_Beta
 import pdb# use pdb.set_trace() as breakpoint
 
 #%%
-def KeraS(X_train, Y_train, X_val, Y_val, X_test, Y_test, batchsize,Epochs,dropout,hidden_units,label,class_weights,learning_rate,learning_rate_decay,activationF, Loss_Function, Perf_Metric):
+def KeraS(X_train, Y_train, X_val, Y_val, X_test, Y_test, batchsize,Epochs,dropout,hidden_units,Dense_Unit,label,class_weights,learning_rate,learning_rate_decay,activationF, Loss_Function, Perf_Metric):
        
 #selecte_babies are the babies without test baby
 #### CREATING THE sampleweight FOR SELECTED BABIES  
@@ -61,7 +61,7 @@ def KeraS(X_train, Y_train, X_val, Y_val, X_test, Y_test, batchsize,Epochs,dropo
 #    model=LSTM_model_2(X_train,Y_train,dropout,hidden_units,MaskWert)
 #    model=LSTM_model_3_advanced(X_train,Y_train,dropout,hidden_units,activationF)
     residual_blocks=1
-    model=ResNet_LSTM_Beta(X_train,Y_train,dropout,hidden_units,activationF,residual_blocks)
+    model=ResNet_LSTM_Beta(X_train,Y_train,dropout,hidden_units,Dense_Unit,activationF,residual_blocks)
 #    model=ResNet_LSTM_1(X_train,Y_train,dropout,hidden_units,activationF,residual_blocks)
     
 #MODEL PARAMETERS    

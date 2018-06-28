@@ -32,15 +32,15 @@ from keras.layers import BatchNormalization
 
 from keras.constraints import max_norm
 #%%   
-def ResNet_LSTM_Beta(X_train,Y_train,dropout,hidden_units,activationF,residual_blocks):   
+def ResNet_LSTM_Beta(X_train,Y_train,dropout,hidden_units,Dense_Unit,activationF,residual_blocks):   
 
-       def Block_unit(X_train,dropout,activationF,hidden_units):
+       def Block_unit(X_train,dropout,activationF,hidden_units,Dense_Unit):
             def unit(x):
                  ident = x
                  x=layers.Bidirectional(LSTM(hidden_units, return_sequences=True, kernel_constraint=max_norm(max_value=3.), dropout=dropout, recurrent_dropout=dropout))(x)
                  x=layers.Bidirectional(LSTM(hidden_units, return_sequences=True, kernel_constraint=max_norm(max_value=3.), dropout=dropout, recurrent_dropout=dropout))(x)                                    
                  x=layers.Dropout(dropout, noise_shape=(None, 1, hidden_units*2))(x) 
-                 x=layers.Dense(hidden_units, activation=activationF, kernel_constraint=max_norm(max_value=3.))(x)                                                  
+                 x=layers.Dense(Dense_Unit, activation=activationF, kernel_constraint=max_norm(max_value=3.))(x)                                                  
                  x = merge([ident,x], mode = 'sum') #mode 'sum' concat
                  return x
             return unit
@@ -48,7 +48,7 @@ def ResNet_LSTM_Beta(X_train,Y_train,dropout,hidden_units,activationF,residual_b
        def cake(residual_blocks,hidden_units,X_train,dropout,activationF):
               def unit(x):
                      for j in range(residual_blocks):
-                         x=Block_unit(X_train,dropout,activationF,hidden_units)(x)              
+                         x=Block_unit(X_train,dropout,activationF,hidden_units,Dense_Unit)(x)              
                          return x                          
               return unit
     
@@ -57,7 +57,7 @@ def ResNet_LSTM_Beta(X_train,Y_train,dropout,hidden_units,activationF,residual_b
 #       i = inp
        i=layers.Masking(mask_value=666,input_shape=(X_train.shape[1],X_train.shape[2]))(inp)
        i=layers.Dropout(dropout/2, noise_shape=(None, 1, X_train.shape[2]))(i)
-       i=layers.Dense(34, activation=activationF, kernel_constraint=max_norm(max_value=3.))(i) 
+       i=layers.Dense(Dense_Unit, activation=activationF, kernel_constraint=max_norm(max_value=3.))(i) 
        i=BatchNormalization(axis=1)(i)     
           
        i = cake(residual_blocks,2,X_train,dropout,activationF)(i) 

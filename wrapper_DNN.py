@@ -89,7 +89,7 @@ scaler = MinMaxScaler(feature_range=scalerange) #define function
 Loss_Function='categorical_crossentropy'# categorical_crossentropy OR mean_squared_error IF BINARY : binary_crossentropy
 Perf_Metric=['categorical_accuracy']# 'categorical_accuracy' OR 'binary_accuray'
 ActivationF='sigmoid' # 'relu', 'tanh', 'sigmoid' ,...  Only in case the data is not normalized , only standardised
-
+Dense_Unit=32
 
 if scalerange==(0,1) :
        activationF='sigmoid'
@@ -107,7 +107,7 @@ if Lookback==1337: # The problem is that the patients have different lenght. The
        
        
 info={'label':label,'Features':'all','Lookback':Lookback,'split':split,'batchsize':batchsize,'Epochs':Epochs,'hidden_units':hidden_units, 
-      'dropout':dropout,'learning_rate':learning_rate,'learning_rate_decay':learning_rate_decay, 'fold':fold, 'Scale':scalerange,'Loss_Function':Loss_Function,'Perf_Metric':Perf_Metric,'Activation_funtion':activationF }
+      'dropout':dropout,'learning_rate':learning_rate,'learning_rate_decay':learning_rate_decay, 'fold':fold, 'Scale':scalerange,'Loss_Function':Loss_Function,'Perf_Metric':Perf_Metric,'Activation_funtion':activationF,'Dens_unit': Dense_Unit }
 #---------------------------
 #AVERAGING
 FensterQS=20 
@@ -191,7 +191,7 @@ def loading_and_DNN(whichMix):
        =leave_one_out_cross_validation(babies,AnnotMatrix_each_patient,FeatureMatrix_each_patient,\
                 label, lst,ChoosenKind,SamplingMeth,probability_threshold,\
                 ASprobLimit,dispinfo,\
-                Lookback,split,fold,batchsize,Epochs,dropout,hidden_units,learning_rate,learning_rate_decay,activationF,Loss_Function,Perf_Metric)
+                Lookback,split,fold,batchsize,Epochs,dropout,hidden_units,Dense_Unit,learning_rate,learning_rate_decay,activationF,Loss_Function,Perf_Metric)
        
        
        return  babies, y_each_patient, Performance_Kappa, mean_train_metric, mean_train_loss, mean_val_metric, mean_val_loss, mean_test_metric, mean_test_loss
