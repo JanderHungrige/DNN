@@ -33,7 +33,9 @@ from build_model import LSTM_model_2
 from build_model import LSTM_model_3
 from build_model import LSTM_model_3_advanced
 
-from build_model_residual import ResNet_LSTM_1
+from build_model_residual import ResNet_LSTM_Beta
+#from build_model_residual import ResNet_LSTM_1
+
 
 #import __main__  
 
@@ -59,7 +61,9 @@ def KeraS(X_train, Y_train, X_val, Y_val, X_test, Y_test, batchsize,Epochs,dropo
 #    model=LSTM_model_2(X_train,Y_train,dropout,hidden_units,MaskWert)
 #    model=LSTM_model_3_advanced(X_train,Y_train,dropout,hidden_units,activationF)
     residual_blocks=1
-    model=ResNet_LSTM_1(X_train,Y_train,dropout,hidden_units,activationF,residual_blocks)
+    model=ResNet_LSTM_Beta(X_train,Y_train,dropout,hidden_units,activationF,residual_blocks)
+#    model=ResNet_LSTM_1(X_train,Y_train,dropout,hidden_units,activationF,residual_blocks)
+    
 #MODEL PARAMETERS    
     model.compile(loss=Loss_Function, 
                   optimizer='adam',
@@ -68,6 +72,8 @@ def KeraS(X_train, Y_train, X_val, Y_val, X_test, Y_test, batchsize,Epochs,dropo
     model.optimizer.lr=learning_rate #0.0001 to 0.01 default =0.001
     model.optimizer.decay=learning_rate_decay
     
+    from keras.utils.vis_utils import plot_model    
+    plot_model(model, to_file='model_plot.png', show_shapes=True, show_layer_names=True)
 
 # TRAIN MODEL (in silent mode, verbose=0)       
     history=model.fit(X_train,
