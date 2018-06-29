@@ -33,7 +33,9 @@ from build_model import LSTM_model_2
 from build_model import LSTM_model_3
 from build_model import LSTM_model_3_advanced
 
-from build_model_residual import ResNet_LSTM_Beta
+from build_model_residual import ResNet_deep_Beta
+from build_model_residual import ResNet_wide_Beta
+
 #from build_model_residual import ResNet_LSTM_1
 
 
@@ -61,9 +63,10 @@ def KeraS(X_train, Y_train, X_val, Y_val, X_test, Y_test, batchsize,Epochs,dropo
 #    model=LSTM_model_2(X_train,Y_train,dropout,hidden_units,MaskWert)
 #    model=LSTM_model_3_advanced(X_train,Y_train,dropout,hidden_units,activationF)
     residual_blocks=1
-    model=ResNet_LSTM_Beta(X_train,Y_train,dropout,hidden_units,Dense_Unit,activationF,residual_blocks)
-#    model=ResNet_LSTM_1(X_train,Y_train,dropout,hidden_units,activationF,residual_blocks)
-    
+    model=ResNet_deep_Beta(X_train,Y_train,dropout,hidden_units,Dense_Unit,activationF,residual_blocks)
+#    model=ResNet_wide_Beta(X_train,Y_train,dropout,hidden_units,Dense_Unit,activationF,residual_blocks)
+    from keras.utils.vis_utils import plot_model    
+    plot_model(model, to_file='model_plot.png', show_shapes=True, show_layer_names=True)   
 #MODEL PARAMETERS    
     model.compile(loss=Loss_Function, 
                   optimizer='adam',
@@ -84,8 +87,7 @@ def KeraS(X_train, Y_train, X_val, Y_val, X_test, Y_test, batchsize,Epochs,dropo
                        validation_data=(X_val,Y_val),
                        shuffle=False)
     
-    from keras.utils.vis_utils import plot_model    
-    plot_model(model, to_file='model_plot.png', show_shapes=True, show_layer_names=True)
+
     
 #EVALUATE MODEL     
     test_loss,test_metric=model.evaluate(X_test,Y_test,batch_size=batchsize)        
