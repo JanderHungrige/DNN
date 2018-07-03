@@ -45,7 +45,7 @@ from build_model_residual import ResNet_wide_Beta
 import pdb# use pdb.set_trace() as breakpoint
 
 #%%
-def KeraS(X_train, Y_train, X_val, Y_val, X_test, Y_test, batchsize,Epochs,dropout,hidden_units,Dense_Unit,label,class_weights,learning_rate,learning_rate_decay,activationF, Loss_Function, Perf_Metric):
+def KeraS(X_train, Y_train, X_val, Y_val, X_test, Y_test, batchsize,Epochs,dropout,hidden_units,Dense_Unit,label,class_weights,learning_rate,learning_rate_decay,activationF, Loss_Function, Perf_Metric,Kr,Ar):
        
 #selecte_babies are the babies without test baby
 #### CREATING THE sampleweight FOR SELECTED BABIES  
@@ -56,15 +56,18 @@ def KeraS(X_train, Y_train, X_val, Y_val, X_test, Y_test, batchsize,Epochs,dropo
     all_test_metric=[];all_test_loss=[];all_train_metric=[];all_train_loss=[];all_val_metric=[];all_val_loss=[]
     resultsK=[];mean_test_metric=[];mean_train_metric=[]
               
-
+    
 #BUILT MODEL    
 #    model=basic_dense_model(X_train,Y_train)
 #    model=LSTM_model_1(X_train,Y_train,dropout,hidden_units,MaskWert)
 #    model=LSTM_model_2(X_train,Y_train,dropout,hidden_units,MaskWert)
-#    model=LSTM_model_3_advanced(X_train,Y_train,dropout,hidden_units,activationF)
-    residual_blocks=1
-    model=ResNet_deep_Beta(X_train,Y_train,dropout,hidden_units,Dense_Unit,activationF,residual_blocks)
-#    model=ResNet_wide_Beta(X_train,Y_train,dropout,hidden_units,Dense_Unit,activationF,residual_blocks)
+    model=LSTM_model_3_advanced(X_train,Y_train,dropout,hidden_units,Dense_Unit,activationF)
+    
+#    residual_blocks=1
+#    model=ResNet_deep_Beta(X_train,Y_train,dropout,hidden_units,Dense_Unit,activationF,residual_blocks,Kr,Ar)
+##    model=ResNet_wide_Beta(X_train,Y_train,dropout,hidden_units,Dense_Unit,activationF,residual_blocks,Kr,Ar)
+    
+    
     from keras.utils.vis_utils import plot_model    
     plot_model(model, to_file='model_plot.png', show_shapes=True, show_layer_names=True)   
 #MODEL PARAMETERS    
@@ -86,9 +89,8 @@ def KeraS(X_train, Y_train, X_val, Y_val, X_test, Y_test, batchsize,Epochs,dropo
                        sample_weight=class_weights,
                        validation_data=(X_val,Y_val),
                        shuffle=False)
-    
 
-    
+    print(model.summary()) 
 #EVALUATE MODEL     
     test_loss,test_metric=model.evaluate(X_test,Y_test,batch_size=batchsize)        
     prediction = model.predict(X_test, batch_size=batchsize) 
@@ -122,8 +124,10 @@ def KeraS(X_train, Y_train, X_val, Y_val, X_test, Y_test, batchsize,Epochs,dropo
     all_val_loss.append(val_loss)   
     
        
-    mean_test_metric=np.mean(all_test_metric) # Kappa is not calculated per epoch but just per fold. Therefor we generate on mean Kappa
-    mean_train_metric=np.mean(all_train_metric,axis=0)
+#    mean_test_metric=np.mean(all_test_metric) # Kappa is not calculated per epoch but just per fold. Therefor we generate on mean Kappa
+#    mean_train_metric=np.mean(all_train_metric,axis=0)
+    mean_test_metric=all_test_metric # Kappa is not calculated per epoch but just per fold. Therefor we generate on mean Kappa
+    mean_train_metric=all_train_metric    
     mean_val_metric=np.mean(all_val_metric,axis=0)    
     mean_test_loss=mean(all_test_loss,axis=0)    
     mean_train_loss=np.mean(all_train_loss,axis=0)

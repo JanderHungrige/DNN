@@ -67,9 +67,9 @@ Loading data declaration & Wrapper variables
 """
 FeatureSet='Features' #Features ECG, EDR, HRV
 lst= [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33] 
-
+#---------------------------
 label=[1,2,3,4,6] # 1=AS 2=QS 3=Wake 4=Care-taking 5=NA 6= transition
-usedPC='Philips' #Philips or c3po
+usedPC='Philips' #Philips or c3po or Cluster
 #Loockback for the LSTM. The data is separated samples with timestep=loockback; 
 #Loockback of 1337 mean all data per patient. Otherwise it is in nr of 30s epochs. e.g. 60=30min  120=1h 10=5min
 # HOw to split the dataset in [Train, Validation, Test] e.g.70:15:15  or 50:25:25 ,... 
@@ -78,18 +78,20 @@ Lookback= 1337# 1337 or anything else .
 split=[0.60,0.2,0.2];
 split=[0.70,0.30];
 batchsize=5  # LSTM needs [batchsize, timestep, feature] your batch size divides nb_samples from the original tensor. So batchsize should be smaller than samples
-Epochs=700
+Epochs=2
 hidden_units=34 # 2-64 or even 1000 as used by sleepnet best: multible of 32
+Dense_Unit=20
 dropout=0.5 #0.5; 0.9  dropout can be between 0-1  as %  DROPOUT CAN BE ADDED TO EACH LAYER
 learning_rate=0.0001 #0.0001 to 0.01 default =0.001
 learning_rate_decay=0.0 #0.0 default
-fold=3
+fold=2
 scalerange=(0, 2) #(0,1) or (-1,1) #If you are using sigmoid activation functions, rescale your data to values between 0-and-1. If you’re using the Hyperbolic Tangent (tanh), rescale to values between -1 and 1.
 scaler = MinMaxScaler(feature_range=scalerange) #define function
 Loss_Function='categorical_crossentropy'# categorical_crossentropy OR mean_squared_error IF BINARY : binary_crossentropy
 Perf_Metric=['categorical_accuracy']# 'categorical_accuracy' OR 'binary_accuray'
 ActivationF='sigmoid' # 'relu', 'tanh', 'sigmoid' ,...  Only in case the data is not normalized , only standardised
-Dense_Unit=32
+Kr=0.01 # Kernel regularizers
+Ar=0.01 #ACtivity regularizers
 
 if scalerange==(0,1) :
        activationF='sigmoid'
@@ -107,7 +109,7 @@ if Lookback==1337: # The problem is that the patients have different lenght. The
        
        
 info={'label':label,'Features':'all','Lookback':Lookback,'split':split,'batchsize':batchsize,'Epochs':Epochs,'hidden_units':hidden_units, 
-      'dropout':dropout,'learning_rate':learning_rate,'learning_rate_decay':learning_rate_decay, 'fold':fold, 'Scale':scalerange,'Loss_Function':Loss_Function,'Perf_Metric':Perf_Metric,'Activation_funtion':activationF,'Dens_unit': Dense_Unit }
+      'dropout':dropout,'learning_rate':learning_rate,'learning_rate_decay':learning_rate_decay, 'fold':fold, 'Scale':scalerange,'Loss_Function':Loss_Function,'Perf_Metric':Perf_Metric,'Activation_funtion':activationF,'Dens_unit': Dense_Unit, 'Kernel Regularizer': Kr , 'Activity regularizer': Ar}
 #---------------------------
 #AVERAGING
 FensterQS=20 
@@ -131,8 +133,7 @@ if dataset == 'MMC':
 
 
 
-#---------------------------
-ux=0 # if using this on Linux cluster use 1 to change adresses
+
 #---------------------------
 Movingwindow=FensterQS # WIndow size for moving average
 preaveraging=0
@@ -171,13 +172,13 @@ def loading_and_DNN(whichMix):
        """
        if WhichMix=='perSession':            
               babies, AnnotMatrix_each_patient,FeatureMatrix_each_patient\
-              =Loading_data_perSession(dataset, selectedbabies, lst, FeatureSet, Rpeakmethod,ux,scaler, \
+              =Loading_data_perSession(dataset, selectedbabies, lst, FeatureSet, Rpeakmethod,scaler, \
                             merge34, Movingwindow, preaveraging, postaveraging, exceptNOF, onlyNOF, FEAT,\
                             dispinfo,usedPC)       
               
        elif WhichMix=='all':              
               babies, AnnotMatrix_each_patient, FeatureMatrix_each_patient\
-              =Loading_data_all(dataset, selectedbabies, lst, FeatureSet, Rpeakmethod,ux,scaler, \
+              =Loading_data_all(dataset, selectedbabies, lst, FeatureSet, Rpeakmethod,scaler, \
                             merge34, Movingwindow, preaveraging, postaveraging, exceptNOF, onlyNOF, FEAT,\
                             dispinfo,usedPC)                   
        """
@@ -191,7 +192,7 @@ def loading_and_DNN(whichMix):
        =leave_one_out_cross_validation(babies,AnnotMatrix_each_patient,FeatureMatrix_each_patient,\
                 label, lst,ChoosenKind,SamplingMeth,probability_threshold,\
                 ASprobLimit,dispinfo,\
-                Lookback,split,fold,batchsize,Epochs,dropout,hidden_units,Dense_Unit,learning_rate,learning_rate_decay,activationF,Loss_Function,Perf_Metric)
+                Lookback,split,fold,batchsize,Epochs,dropout,hidden_units,Dense_Unit,learning_rate,learning_rate_decay,activationF,Loss_Function,Perf_Metric,Kr,Ar)
        
        
        return  babies, y_each_patient, Performance_Kappa, mean_train_metric, mean_train_loss, mean_val_metric, mean_val_loss, mean_test_metric, mean_test_loss

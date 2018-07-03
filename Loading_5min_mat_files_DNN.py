@@ -33,7 +33,7 @@ from sklearn.kernel_approximation import RBFSampler
 
 
 
-def Loading_data_all(dataset, selectedbabies, lst, FeatureSet, Rpeakmethod,ux, scaler, \
+def Loading_data_all(dataset, selectedbabies, lst, FeatureSet, Rpeakmethod, scaler, \
                             merge34, Movingwindow, preaveraging, postaveraging, exceptNOF, onlyNOF, FEAT,\
                             dispinfo,usedPC):
        
@@ -52,14 +52,14 @@ def Loading_data_all(dataset, selectedbabies, lst, FeatureSet, Rpeakmethod,ux, s
                      folder=('/home/310122653/Pyhton_Folder/cECG/cMatrices/')
               else:
                      folder=('C:/Users/310122653/Dropbox/PHD/python/cECG/cMatrices/')
+                     
        if 'MMC'== dataset:        
-              if ux:
+              if usedPC=='Cluster':
                      folder=('/home/310122653/Pyhton_Folder/DNN/Matrices/')
-              else:
-                     if usedPC=='Philips':
-                            folder=('C:/Users/310122653/Documents/PhD/Article_4_(MMC)/Processed_data/DNN_Matrices/Matrices_Features/')              
-                     if usedPC=='c3po':
-                            folder=('C:/Users/C3PO/Desktop/Processed data/DNN_Matrices/Matrices_Features/') 
+              if usedPC=='Philips':
+                     folder=('C:/Users/310122653/Documents/PhD/Article_4_(MMC)/Processed_data/DNN_Matrices/Matrices_Features/')              
+              if usedPC=='c3po':
+                     folder=('C:/Users/C3PO/Desktop/Processed data/DNN_Matrices/Matrices_Features/') 
               
        # ONLY 5 MIN FEATURES AND ANNOTATIONS
        dateien_each_patient="FeatureMatrix_","Annotations_" #non scaled values. The values should be scaled over all patient and not per patient. Therfore this is better
