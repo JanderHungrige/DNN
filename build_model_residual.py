@@ -17,6 +17,8 @@ from keras import metrics
 from keras import models
 from keras import layers
 from keras import callbacks
+from keras import regularizers
+
 from keras.utils import np_utils
 
 from keras.layers import Input
@@ -32,13 +34,19 @@ from keras.layers import BatchNormalization
 
 from keras.constraints import max_norm
 #%%   
-def ResNet_deep_Beta(X_train,Y_train,dropout,hidden_units,Dense_Unit,activationF,residual_blocks):   
+def ResNet_deep_Beta(X_train,Y_train,dropout,hidden_units,Dense_Unit,activationF,residual_blocks,Kr,Ar):   
 
-       def Block_unit(X_train,dropout,activationF,hidden_units,Dense_Unit):
+       def Block_unit(X_train,dropout,activationF,hidden_units,Dense_Unit,Kr,Ar):
             def unit(x):
                  ident = x
-                 x=layers.Bidirectional(LSTM(hidden_units, return_sequences=True, kernel_constraint=max_norm(max_value=3.), dropout=dropout, recurrent_dropout=dropout))(x)
-                 x=layers.Bidirectional(LSTM(hidden_units, return_sequences=True, kernel_constraint=max_norm(max_value=3.), dropout=dropout, recurrent_dropout=dropout))(x)                                    
+                 x=layers.Bidirectional(LSTM(hidden_units, return_sequences=True,   
+                                kernel_regularizer=regularizers.l2(0.01),
+                                activity_regularizer=regularizers.l2(0.01),
+                                kernel_constraint=max_norm(max_value=3.), dropout=dropout, recurrent_dropout=dropout))(x)
+                 x=layers.Bidirectional(LSTM(hidden_units, return_sequences=True,
+                                kernel_regularizer=regularizers.l2(0.01),
+                                activity_regularizer=regularizers.l2(0.01),
+                                kernel_constraint=max_norm(max_value=3.), dropout=dropout, recurrent_dropout=dropout))(x)                         
                  x=layers.Dropout(dropout, noise_shape=(None, 1, hidden_units*2))(x) 
                  x=layers.Dense(Dense_Unit, activation=activationF, kernel_constraint=max_norm(max_value=3.))(x)                                                  
                  x = merge([ident,x], mode = 'sum') #mode 'sum' concat
@@ -48,7 +56,7 @@ def ResNet_deep_Beta(X_train,Y_train,dropout,hidden_units,Dense_Unit,activationF
        def cake(residual_blocks,hidden_units,X_train,dropout,activationF):
               def unit(x):
                      for j in range(residual_blocks):
-                         x=Block_unit(X_train,dropout,activationF,hidden_units,Dense_Unit)(x)              
+                         x=Block_unit(X_train,dropout,activationF,hidden_units,Dense_Unit,Kr,Ar)(x)              
                          return x                          
               return unit
     
@@ -60,9 +68,9 @@ def ResNet_deep_Beta(X_train,Y_train,dropout,hidden_units,Dense_Unit,activationF
        i=layers.Dense(Dense_Unit, activation=activationF, kernel_constraint=max_norm(max_value=3.))(i) 
        i=BatchNormalization(axis=1)(i)     
           
+       i = cake(residual_blocks,2,X_train,dropout,activationF)(i) 
        i = cake(residual_blocks,32,X_train,dropout,activationF)(i) 
-       i = cake(residual_blocks,32,X_train,dropout,activationF)(i) 
-       i = cake(residual_blocks,32,X_train,dropout,activationF)(i)
+       i = cake(residual_blocks,64,X_train,dropout,activationF)(i)
        
                
        i=layers.Bidirectional(LSTM(hidden_units, return_sequences=True, kernel_constraint=max_norm(max_value=3.), dropout=dropout, recurrent_dropout=dropout))(i)                   
@@ -73,13 +81,19 @@ def ResNet_deep_Beta(X_train,Y_train,dropout,hidden_units,Dense_Unit,activationF
        return model
 
 #%%    
-def ResNet_wide_Beta(X_train,Y_train,dropout,hidden_units,Dense_Unit,activationF,residual_blocks):   
+def ResNet_wide_Beta(X_train,Y_train,dropout,hidden_units,Dense_Unit,activationF,residual_blocks,Kr,Ar):   
 
-       def Block_unit(X_train,dropout,activationF,hidden_units,Dense_Unit):
+       def Block_unit(X_train,dropout,activationF,hidden_units,Dense_Unit,Kr,Ar):
             def unit(x):
                  ident = x
-                 x=layers.Bidirectional(LSTM(hidden_units, return_sequences=True, kernel_constraint=max_norm(max_value=3.), dropout=dropout, recurrent_dropout=dropout))(x)
-                 x=layers.Bidirectional(LSTM(hidden_units, return_sequences=True, kernel_constraint=max_norm(max_value=3.), dropout=dropout, recurrent_dropout=dropout))(x)                                    
+                 x=layers.Bidirectional(LSTM(hidden_units, return_sequences=True,   
+                                kernel_regularizer=regularizers.l2(0.01),
+                                activity_regularizer=regularizers.l2(0.01),
+                                kernel_constraint=max_norm(max_value=3.), dropout=dropout, recurrent_dropout=dropout))(x)
+                 x=lyers.Bidirectional(LSTM(hidden_units, return_sequences=True,
+                                kernel_regularizer=regularizers.l2(0.01),
+                                activity_regularizer=regularizers.l2(0.01),
+                                kernel_constraint=max_norm(max_value=3.), dropout=dropout, recurrent_dropout=dropout))(x)                                      
                  x=layers.Dropout(dropout, noise_shape=(None, 1, hidden_units*2))(x) 
                  x=layers.Dense(Dense_Unit, activation=activationF, kernel_constraint=max_norm(max_value=3.))(x)                                                  
                  x = merge([ident,x], mode = 'sum') #mode 'sum' concat
@@ -89,11 +103,11 @@ def ResNet_wide_Beta(X_train,Y_train,dropout,hidden_units,Dense_Unit,activationF
        def cake(residual_blocks,hidden_units,X_train,dropout,activationF):
               def unit(x):
                      for j in range(residual_blocks):
-                         x=Block_unit(X_train,dropout,activationF,hidden_units,Dense_Unit)(x)              
+                         x=Block_unit(X_train,dropout,activationF,hidden_units,Dense_Unit,Kr,Ar)(x)              
                          return x                          
               return unit
     
-       
+
        inp = Input(shape=(X_train.shape[1],X_train.shape[2]))
 #       i = inp
        i=layers.Masking(mask_value=666,input_shape=(X_train.shape[1],X_train.shape[2]))(inp)
