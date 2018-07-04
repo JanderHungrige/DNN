@@ -65,151 +65,144 @@ Loading data declaration & Wrapper variables
 29,30,31,32,33= HRV nonlinear
 **************************************************************************
 """
-FeatureSet='Features' #Features ECG, EDR, HRV
-lst= [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33] 
-#---------------------------
-label=[1,2,3,4,6] # 1=AS 2=QS 3=Wake 4=Care-taking 5=NA 6= transition
-usedPC='Philips' #Philips or c3po or Cluster
-#Loockback for the LSTM. The data is separated samples with timestep=loockback; 
-#Loockback of 1337 mean all data per patient. Otherwise it is in nr of 30s epochs. e.g. 60=30min  120=1h 10=5min
-# HOw to split the dataset in [Train, Validation, Test] e.g.70:15:15  or 50:25:25 ,... 
-# The split is done for each fold. Just for the chekout phase use fold one. Later calculate how often the test split fits into the total data, that is the fold. e.g. 30 patients with 15% test -> 4.5 (round to 5) patients per fold. Now see how many times the 30 can be folded with 5 patients in the test set to cover all patients. 30/5=6 -> 6 fold
-Lookback= 1337# 1337 or anything else . 
-split=[0.60,0.2,0.2];
-split=[0.70,0.30];
-batchsize=5  # LSTM needs [batchsize, timestep, feature] your batch size divides nb_samples from the original tensor. So batchsize should be smaller than samples
-Epochs=2
-hidden_units=34 # 2-64 or even 1000 as used by sleepnet best: multible of 32
-Dense_Unit=20
-dropout=0.5 #0.5; 0.9  dropout can be between 0-1  as %  DROPOUT CAN BE ADDED TO EACH LAYER
-learning_rate=0.0001 #0.0001 to 0.01 default =0.001
-learning_rate_decay=0.0 #0.0 default
-fold=2
-scalerange=(0, 2) #(0,1) or (-1,1) #If you are using sigmoid activation functions, rescale your data to values between 0-and-1. If you’re using the Hyperbolic Tangent (tanh), rescale to values between -1 and 1.
-scaler = MinMaxScaler(feature_range=scalerange) #define function
-Loss_Function='categorical_crossentropy'# categorical_crossentropy OR mean_squared_error IF BINARY : binary_crossentropy
-Perf_Metric=['categorical_accuracy']# 'categorical_accuracy' OR 'binary_accuray'
-ActivationF='sigmoid' # 'relu', 'tanh', 'sigmoid' ,...  Only in case the data is not normalized , only standardised
-Kr=0.01 # Kernel regularizers
-Ar=0.01 #ACtivity regularizers
-
-if scalerange==(0,1) :
-       activationF='sigmoid'
-elif scalerange==(-1,1):
-       activationF='tanh'    
-else:
-       activationF=ActivationF
+class Variablen:
+       FeatureSet='Features' #Features ECG, EDR, HRV
+       lst= [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33] 
+       label=[1,2,3,4,6] # 1=AS 2=QS 3=Wake 4=Care-taking 5=NA 6= transition
+       usedPC='Philips' #Philips or c3po or Cluster
+       dataset='MMC'  #"ECG" "cECG" "MMC" "MMC+cECG" 
+       merge34=1
+       WhichMix='all' #perSession or all  # determine how the data was scaled. PEr session or just per patient
        
-if len(label)==2:
-       Loss_Function='binary_crossentropy'       
-       Perf_Metric=['categorical_accuracy'] # ['categorical_accuracy'] OR ['binary_accuray']
+       
+       
+       Lookback= 1337# 1337 or anything else . #Loockback for the LSTM. The data is separated samples with timestep=loockback; #Loockback of 1337 mean all data per patient. Otherwise it is in nr of 30s epochs. e.g. 60=30min  120=1h 10=5min
+#       split=[0.60,0.2,0.2];# HOw to split the dataset in [Train, Validation, Test] e.g.70:15:15  or 50:25:25 ,... # The split is done for each fold. Just for the chekout phase use fold one. Later calculate how often the test split fits into the total data, that is the fold. e.g. 30 patients with 15% test -> 4.5 (round to 5) patients per fold. Now see how many times the 30 can be folded with 5 patients in the test set to cover all patients. 30/5=6 -> 6 fold
+       split=[0.70,0.30];
+       batchsize=5  # LSTM needs [batchsize, timestep, feature] your batch size divides nb_samples from the original tensor. So batchsize should be smaller than samples
+       Epochs=2
+       hidden_units=32 # 2-64 or even 1000 as used by sleepnet best: multible of 32
+       Dense_Unit=20
+       dropout=0.5 #0.5; 0.9  dropout can be between 0-1  as %  DROPOUT CAN BE ADDED TO EACH LAYER
+       learning_rate=0.001 #0.0001 to 0.01 default =0.001
+       learning_rate_decay=0.0 #0.0 default
+       fold=2
+       scalerange=(0, 2) #(0,1) or (-1,1) #If you are using sigmoid activation functions, rescale your data to values between 0-and-1. If you’re using the Hyperbolic Tangent (tanh), rescale to values between -1 and 1.
+       scaler = MinMaxScaler(feature_range=scalerange) #define function
+       Loss_Function='categorical_crossentropy'# categorical_crossentropy OR mean_squared_error IF BINARY : binary_crossentropy
+       Perf_Metric=['categorical_accuracy']# 'categorical_accuracy' OR 'binary_accuray'
+       activationF='sigmoid' # 'relu', 'tanh', 'sigmoid' ,...  Only in case the data is not normalized , only standardised
+       Kr=0.01 # Kernel regularizers
+       Ar=0.01 #ACtivity regularizers
+       residual_blocks=1
         
-if Lookback==1337: # The problem is that the patients have different lenght. Then we need to zero pad. Instead of zeropadding we can use diffent length when batchsize==1
-       batchsize=1
+              
        
+Var=Variablen()    
+
+
+if Var.dataset=='ECG' or 'cECG':
+         Var.selectedbabies =[0,1,2,3,5,6,7,8] #0-8 ('4','5','6','7','9','10','11','12','13')
+if Var.dataset == 'MMC':
+       Var.selectedbabies=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21] #0-21
+if Var.dataset == 'MMC+cECG':
+       Var.selectedbabies=[0,1,2,3,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27] #0-27    # first 9 cECG rest MMC   
+
+if Var.scalerange==(0,1) :
+       Var.activationF='sigmoid'
+elif Var.scalerange==(-1,1):
+       Var.activationF='tanh'    
+
+if len(Var.label)==2:
+       Var.Loss_Function='binary_crossentropy'       
+       Var.Perf_Metric=['categorical_accuracy'] # ['categorical_accuracy'] OR ['binary_accuray']
+ 
+if Var.Lookback==1337: # The problem is that the patients have different lenght. Then we need to zero pad. Instead of zeropadding we can use diffent length when batchsize==1
+       Var.batchsize=1
        
-info={'label':label,'Features':'all','Lookback':Lookback,'split':split,'batchsize':batchsize,'Epochs':Epochs,'hidden_units':hidden_units, 
-      'dropout':dropout,'learning_rate':learning_rate,'learning_rate_decay':learning_rate_decay, 'fold':fold, 'Scale':scalerange,'Loss_Function':Loss_Function,'Perf_Metric':Perf_Metric,'Activation_funtion':activationF,'Dens_unit': Dense_Unit, 'Kernel Regularizer': Kr , 'Activity regularizer': Ar}
+if Var.merge34 and 3 in Var.label:
+              Var.label.remove(3)      
+info={'label': Var.label,'Features':'all','Lookback': Var.Lookback,'split': Var.split,'batchsize': Var.batchsize,'Epochs': Var.Epochs,'hidden_units':Var.hidden_units, 
+      'dropout': Var.dropout,'learning_rate': Var.learning_rate,'learning_rate_decay': Var.learning_rate_decay, 
+      'fold': Var.fold, 'Scale': Var.scalerange,'Loss_Function': Var.Loss_Function,
+      'Perf_Metric': Var.Perf_Metric,'Activation_funtion': Var.activationF,'Dens_unit': Var.Dense_Unit, 
+      'Kernel Regularizer': Var.Kr , 'Activity regularizer': Var.Ar}
 #---------------------------
 #AVERAGING
-FensterQS=20 
-ExFeatQS=1; 
-FEATaQS=[lst.index(0),lst.index(25),lst.index(33)]# 9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26
+class Variablenplus:
+       FensterQS=20 
+       ExFeatQS=1; 
+       FEATaQS=[Var.lst.index(0),Var.lst.index(25),Var.lst.index(33)]# 9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26
 
 #POLY
-PolyTQS=0; 
-FEATpQS=[11,14,29,30,31]#[lstIS.index(11),lstIS.index(12),lstIS.index(13),lstIS.index(14),lstIS.index(10),lstIS.index(24),lstIS.index(29),lstIS.index(32)]#[0,3,4,5]#12
+       PolyTQS=0; 
+       FEATpQS=[11,14,29,30,31]#[lstIS.index(11),lstIS.index(12),lstIS.index(13),lstIS.index(14),lstIS.index(10),lstIS.index(24),lstIS.index(29),lstIS.index(32)]#[0,3,4,5]#12
 
-ASQS= [0,0.69]#[0.65,0]#[0.63,0.7]
-NQS=100; mslQS=5 #100 2
+       ASQS= [0,0.69]#[0.65,0]#[0.63,0.7]
+       NQS=100; mslQS=5 #100 2
 
-Rpeakmethod='R' #R or M
-dataset='MMC'  #ECG cECG or MMC 
-#***************
-if dataset=='ECG' or 'cECG':
-       selectedbabies =[0,1,2,3,5,6,7,8] #0-8 ('4','5','6','7','9','10','11','12','13')
-if dataset == 'MMC':
-       selectedbabies=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21] #0-21
+       Rpeakmethod='R' #R or M
 
-
-
-
-#---------------------------
-Movingwindow=FensterQS # WIndow size for moving average
-preaveraging=0
-postaveraging=0
-exceptNOF=ExFeatQS #Which Number of Features (NOF) should be used with moving average?  all =oth tzero; only some or all except some defined in FEAT
-onlyNOF=0 # [0,1,2,27,28,29]
-FEAT=FEATaQS
+       Movingwindow=FensterQS # WIndow size for moving average
+       preaveraging=0
+       postaveraging=0
+       exceptNOF=ExFeatQS #Which Number of Features (NOF) should be used with moving average?  all =oth tzero; only some or all except some defined in FEAT
+       onlyNOF=0 # [0,1,2,27,28,29]
+       FEAT=FEATaQS
 #----------------------------
-PolyTrans=PolyTQS#use polinominal transformation on the Features specified in FEATp
-ExpFactor=2# which degree of polinomonal (2)
-exceptNOpF= 0#Which Number of Features (NOpF) should be used with polynominal fit?  all =0; only some or all except some defined in FEATp
-onlyNOpF=1 # [0,1,2,27,28,29]
-FEATp=FEATpQS
+       PolyTrans=PolyTQS#use polinominal transformation on the Features specified in FEATp
+       ExpFactor=2# which degree of polinomonal (2)
+       exceptNOpF= 0#Which Number of Features (NOpF) should be used with polynominal fit?  all =0; only some or all except some defined in FEATp
+       onlyNOpF=1 # [0,1,2,27,28,29]
+       FEATp=FEATpQS
 #---------------------------
-SamplingMeth='NONE'  # 'NONE' 'SMOTE'  or 'ADASYN' #For up and downsampling of data
-ChoosenKind=0   # 0-3['regular','borderline1','borderline2','svm'] only when using SMOTE
+       SamplingMeth='NONE'  # 'NONE' 'SMOTE'  or 'ADASYN' #For up and downsampling of data
+       ChoosenKind=0   # 0-3['regular','borderline1','borderline2','svm'] only when using SMOTE
 #---------------------------
-probability_threshold=1 # 1 to use different probabilities tan 0.5 to decide on the class. At the moment it is >=0.2 for any other calss then AS
-ASprobLimit=ASQS# Determine the AS lower limit for the probability for which another class is chosen than AS. For: [3 labels, >3 labels]
-WhichMix='all' #perSession or all  # determine how the data was scaled. PEr session or just per patient
+       probability_threshold=1 # 1 to use different probabilities tan 0.5 to decide on the class. At the moment it is >=0.2 for any other calss then AS
+       ASprobLimit=ASQS# Determine the AS lower limit for the probability for which another class is chosen than AS. For: [3 labels, >3 labels]
 
-merge34=1
-if merge34 and 3 in label:
-              label.remove(3)
-       
-  
+
+Varplus=Variablenplus()
+#%%
 """
 Loading Data
 """
 Class_dict, features_dict, features_indx=Feature_names()
-#%%
+
 # CHOOSING WHICH FEATURE MATRIX IS USED
 def loading_and_DNN(whichMix):
-       """
-       LOAD DATA
-       """
-       if WhichMix=='perSession':            
+       if Var.WhichMix=='perSession':            
               babies, AnnotMatrix_each_patient,FeatureMatrix_each_patient\
-              =Loading_data_perSession(dataset, selectedbabies, lst, FeatureSet, Rpeakmethod,scaler, \
-                            merge34, Movingwindow, preaveraging, postaveraging, exceptNOF, onlyNOF, FEAT,\
-                            dispinfo,usedPC)       
+              =Loading_data_perSession(Var,Varplus)       
               
-       elif WhichMix=='all':              
+       elif Var.WhichMix=='all':              
               babies, AnnotMatrix_each_patient, FeatureMatrix_each_patient\
-              =Loading_data_all(dataset, selectedbabies, lst, FeatureSet, Rpeakmethod,scaler, \
-                            merge34, Movingwindow, preaveraging, postaveraging, exceptNOF, onlyNOF, FEAT,\
-                            dispinfo,usedPC)                   
-       """
-       LOOCV 
-       """    
-       laenge=[sum(len(FeatureMatrix_each_patient[i]) for i in range(len(FeatureMatrix_each_patient))) ]
-       
-       
-       print('Total amount of epochs: {}'.format(laenge))
-       y_each_patient, Performance_Kappa, mean_train_metric, mean_train_loss, mean_val_metric, mean_val_loss, mean_test_metric, mean_test_loss\
-       =leave_one_out_cross_validation(babies,AnnotMatrix_each_patient,FeatureMatrix_each_patient,\
-                label, lst,ChoosenKind,SamplingMeth,probability_threshold,\
-                ASprobLimit,dispinfo,\
-                Lookback,split,fold,batchsize,Epochs,dropout,hidden_units,Dense_Unit,learning_rate,learning_rate_decay,activationF,Loss_Function,Perf_Metric,Kr,Ar)
-       
-       
-       return  babies, y_each_patient, Performance_Kappa, mean_train_metric, mean_train_loss, mean_val_metric, mean_val_loss, mean_test_metric, mean_test_loss
+              =Loading_data_all(Var,Varplus)                   
+
+       return  babies, AnnotMatrix_each_patient,FeatureMatrix_each_patient
+
+babies, AnnotMatrix_each_patient, FeatureMatrix_each_patient\
+= loading_and_DNN(Var)  
+
 #%%
+"""
+LOOCV 
+"""    
+laenge=[sum(len(FeatureMatrix_each_patient[i]) for i in range(len(FeatureMatrix_each_patient))) ]
+print('Total amount of epochs: {}'.format(laenge))
 
-babies, y_each_patient, Performance_Kappa_pp, mean_train_metric_pp, mean_train_loss_pp, mean_val_metric_pp, mean_val_loss_pp, mean_test_metric_pp, mean_test_loss_pp\
-= loading_and_DNN(WhichMix)                  
+y_each_patient, mean_Kappa, mean_train_metric, mean_train_loss, mean_val_metric, mean_val_loss, mean_test_metric, mean_test_loss\
+=leave_one_out_cross_validation(babies,AnnotMatrix_each_patient,FeatureMatrix_each_patient,Var,Varplus)
 
-
-if fold>1:
-       mean_test_metric=np.mean(mean_test_metric_pp) # Kappa is not calculated per epoch but just per fold. Therefor we generate on mean Kappa
-       mean_train_metric=np.mean(mean_train_metric_pp,axis=0)
-       mean_val_metric=np.mean(mean_val_metric_pp,axis=0)    
-       mean_test_loss=mean(mean_test_loss_pp,axis=0)    
-       mean_train_loss=np.mean(mean_train_loss_pp,axis=0)
-       mean_val_loss=np.mean(mean_val_loss_pp,axis=0)      
-       Performance_Kappa=np.mean(Performance_Kappa_pp)
+if Var.fold>1:
+       mean_test_metric_overall=np.mean(mean_test_metric) # Kappa is not calculated per epoch but just per fold. Therefor we generate on mean Kappa
+       mean_train_metric_overall=np.mean(mean_train_metric,axis=0)
+       mean_val_metric_overall=np.mean(mean_val_metric,axis=0)    
+       mean_test_loss_overall=mean(mean_test_loss,axis=0)    
+       mean_train_loss_overall=np.mean(mean_train_loss,axis=0)
+       mean_val_loss_overall=np.mean(mean_val_loss,axis=0)      
+       mean_Kappa_overall=np.mean(mean_Kappa)
 
 #
 ## Kappa over all annotations and predictions merged together
@@ -239,7 +232,7 @@ END
 """
 disp('-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  - ')
 
-if len(split)<3:
+if len(Var.split)<3:
        disp('don`t give a f** about Kappa. Data is only plit for train and val' )
 import time
 t=time.localtime()

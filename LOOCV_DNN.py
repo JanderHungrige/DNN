@@ -32,13 +32,8 @@ from sklearn.utils import class_weight
 from collections import deque
 import __main__
 
-def leave_one_out_cross_validation(\
-         babies,AnnotMatrix_each_patient,FeatureMatrix_each_patient,\
-         label, lst,ChoosenKind,\
-         SamplingMeth,probability_threshold,ASprobLimit, \
-         dispinfo,\
-         lookback,split,fold,batchsize,Epochs,dropout,hidden_units,Dense_Unit,learning_rate,learning_rate_decay,activationF,Loss_Function,Perf_Metric,Kr,Ar):
-       
+def leave_one_out_cross_validation(babies,AnnotMatrix_each_patient,FeatureMatrix_each_patient,Var,Varplus):
+         
        t_a=list()
        classpredictions=list()
        Probabilities=list()
@@ -105,28 +100,28 @@ def leave_one_out_cross_validation(\
            
 
        # Using only the labels choosen in the wrapper
-       idx=[in1d(AnnotMatrix_each_patient[sb],label) for sb in babies]#.values()]     # which are the idices for AnnotMatrix_each_patient == label
+       idx=[in1d(AnnotMatrix_each_patient[sb],Var.label) for sb in babies]#.values()]     # which are the idices for AnnotMatrix_each_patient == label
        idx=[nonzero(idx[sb])[0] for sb in range(len(babies))]#.values()]              # get the indices where True
        X_labeled=[val[idx[sb],:] for sb, val in enumerate(FeatureMatrix_for_choosen_patients)]   #selecting the datapoints in label
        y_labeled=[val[idx[sb],:] for sb, val in enumerate(AnnotMatrix_for_choosen_patients)] #get the values for y from idx and label
            
 #CALCULATE CLASS WEIGHTS   
        Weights_dict=sample_weight_calc_per_class(y_labeled)
-       Weights_all=create_sample_Weigth(y_labeled,Weights_dict,label) 
+       Weights_all=create_sample_Weigth(y_labeled,Weights_dict,Var.label) 
 #        weights_all=[[weights_dict.get(x, 0) for x in sublist.flatten()] for sublist in y_labeled]
 
 # ONE HOT ENCODING OF Y-LABELS      
        y_labeled = [np_utils.to_categorical(y_labeled[i]) for i in range(len(y_labeled)) ]      
 
 #PREPARING SHIFT FOR FOLD       
-       Testing_Train_Val_Test=list(percentage_split(X_labeled,split)) 
+       Testing_Train_Val_Test=list(percentage_split(X_labeled,Var.split)) 
        vallength=len(Testing_Train_Val_Test[1]); print('possible Val folds: %i' %(floor(len(Testing_Train_Val_Test[0])/vallength) ))       
        if len(Testing_Train_Val_Test)==3:
               testength=len(Testing_Train_Val_Test[2]);print('possible Test folds: %i' %(floor(len(Testing_Train_Val_Test[0])/testength) ))
               
 #FOLDING------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
-       for V in range(fold):
+       for V in range(Var.fold):
            print('**************************')
            print('Validating on fold: %i' %(V+1) )           
 # SHIFT FOR EACH FOLD
@@ -140,34 +135,34 @@ def leave_one_out_cross_validation(\
                          y_labeled=shiftRbyn(y_labeled,testength)
                          Weights_all=shiftRbyn(Weights_all,testength)                         
 #ZEROPADDING IF TOTAL SET IS USED AS TIMESTEP           
-           if lookback==1337:
+           if Var.Lookback==1337:
                   list_len = [len(i) for i in X_labeled] # zero pad all sessions/patientsets to have same length
                   X_labeled=[np.pad(X_labeled[i],pad_width=((0,max(list_len)-len(X_labeled[i])),(0,0)),mode ='constant',constant_values=666) for i in range(len(X_labeled))] #padwith=((before axe0, after axe0),(before axe1, before axe1)))
                   y_labeled=[np.pad(y_labeled[i],pad_width=((0,max(list_len)-len(y_labeled[i])),(0,0)),mode ='constant') for i in range(len(y_labeled))] #padwith=((before axe0, after axe0),(before axe1, before axe1)))
                   Weights_all=[np.pad(Weights_all[i],pad_width=((0,max(list_len)-len(Weights_all[i])),(0,0)),mode ='constant') for i in range(len(Weights_all))] #padwith=((before axe0, after axe0),(before axe1, before axe1)))
 # SPLIT DATASET                     
-           X_Train_Val_Test=list(percentage_split(X_labeled,split)) # Splitting the data into Train-Val-Test after the split percentages
-           Y_Train_Val_Test=list(percentage_split(y_labeled,split))
-           Weigths_split=list(percentage_split(Weights_all,split))
+           X_Train_Val_Test=list(percentage_split(X_labeled,Var.split)) # Splitting the data into Train-Val-Test after the split percentages
+           Y_Train_Val_Test=list(percentage_split(y_labeled,Var.split))
+           Weigths_split=list(percentage_split(Weights_all,Var.split))
            
 #CREATE LOOCKBACK 3D TENSOR           
-           if lookback!=1337:
-                  X_Train=data_with_lookback(X_Train_Val_Test[0],lookback,666) # function defined above. Split data into loockback steps and create 3D tensor
-                  Y_Train=data_with_lookback(Y_Train_Val_Test[0],lookback,0)
-                  Weigths=data_with_lookback(Weigths_split[0],lookback,0);Weigths=np.squeeze(Weigths, axis=(2,)) # Wheights need to be in shape (samples, sequence_length) for temporal mode
+           if Var.Lookback!=1337:
+                  X_Train=data_with_lookback(X_Train_Val_Test[0],Var.Lookback,666) # function defined above. Split data into loockback steps and create 3D tensor
+                  Y_Train=data_with_lookback(Y_Train_Val_Test[0],Var.Lookback,0)
+                  Weigths=data_with_lookback(Weigths_split[0],Var.Lookback,0);Weigths=np.squeeze(Weigths, axis=(2,)) # Wheights need to be in shape (samples, sequence_length) for temporal mode
                   
-                  X_Val=data_with_lookback(X_Train_Val_Test[1],lookback,666)
-                  Y_Val=data_with_lookback(Y_Train_Val_Test[1],lookback,0)
+                  X_Val=data_with_lookback(X_Train_Val_Test[1],Var.Lookback,666)
+                  Y_Val=data_with_lookback(Y_Train_Val_Test[1],Var.Lookback,0)
                   
                   if len(X_Train_Val_Test)==3:
-                         X_Test=data_with_lookback(X_Train_Val_Test[2],lookback,666)
-                         Y_Test=data_with_lookback(Y_Train_Val_Test[2],lookback,0)
+                         X_Test=data_with_lookback(X_Train_Val_Test[2],Var.Lookback,666)
+                         Y_Test=data_with_lookback(Y_Train_Val_Test[2],Var.Lookback,0)
                   else: 
                          X_Test=X_Val
                          Y_Test=Y_Val                         
                   
 #CREATE 3D TENSOR FOR TOTAL SET (LOOKBACK= TOTAL SESSION/DATA LENGTH)
-           if lookback==1337: # for any lookbackstep smaler than the total session/set
+           if Var.Lookback==1337: # for any lookbackstep smaler than the total session/set
                   X_Train=X_Train_Val_Test[0]  ;  X_Train = np.stack((X_Train), axis=0)        # here again as we first had to zeropad, then split, then stack       
                   Y_Train=Y_Train_Val_Test[0]  ;  Y_Train = np.stack((Y_Train), axis=0)          
                   Weigths=Weigths_split[0] ; Weigths=np.squeeze(Weigths, axis=(2,)) # Wheights need to be in shape (samples, sequence_length) for temporal mode
@@ -182,7 +177,7 @@ def leave_one_out_cross_validation(\
                          X_Test=X_Val
                          Y_Test=Y_Val
                
-               
+           Var.class_weights=Weigths  
 #CALCULATE CLASS_WEIGHTS TO BALANCE CLASS IMBALANCE               
 #           stackedTrain=np.concatenate(Y_Train_Val_Test[0], axis=0)  # make one hot encodd back to integer values representing the labels 
 #           indEy = (np.argmax(stackedTrain, axis=1), stackedTrain.shape)
@@ -196,8 +191,7 @@ def leave_one_out_cross_validation(\
 #FORWARD SETS TO KERAS WHERE THE MODEL IS BUILT, TRAINED, VALIDATED AND TESTED           
            print ('Training data shape is:[%i, %i, %i]' %(X_Train.shape))
            resultsK_fold, mean_k_fold, mean_train_metric_fold, mean_val_metric_fold, mean_train_loss_fold, mean_val_loss_fold, mean_test_metric_fold, mean_test_loss_fold\
-           =KeraS(X_Train, Y_Train, X_Val, Y_Val, X_Test, Y_Test, 
-                  batchsize,Epochs,dropout,hidden_units,Dense_Unit,label,Weigths,learning_rate,learning_rate_decay,activationF,Loss_Function,Perf_Metric,Kr,Ar)
+           =KeraS(X_Train, Y_Train, X_Val, Y_Val, X_Test, Y_Test, Var)
 
 #GATHERING THE RESULTS OF THE TESTING           
 #           classpredictions.append(prediction)

@@ -34,29 +34,29 @@ from keras.layers import BatchNormalization
 
 from keras.constraints import max_norm
 #%%   
-def ResNet_deep_Beta(X_train,Y_train,dropout,hidden_units,Dense_Unit,activationF,residual_blocks,Kr,Ar):   
+def ResNet_deep_Beta(X_train,Y_train,Var):   
 
-       def Block_unit(X_train,dropout,activationF,hidden_units,Dense_Unit,Kr,Ar):
+       def Block_unit(X_train,Var):
             def unit(x):
                  ident = x
-                 x=layers.Bidirectional(LSTM(hidden_units, return_sequences=True,   
+                 x=layers.Bidirectional(LSTM(Var.hidden_units, activation=Var.activationF, return_sequences=True,   
                                 kernel_regularizer=regularizers.l2(0.01),
                                 activity_regularizer=regularizers.l2(0.01),
-                                kernel_constraint=max_norm(max_value=3.), dropout=dropout, recurrent_dropout=dropout))(x)
-                 x=layers.Bidirectional(LSTM(hidden_units, return_sequences=True,
+                                kernel_constraint=max_norm(max_value=3.), dropout=Var.dropout, recurrent_dropout=Var.dropout))(x)
+                 x=layers.Bidirectional(LSTM(Var.hidden_units, return_sequences=True,
                                 kernel_regularizer=regularizers.l2(0.01),
                                 activity_regularizer=regularizers.l2(0.01),
-                                kernel_constraint=max_norm(max_value=3.), dropout=dropout, recurrent_dropout=dropout))(x)                         
-                 x=layers.Dropout(dropout, noise_shape=(None, 1, hidden_units*2))(x) 
-                 x=layers.Dense(Dense_Unit, activation=activationF, kernel_constraint=max_norm(max_value=3.))(x)                                                  
+                                kernel_constraint=max_norm(max_value=3.), dropout=Var.dropout, recurrent_dropout=Var.dropout))(x)                         
+                 x=layers.Dropout(Var.dropout, noise_shape=(None, 1, Var.hidden_units*2))(x) 
+                 x=layers.Dense(Var.Dense_Unit, activation=Var.activationF, kernel_constraint=max_norm(max_value=3.))(x)                                                  
                  x = merge([ident,x], mode = 'sum') #mode 'sum' concat
                  return x
             return unit
                              
-       def cake(residual_blocks,hidden_units,X_train,dropout,activationF):
+       def cake(Var):
               def unit(x):
-                     for j in range(residual_blocks):
-                         x=Block_unit(X_train,dropout,activationF,hidden_units,Dense_Unit,Kr,Ar)(x)              
+                     for j in range(Var.residual_blocks):
+                         x=Block_unit(X_train,Var)(x)              
                          return x                          
               return unit
     
@@ -64,16 +64,16 @@ def ResNet_deep_Beta(X_train,Y_train,dropout,hidden_units,Dense_Unit,activationF
        inp = Input(shape=(X_train.shape[1],X_train.shape[2]))
 #       i = inp
        i=layers.Masking(mask_value=666,input_shape=(X_train.shape[1],X_train.shape[2]))(inp)
-       i=layers.Dropout(dropout/2, noise_shape=(None, 1, X_train.shape[2]))(i)
-       i=layers.Dense(Dense_Unit, activation=activationF, kernel_constraint=max_norm(max_value=3.))(i) 
+       i=layers.Dropout(Var.dropout/2, noise_shape=(None, 1, X_train.shape[2]))(i)
+       i=layers.Dense(Var.Dense_Unit, activation=Var.activationF, kernel_constraint=max_norm(max_value=3.))(i) 
        i=BatchNormalization(axis=1)(i)     
           
-       i = cake(residual_blocks,2,X_train,dropout,activationF)(i) 
-       i = cake(residual_blocks,32,X_train,dropout,activationF)(i) 
-       i = cake(residual_blocks,64,X_train,dropout,activationF)(i)
+       i = cake(Var)(i) 
+       i = cake(Var)(i) 
+       i = cake(Var)(i)
        
                
-       i=layers.Bidirectional(LSTM(hidden_units, return_sequences=True, kernel_constraint=max_norm(max_value=3.), dropout=dropout, recurrent_dropout=dropout))(i)                   
+       i=layers.Bidirectional(LSTM(Var.hidden_units, return_sequences=True, kernel_constraint=max_norm(max_value=3.), dropout=Var.dropout, recurrent_dropout=Var.dropout))(i)                   
        i = Dense(Y_train.shape[-1],activation='softmax', kernel_constraint=max_norm(max_value=3.))(i)
 
        model = Model(inputs=inp,outputs=i)  
@@ -81,29 +81,29 @@ def ResNet_deep_Beta(X_train,Y_train,dropout,hidden_units,Dense_Unit,activationF
        return model
 
 #%%    
-def ResNet_wide_Beta(X_train,Y_train,dropout,hidden_units,Dense_Unit,activationF,residual_blocks,Kr,Ar):   
+def ResNet_wide_Beta(X_train,Y_train,Var):   
 
-       def Block_unit(X_train,dropout,activationF,hidden_units,Dense_Unit,Kr,Ar):
+       def Block_unit(X_train,Var,hidden_units):
             def unit(x):
                  ident = x
-                 x=layers.Bidirectional(LSTM(hidden_units, return_sequences=True,   
+                 x=layers.Bidirectional(LSTM(hidden_units, activation=Var.activationF, return_sequences=True,   
                                 kernel_regularizer=regularizers.l2(0.01),
                                 activity_regularizer=regularizers.l2(0.01),
-                                kernel_constraint=max_norm(max_value=3.), dropout=dropout, recurrent_dropout=dropout))(x)
-                 x=lyers.Bidirectional(LSTM(hidden_units, return_sequences=True,
+                                kernel_constraint=max_norm(max_value=3.), dropout=Var.dropout, recurrent_dropout=Var.dropout))(x)
+                 x=layers.Bidirectional(LSTM(hidden_units, return_sequences=True,
                                 kernel_regularizer=regularizers.l2(0.01),
                                 activity_regularizer=regularizers.l2(0.01),
-                                kernel_constraint=max_norm(max_value=3.), dropout=dropout, recurrent_dropout=dropout))(x)                                      
-                 x=layers.Dropout(dropout, noise_shape=(None, 1, hidden_units*2))(x) 
-                 x=layers.Dense(Dense_Unit, activation=activationF, kernel_constraint=max_norm(max_value=3.))(x)                                                  
+                                kernel_constraint=max_norm(max_value=3.), dropout=Var.dropout, recurrent_dropout=Var.dropout))(x)                                      
+                 x=layers.Dropout(Var.dropout, noise_shape=(None, 1, hidden_units*2))(x) 
+                 x=layers.Dense(Var.Dense_Unit, activation=Var.activationF, kernel_constraint=max_norm(max_value=3.))(x)                                                  
                  x = merge([ident,x], mode = 'sum') #mode 'sum' concat
                  return x
             return unit
                              
-       def cake(residual_blocks,hidden_units,X_train,dropout,activationF):
+       def cake(Var, hidden_units):
               def unit(x):
-                     for j in range(residual_blocks):
-                         x=Block_unit(X_train,dropout,activationF,hidden_units,Dense_Unit,Kr,Ar)(x)              
+                     for j in range(Var.residual_blocks):
+                         x=Block_unit(X_train,Var,hidden_units)(x)              
                          return x                          
               return unit
     
@@ -111,24 +111,24 @@ def ResNet_wide_Beta(X_train,Y_train,dropout,hidden_units,Dense_Unit,activationF
        inp = Input(shape=(X_train.shape[1],X_train.shape[2]))
 #       i = inp
        i=layers.Masking(mask_value=666,input_shape=(X_train.shape[1],X_train.shape[2]))(inp)
-       i=layers.Dropout(dropout/2, noise_shape=(None, 1, X_train.shape[2]))(i)
-       i=layers.Dense(Dense_Unit, activation=activationF, kernel_constraint=max_norm(max_value=3.))(i) 
+       i=layers.Dropout(Var.dropout/2, noise_shape=(None, 1, X_train.shape[2]))(i)
+       i=layers.Dense(Var.Dense_Unit, activation=Var.activationF, kernel_constraint=max_norm(max_value=3.))(i) 
        intro_out=BatchNormalization(axis=1)(i)     
             
-       Pfad1 = cake(residual_blocks,32,X_train,dropout,activationF)(intro_out) 
-       Pfad1 = cake(residual_blocks,32,X_train,dropout,activationF)(Pfad1) 
+       Pfad1 = cake(Var,32)(intro_out) 
+       Pfad1 = cake(Var,32)(Pfad1) 
        
-       Pfad2 = cake(residual_blocks,2,X_train,dropout,activationF)(intro_out) 
-       Pfad2 = cake(residual_blocks,2,X_train,dropout,activationF)(Pfad2) 
+       Pfad2 = cake(Var,2)(intro_out) 
+       Pfad2 = cake(Var,2)(Pfad2) 
 
-       Pfad3 = cake(residual_blocks,64,X_train,dropout,activationF)(intro_out) 
-       Pfad3 = cake(residual_blocks,64,X_train,dropout,activationF)(Pfad3) 
+       Pfad3 = cake(Var,64)(intro_out) 
+       Pfad3 = cake(Var,64)(Pfad3) 
        
        i = layers.concatenate([Pfad1, Pfad2, Pfad3])
 
        
                
-       Outro_out=layers.Bidirectional(LSTM(hidden_units, return_sequences=True, kernel_constraint=max_norm(max_value=3.), dropout=dropout, recurrent_dropout=dropout))(i)                   
+       Outro_out=layers.Bidirectional(LSTM(Var.hidden_units, return_sequences=True, kernel_constraint=max_norm(max_value=3.), dropout=Var.dropout, recurrent_dropout=Var.dropout))(i)                   
        Outro_out = Dense(Y_train.shape[-1],activation='softmax', kernel_constraint=max_norm(max_value=3.))(Outro_out)
 
        model = Model(inputs=inp,outputs=Outro_out)  

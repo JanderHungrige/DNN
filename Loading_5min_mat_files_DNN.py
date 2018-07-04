@@ -33,44 +33,52 @@ from sklearn.kernel_approximation import RBFSampler
 
 
 
-def Loading_data_all(dataset, selectedbabies, lst, FeatureSet, Rpeakmethod, scaler, \
-                            merge34, Movingwindow, preaveraging, postaveraging, exceptNOF, onlyNOF, FEAT,\
-                            dispinfo,usedPC):
+def Loading_data_all(Var,Varplus):
        
 
        """
        START *************************************************************************
        """
-       if 'ECG'== dataset:
+       if 'ECG'== Var.dataset:
               if ux:
                      folder=('/home/310122653/Pyhton_Folder/cECG/Matrices/')
               else:
                      folder=('C:/Users/310122653/Dropbox/PHD/python/cECG/Matrices/')
      
-       if 'cECG'==dataset:
+       if 'cECG'==Var.dataset:
               if ux:
                      folder=('/home/310122653/Pyhton_Folder/cECG/cMatrices/')
               else:
                      folder=('C:/Users/310122653/Dropbox/PHD/python/cECG/cMatrices/')
                      
-       if 'MMC'== dataset:        
-              if usedPC=='Cluster':
+       if 'MMC'== Var.dataset:        
+              if Var.usedPC=='Cluster':
                      folder=('/home/310122653/Pyhton_Folder/DNN/Matrices/')
-              if usedPC=='Philips':
+              if Var.usedPC=='Philips':
                      folder=('C:/Users/310122653/Documents/PhD/Article_4_(MMC)/Processed_data/DNN_Matrices/Matrices_Features/')              
-              if usedPC=='c3po':
+              if Var.usedPC=='c3po':
                      folder=('C:/Users/C3PO/Desktop/Processed data/DNN_Matrices/Matrices_Features/') 
+                     
+       if 'MMC+cECG'== Var.dataset:        
+              if Var.usedPC=='Cluster':
+                     folder=('/home/310122653/Pyhton_Folder/DNN/Matrices/')
+              if Var.usedPC=='Philips':
+                     folder=('C:/Users/310122653/Documents/PhD/Article_4_(MMC)/Processed_data/DNN_Matrices/Matrices_Features_Mix/')              
+              if Var.usedPC=='c3po':
+                     folder=('C:/Users/C3PO/Desktop/Processed data/DNN_Matrices/Matrices_Features_Mix/')                      
               
        # ONLY 5 MIN FEATURES AND ANNOTATIONS
        dateien_each_patient="FeatureMatrix_","Annotations_" #non scaled values. The values should be scaled over all patient and not per patient. Therfore this is better
 #       windowlength="30"
-       if 'ECG'== dataset or 'cECG'== dataset:
+       if 'ECG'== Var.dataset or 'cECG'== Var.dataset:
            Neonate_all='4','5','6','7','9','10','11','12','13'
-       if 'MMC'== dataset:
-           Neonate_all='1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20','21','22'          
-       babies=[i for i in range(len(selectedbabies))]# return to main function
+       if 'MMC'== Var.dataset:
+           Neonate_all='1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20','21','22' 
+       if 'MMC+cECG'== Var.dataset:
+           Neonate_all='4','5','6','7','9','10','11','12','13','21','22','23','24','25','26','27','28','29','30','31','32','33','34','35','36','37','38','39','40','41','42'            
+       babies=[i for i in range(len(Var.selectedbabies))]# return to main function
        
-       Neonate=[(Neonate_all[i]) for i in selectedbabies];Neonate=tuple(Neonate)
+       Neonate=[(Neonate_all[i]) for i in Var.selectedbabies];Neonate=tuple(Neonate)
        FeatureMatrix_each_patient_all=[0]*len(Neonate)
        AnnotMatrix_each_patient=[0]*len(Neonate)
        t_a=[0]*len(Neonate)
@@ -104,25 +112,25 @@ def Loading_data_all(dataset, selectedbabies, lst, FeatureSet, Rpeakmethod, scal
        if FeatureMatrix_each_patient_all[0].shape[0] < FeatureMatrix_each_patient_all[0].shape[1]: # We need [Data, Features]
                   FeatureMatrix_each_patient_all=[FeatureMatrix_each_patient_all[k].conj().transpose() for k in babies] # if the featuer matrix is turned wrongly, transpose it.                              
            
-       if FeatureSet=='FET':
+       if Var.FeatureSet=='FET':
               FeatureMatrix_each_patient_all=[val[:,lst] for sb, val in enumerate(FeatureMatrix_each_patient_all)] # selecting only the features in lst                      
                                  
-       if postaveraging:             
+       if Varplus.postaveraging:             
               NOF=np.arange(0,(np.size(FeatureMatrix_each_patient_all[K],1))) # create range from 0-29 (lenth of features)
               if exceptNOF:
-                     NOF= np.delete(NOF,FEAT)
+                     NOF= np.delete(Varplus.NOF,Varplus.FEAT)
               if onlyNOF:
-                     NOF=FEAT
+                     NOF=Varplus.FEAT
               for F in NOF:#range(np.size(FeatureMatrix_each_patient_fromSession[K],1)):
                      FeatureMatrix_each_patient_all[K][:,F]=\
-                     np.convolve(FeatureMatrix_each_patient_all[K][:,F], np.ones((Movingwindow,))/Movingwindow, mode='same')                
+                     np.convolve(FeatureMatrix_each_patient_all[K][:,F], np.ones((Varplus.Movingwindow,))/Varplus.Movingwindow, mode='same')                
                                           
       
        
-       AnnotMatrix_each_patient=AnnotationChanger(AnnotMatrix_each_patient,0,0,0,0,0,0,merge34)
+       AnnotMatrix_each_patient=AnnotationChanger(AnnotMatrix_each_patient,0,0,0,0,0,0,Var.merge34)
        
 # NORMALIZATION PER fEATURE (COLUMN) 
-       if scaler==(0,1) or scaler==(-1,1):
+       if Var.scaler==(0,1) or Var.scaler==(-1,1):
               def Normaliz(values,scaler):
                      values=scaler.fit_transform(np.reshape(values,(-1,1)))
                      return values
@@ -130,7 +138,7 @@ def Loading_data_all(dataset, selectedbabies, lst, FeatureSet, Rpeakmethod, scal
               data =[0]*len(Neonate)         
               for matrix,i in zip(FeatureMatrix_each_patient_all,range(len(FeatureMatrix_each_patient_all))):  # iterate through every matrix in the list           
                   for column in matrix.transpose():  # iterate through every column in the matrix
-                      NormCol=Normaliz(column,scaler) # call normalization function
+                      NormCol=Normaliz(column,Var.scaler) # call normalization function
                       if 'Matrx' in locals():
                              Matrx=np.hstack((Matrx,NormCol)) 
                       else:
@@ -148,9 +156,7 @@ def Loading_data_all(dataset, selectedbabies, lst, FeatureSet, Rpeakmethod, scal
        
        #%%
        
-def Loading_data_perSession(dataset, selectedbabies, lst, FeatureSet, Rpeakmethod,ux, \
-                            merge34, Movingwindow, preaveraging, postaveraging, exceptNOF, onlyNOF, FEAT,\
-                            dispinfo,usedPC):    
+def Loading_data_perSession(Var,Varplus):    
              
        """
        Creating Feature Matrix per session
@@ -158,31 +164,31 @@ def Loading_data_perSession(dataset, selectedbabies, lst, FeatureSet, Rpeakmetho
        
        
        #folder=('/home/310122653/Pyhton_Folder/cECG/Matrices/')
-       if 'ECG'== dataset:
+       if 'ECG'== Var.dataset:
               if ux:
                      Sessionfolder=('/home/310122653/Pyhton_Folder/cECG/Matrices/Sessions/')
               else:
                      Sessionfolder=('C:/Users/310122653/Dropbox/PHD/python/cECG/Matrices/Sessions/')
-       if 'cECG'==dataset:
+       if 'cECG'==Var.dataset:
               if ux:
                      Sessionfolder=('/home/310122653/Pyhton_Folder/cECG/cMatrices/Sessions/')
               else:
                      Sessionfolder=('C:/Users/310122653/Dropbox/PHD/python/cECG/cMatrices/Sessions/')
-       if 'MMC'== dataset:        
+       if 'MMC'== Var.dataset:        
               if ux:
                      Sessionfolder=('/home/310122653/Pyhton_Folder/DNN/Matrices/Sessions/')
               else:
-                     if usedPC=='Philips':
+                     if Var.usedPC=='Philips':
                             folder=('C:/Users/310122653/Documents/PhD/Article_4_(MMC)/Processed_data/DNN_Matrices/Matrices_Features/')              
-                     if usedPC=='c3po':
+                     if Var.usedPC=='c3po':
                             folder=('C:/Users/C3PO/Desktop/Processed data/DNN_Matrices/Matrices_Features/')       
 
  
        dateien_each_patient="FeatureMatrix_","Annotations_" #non scaled values. The values should be scaled over all patient and not per patient. Therfore this is better
 #       windowlength="300"
-       if 'ECG'== dataset or 'cECG'== dataset:
+       if 'ECG'== Var.dataset or 'cECG'== Var.dataset:
            Neonate_all='4','5','6','7','9','10','11','12','13'
-       if 'MMC'== dataset:
+       if 'MMC'== Var.dataset:
            Neonate_all='1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20','21','22'          
            
        babies=[i for i in range(len(selectedbabies))]# return to main function
@@ -199,7 +205,7 @@ def Loading_data_perSession(dataset, selectedbabies, lst, FeatureSet, Rpeakmetho
        FeatureMatrix_each_patient_fromSession=[None]*len(Neonate)
        FeatureMatrix_each_patient_fromSession_poly=[None]*len(Neonate)
 
-       AnnotMatrix_each_patient=Loading_Annotations(dataset,selectedbabies,ux,usedPC,plotting=0) # loading Annotations
+       AnnotMatrix_each_patient=Loading_Annotations(Var.dataset,Var.selectedbabies,ux,Var.usedPC,plotting=0) # loading Annotations
        
        for K in range(len(Neonate)):      
               Dateien=glob.glob(Sessionfolder +'FeatureMatrix_'+Neonate[K]+ '_**')
@@ -229,7 +235,7 @@ def Loading_data_perSession(dataset, selectedbabies, lst, FeatureSet, Rpeakmetho
                             WelcheSindzuKurz.append(j) #Just count how many Sessions do not have cECG values. If more than one different strategy is needed than the one below
                             
               if WelcheSindzuKurz:# deleting the ones that are too short in Annotation MAtrix. Apparently if there is no data(leer), then the Annotations are already shortened. Therefore only corretion for the once which are a bit to short
-                     AnnotMatrix_each_patient=correcting_Annotations_length(dataset,K,WelcheSindzuKurz,ux,selectedbabies,AnnotMatrix_each_patient,FeatureMatrix_Session_each_patient)
+                     AnnotMatrix_each_patient=correcting_Annotations_length(Var.dataset,K,WelcheSindzuKurz,ux,Var.selectedbabies,AnnotMatrix_each_patient,FeatureMatrix_Session_each_patient)
                      WelcheSindLeer.extend(WelcheSindzuKurz)# delete the ones that are zero and the once that are too short
                      
               for index in sorted(WelcheSindLeer, reverse=True):
@@ -244,17 +250,17 @@ def Loading_data_perSession(dataset, selectedbabies, lst, FeatureSet, Rpeakmetho
               
               
        for K in range(len(Neonate)):           
-                 if postaveraging:             
+                 if Varplus.postaveraging:             
                      NOF=np.arange(0,(np.size(FeatureMatrix_each_patient_fromSession[K],1))) # create range from 0-29 (lenth of features)
                      if exceptNOF:
-                            NOF= np.delete(NOF,FEAT)
+                            NOF= np.delete(Varplus.NOF,Varplus.FEAT)
                      if onlyNOF:
-                            NOF=FEAT
+                            NOF=Varplus.FEAT
                      for F in NOF:#range(np.size(FeatureMatrix_each_patient_fromSession[K],1)):
                             FeatureMatrix_each_patient_fromSession[K][:,F]=\
-                            np.convolve(FeatureMatrix_each_patient_fromSession[K][:,F], np.ones((Movingwindow,))/Movingwindow, mode='same')                
+                            np.convolve(FeatureMatrix_each_patient_fromSession[K][:,F], np.ones((Varplus.Movingwindow,))/Varplus.Movingwindow, mode='same')                
                      
-       AnnotMatrix_each_patient=AnnotationChanger(AnnotMatrix_each_patient,LoosingAnnot5,LoosingAnnot6,LoosingAnnot6_2,Smoothing_short,Pack4,direction6,merge34)
+       AnnotMatrix_each_patient=AnnotationChanger(AnnotMatrix_each_patient,Varplus.LoosingAnnot5,Varplus.LoosingAnnot6,Varplus.LoosingAnnot6_2,Varplus.Smoothing_short,Varplus.Pack4,Varplus.direction6,Var.merge34)
 #                     
 #       if plotting:
 #              for l in range(len(AnnotMatrix_each_patient)): 
@@ -315,7 +321,7 @@ def Loading_Annotations(dataset,selectedbabies,ux,usedPC,plotting):
                      folder=('/home/310122653/Pyhton_Folder/cECG/Matrices/')
               else:
                     folder=('C:/Users/310122653/Dropbox/PHD/python/cECG/Matrices/')
-       if 'cECG'==dataset:
+       if 'cECG'==Var.dataset:
               if ux:
                      folder=('/home/310122653/Pyhton_Folder/cECG/cMatrices/')
               else:

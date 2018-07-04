@@ -45,7 +45,7 @@ from build_model_residual import ResNet_wide_Beta
 import pdb# use pdb.set_trace() as breakpoint
 
 #%%
-def KeraS(X_train, Y_train, X_val, Y_val, X_test, Y_test, batchsize,Epochs,dropout,hidden_units,Dense_Unit,label,class_weights,learning_rate,learning_rate_decay,activationF, Loss_Function, Perf_Metric,Kr,Ar):
+def KeraS(X_train, Y_train, X_val, Y_val, X_test, Y_test, Var):
        
 #selecte_babies are the babies without test baby
 #### CREATING THE sampleweight FOR SELECTED BABIES  
@@ -59,24 +59,23 @@ def KeraS(X_train, Y_train, X_val, Y_val, X_test, Y_test, batchsize,Epochs,dropo
     
 #BUILT MODEL    
 #    model=basic_dense_model(X_train,Y_train)
-#    model=LSTM_model_1(X_train,Y_train,dropout,hidden_units,MaskWert)
-#    model=LSTM_model_2(X_train,Y_train,dropout,hidden_units,MaskWert)
-    model=LSTM_model_3_advanced(X_train,Y_train,dropout,hidden_units,Dense_Unit,activationF)
+#    model=LSTM_model_1(X_train,Y_train,Var)
+#    model=LSTM_model_2(X_train,Y_train,Var)
+    model=LSTM_model_3_advanced(X_train,Y_train,Var)
     
-#    residual_blocks=1
-#    model=ResNet_deep_Beta(X_train,Y_train,dropout,hidden_units,Dense_Unit,activationF,residual_blocks,Kr,Ar)
-##    model=ResNet_wide_Beta(X_train,Y_train,dropout,hidden_units,Dense_Unit,activationF,residual_blocks,Kr,Ar)
+#    model=ResNet_deep_Beta(X_train,Y_train,Var)
+#    model=ResNet_wide_Beta(X_train,Y_train,Var)
     
     
     from keras.utils.vis_utils import plot_model    
     plot_model(model, to_file='model_plot.png', show_shapes=True, show_layer_names=True)   
 #MODEL PARAMETERS    
-    model.compile(loss=Loss_Function, 
+    model.compile(loss=Var.Loss_Function, 
                   optimizer='adam',
-                  metrics=Perf_Metric,
+                  metrics=Var.Perf_Metric,
                   sample_weight_mode="temporal")       
-    model.optimizer.lr=learning_rate #0.0001 to 0.01 default =0.001
-    model.optimizer.decay=learning_rate_decay
+    model.optimizer.lr=Var.learning_rate #0.0001 to 0.01 default =0.001
+    model.optimizer.decay=Var.learning_rate_decay
     
     from keras.utils.vis_utils import plot_model    
     plot_model(model, to_file='model_plot.png', show_shapes=True, show_layer_names=True)
@@ -84,16 +83,16 @@ def KeraS(X_train, Y_train, X_val, Y_val, X_test, Y_test, batchsize,Epochs,dropo
 # TRAIN MODEL (in silent mode, verbose=0)       
     history=model.fit(X_train,
                        Y_train,
-                       epochs=Epochs,
-                       batch_size=batchsize,
-                       sample_weight=class_weights,
+                       epochs=Var.Epochs,
+                       batch_size=Var.batchsize,
+                       sample_weight=Var.class_weights,
                        validation_data=(X_val,Y_val),
                        shuffle=False)
 
     print(model.summary()) 
 #EVALUATE MODEL     
-    test_loss,test_metric=model.evaluate(X_test,Y_test,batch_size=batchsize)        
-    prediction = model.predict(X_test, batch_size=batchsize) 
+    test_loss,test_metric=model.evaluate(X_test,Y_test,batch_size=Var.batchsize)        
+    prediction = model.predict(X_test, batch_size=Var.batchsize) 
     stackedpred=np.concatenate(prediction, axis=0)
     #make prediction a simple array to match y_train_base      
 #    indEx = np.unravel_index(np.argmax(prediction, axis=1), prediction.shape)
@@ -108,7 +107,7 @@ def KeraS(X_train, Y_train, X_val, Y_val, X_test, Y_test, batchsize,Epochs,dropo
 #       print(history.history.keys())     
     
 #COLLECTING RESULTS    
-    resultsK.append(cohen_kappa_score(Y_test_Result.ravel(),prediction_base,labels=label))        
+    resultsK.append(cohen_kappa_score(Y_test_Result.ravel(),prediction_base,labels=Var.label))        
 
     all_test_metric.append(test_metric)
     all_test_loss.append(test_loss)

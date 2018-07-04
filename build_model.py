@@ -46,39 +46,39 @@ def basic_dense_model(X_train,Y_train):
 
     return model
 #%%
-def LSTM_model_1_gen(lookback,Nr_Features,Nr_labels,dropout,hidden_units,activationF):
+def LSTM_model_1_gen(X_train,Y_train,Var):
        
    model = Sequential()
-   model.add(Masking(mask_value=666, input_shape=(lookback,Nr_Features)))
-   model.add(LSTM(hidden_units, activation=activationF, return_sequences=True, dropout=dropout))   
-   model.add(LSTM(hidden_units, return_sequences=True))
-   model.add(LSTM(hidden_units, return_sequences=True))
-   model.add(Dense(Nr_labels, activation='softmax'))
+   model.add(Masking(mask_value=666, input_shape=(X_train.shape[1],X_train.shape[2])))
+   model.add(LSTM(Var.hidden_units, activation=Var.activationF, return_sequences=True, dropout=Var.dropout))   
+   model.add(LSTM(Var.hidden_units, return_sequences=True))
+   model.add(LSTM(Var.hidden_units, return_sequences=True))
+   model.add(Dense(Y_train.shape[-1], activation='softmax'))
 
    return model
 
 #%%
-def LSTM_model_1(X_train,Y_train,dropout,hidden_units,activationF):
+def LSTM_model_1(X_train,Y_train,Var):
        
    model = Sequential()
 #   model.add(Masking(mask_value=666, input_shape=X_train.shape))
 #   model.add(LSTM(hidden_units, input_shape=(X_train.shape[1],X_train.shape[2]),activation='tanh', return_sequences=True, dropout=Dropout))   
    model.add(Masking(mask_value=666, input_shape=(X_train.shape[1],X_train.shape[2])))
-   model.add(LSTM(hidden_units, activation=activationF, return_sequences=True, dropout=dropout))  
+   model.add(LSTM(Var.hidden_units, activation=Var.activationF, return_sequences=True, dropout=Var.dropout))  
 #   model.add(LSTM(hidden_units, activation='sigmoid', return_sequences=True, dropout=dropout))      
-   model.add(LSTM(hidden_units, return_sequences=True))
-   model.add(LSTM(hidden_units, return_sequences=True))
+   model.add(LSTM(Var.hidden_units, return_sequences=True))
+   model.add(LSTM(Var.hidden_units, return_sequences=True))
    model.add(Dense(Y_train.shape[-1], activation='softmax'))
 
    return model
 #%%
-def LSTM_model_2(X_train,Y_train,dropout,hidden_units,activationF):       
+def LSTM_model_2(X_train,Y_train,Var):       
    model = Sequential()
    model.add(Masking(mask_value=666, input_shape=(X_train.shape[1],X_train.shape[2]) ))
-   model.add(Dropout(dropout, noise_shape=(None, 1, X_train.shape[2]) ))   
-   model.add(Dense(32, activation=activationF, kernel_constraint=max_norm(max_value=2.) ))   
-   model.add(LSTM(hidden_units, return_sequences=True, dropout=dropout, recurrent_dropout=dropout))  
-   model.add(LSTM(hidden_units, return_sequences=True, dropout=dropout, recurrent_dropout=dropout))
+   model.add(Dropout(Var.dropout, noise_shape=(None, 1, X_train.shape[2]) ))   
+   model.add(Dense(Var.Dense_Unit, activation=Var.activationF, kernel_constraint=max_norm(max_value=2.) ))   #dense unit was 34
+   model.add(LSTM(Var.hidden_units, return_sequences=True, dropout=Var.dropout, recurrent_dropout=Var.dropout))  
+   model.add(LSTM(Var.hidden_units, return_sequences=True, dropout=Var.dropout, recurrent_dropout=Var.dropout))
 #   model.add(LSTM(hidden_units, return_sequences=True, dropout=dropout, recurrent_dropout=dropout))
    model.add(Dense(Y_train.shape[-1], activation='softmax'))
 
@@ -86,12 +86,12 @@ def LSTM_model_2(X_train,Y_train,dropout,hidden_units,activationF):
 
 
 #%%
-def LSTM_model_3(X_train,Y_train,dropout,hidden_units,activationF):
+def LSTM_model_3(X_train,Y_train,Var):
    model = Sequential()
    model.add(Masking(mask_value=666, input_shape=(X_train.shape[1],X_train.shape[2]) ))
-   model.add(Dropout(dropout, noise_shape=(None, 1, X_train.shape[2]) ))   
-   model.add(layers.Bidirectional(layers.LSTM(hidden_units, activation=activationF, return_sequences=True, dropout=dropout)), merge_mode='concat')
-   model.add(layers.Bidirectional(layers.LSTM(hidden_units, return_sequences=True, dropout=dropout)), merge_mode='concat')
+   model.add(Dropout(Var.dropout, noise_shape=(None, 1, X_train.shape[2]) ))   
+   model.add(layers.Bidirectional(layers.LSTM(Var.hidden_units, activation=Var.activationF, return_sequences=True, dropout=Var.dropout)), merge_mode='concat')
+   model.add(layers.Bidirectional(layers.LSTM(Var.hidden_units, return_sequences=True, dropout=Var.dropout)), merge_mode='concat')
 
 #   model.add(LSTM(hidden_units, return_sequences=True))
 #   model.add(LSTM(hidden_units, return_sequences=True))
@@ -101,41 +101,41 @@ def LSTM_model_3(X_train,Y_train,dropout,hidden_units,activationF):
 
    return model  
 #%%
-def LSTM_model_3_advanced(X_train,Y_train,dropout,hidden_units,Dense_Unit,activationF,):   
+def LSTM_model_3_advanced(X_train,Y_train,Var):   
    maxnorm=3.
    batch_size=X_train.shape[0]
    n_frames=X_train.shape[2]
    model = Sequential()
    model.add(Masking(mask_value=666, input_shape=(X_train.shape[1],X_train.shape[2])))
    model.add(Dropout(0.2, noise_shape=(None, 1, X_train.shape[2]) ))   
-   model.add(Dense(Dense_Unit, activation=activationF, kernel_constraint=max_norm(max_value=3.)))
-   model.add(Bidirectional(LSTM(hidden_units, return_sequences=True,   
+   model.add(Dense(Var.Dense_Unit, activation=Var.activationF, kernel_constraint=max_norm(max_value=3.)))
+   model.add(Bidirectional(LSTM(Var.hidden_units, return_sequences=True,   
                                 kernel_regularizer=regularizers.l2(0.01),
                                 activity_regularizer=regularizers.l2(0.01),
-                                kernel_constraint=max_norm(max_value=3.), dropout=dropout, recurrent_dropout=dropout)))
-   model.add(Bidirectional(LSTM(hidden_units, return_sequences=True,
+                                kernel_constraint=max_norm(max_value=3.), dropout=Var.dropout, recurrent_dropout=Var.dropout)))
+   model.add(Bidirectional(LSTM(Var.hidden_units, return_sequences=True,
                                 kernel_regularizer=regularizers.l2(0.01),
                                 activity_regularizer=regularizers.l2(0.01),
-                                kernel_constraint=max_norm(max_value=3.), dropout=dropout, recurrent_dropout=dropout)))   
-   model.add(Dropout(0.5, noise_shape=(None, 1, hidden_units*2)))
+                                kernel_constraint=max_norm(max_value=3.), dropout=Var.dropout, recurrent_dropout=Var.dropout)))   
+   model.add(Dropout(0.5, noise_shape=(None, 1, Var.hidden_units*2)))
    model.add(Dense(Y_train.shape[-1], activation='softmax', kernel_constraint=max_norm(max_value=3.)))
    model.summary()
    
    return model  
 
 #%%
-def LSTM_model_4_advanced(X_train,Y_train,dropout,hidden_units,Dense_Unit,activationF):   
+def LSTM_model_4_advanced(X_train,Y_train,Var):   
    maxnorm=3.
    batch_size=X_train.shape[0]
    n_frames=X_train.shape[2]
    model = Sequential()
    model.add(Masking(mask_value=666, input_shape=(X_train.shape[1],X_train.shape[2])))
    model.add(Dropout(0.2, noise_shape=(None, 1, X_train.shape[2]) ))   
-   model.add(Dense(Dense_Unit, activation=activationF, kernel_constraint=max_norm(max_value=3.)))
+   model.add(Dense(Var.Dense_Unit, activation=Var.activationF, kernel_constraint=max_norm(max_value=3.)))
    BatchNormalization(axis=1)
-   model.add(Bidirectional(LSTM(hidden_units, return_sequences=True, kernel_constraint=max_norm(max_value=3.), dropout=dropout, recurrent_dropout=dropout)))
-   model.add(Bidirectional(LSTM(hidden_units, return_sequences=True, kernel_constraint=max_norm(max_value=3.), dropout=dropout, recurrent_dropout=dropout)))   
-   model.add(Dropout(0.5, noise_shape=(None, 1, 64)))
+   model.add(Bidirectional(LSTM(Var.hidden_units, return_sequences=True, kernel_constraint=max_norm(max_value=3.), dropout=Var.dropout, recurrent_dropout=Var.dropout)))
+   model.add(Bidirectional(LSTM(Var.hidden_units, return_sequences=True, kernel_constraint=max_norm(max_value=3.), dropout=Var.dropout, recurrent_dropout=Var.dropout)))   
+   model.add(Dropout(0.5, noise_shape=(None, 1, Var.hidden_units*2)))
    model.add(Dense(Y_train.shape[-1], activation='softmax', kernel_constraint=max_norm(max_value=3.)))
    model.summary()
    
