@@ -73,7 +73,7 @@ class Variablen:
        dataset='MMC'  #"ECG" "cECG" "MMC" "MMC+cECG" 
        merge34=1
        WhichMix='all' #perSession or all  # determine how the data was scaled. PEr session or just per patient
-       
+       saving_model=1
        
        
        Lookback= 1337# 1337 or anything else . #Loockback for the LSTM. The data is separated samples with timestep=loockback; #Loockback of 1337 mean all data per patient. Otherwise it is in nr of 30s epochs. e.g. 60=30min  120=1h 10=5min
@@ -192,7 +192,7 @@ LOOCV
 laenge=[sum(len(FeatureMatrix_each_patient[i]) for i in range(len(FeatureMatrix_each_patient))) ]
 print('Total amount of epochs: {}'.format(laenge))
 
-y_each_patient, mean_Kappa, mean_train_metric, mean_train_loss, mean_val_metric, mean_val_loss, mean_test_metric, mean_test_loss\
+model,y_each_patient, mean_Kappa, mean_train_metric, mean_train_loss, mean_val_metric, mean_val_loss, mean_test_metric, mean_test_loss\
 =leave_one_out_cross_validation(babies,AnnotMatrix_each_patient,FeatureMatrix_each_patient,Var,Varplus)
 
 if Var.fold>1:
@@ -204,7 +204,11 @@ if Var.fold>1:
        mean_val_loss_overall=np.mean(mean_val_loss,axis=0)      
        mean_Kappa_overall=np.mean(mean_Kappa)
 
+if Var.saving_model:
+       from keras.models import load_model
+       model.save('my_model.h5')  # creates a HDF5 file 'my_model.h5'
 #
+
 ## Kappa over all annotations and predictions merged together
 #tmp_orig=vstack(y_each_patient)
 #tmp_pred=hstack(classpredictions)

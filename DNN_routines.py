@@ -139,7 +139,7 @@ def KeraS(X_train, Y_train, X_val, Y_val, X_test, Y_test, Var):
 #
 #      
     
-    return resultsK, mean_k, mean_train_metric, mean_val_metric, mean_train_loss, mean_val_loss, mean_test_metric, mean_test_loss
+    return model, resultsK, mean_k, mean_train_metric, mean_val_metric, mean_train_loss, mean_val_loss, mean_test_metric, mean_test_loss
 
 #%%
 def KeraS_Gen(X_Train_Val_Test,Y_Train_Val_Test,
