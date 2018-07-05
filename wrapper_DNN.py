@@ -24,8 +24,9 @@ from LOOCV_DNN import leave_one_out_cross_validation
 
 import itertools
 from matplotlib import *
-from numpy import *
+#from numpy import *
 from pylab import *
+import numpy as np
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.preprocessing import StandardScaler
 from sklearn.cross_validation import StratifiedKFold
@@ -41,6 +42,7 @@ from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
 from sklearn.linear_model import Perceptron
 import sys #to add strings together
 import pdb # use pdb.set_trace() as breakpoint
+
 
 
 #from compute_class_weight import *   
@@ -164,6 +166,8 @@ class Variablenplus:
 
 
 Varplus=Variablenplus()
+# fix random seed for reproducibility
+np.random.seed(7)
 #%%
 """
 Loading Data
