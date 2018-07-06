@@ -61,10 +61,10 @@ def KeraS(X_train, Y_train, X_val, Y_val, X_test, Y_test, Var):
 #    model=basic_dense_model(X_train,Y_train)
 #    model=LSTM_model_1(X_train,Y_train,Var)
 #    model=LSTM_model_2(X_train,Y_train,Var)
-    model=LSTM_model_3_advanced(X_train,Y_train,Var)
+#    model=LSTM_model_3_advanced(X_train,Y_train,Var)
     
 #    model=ResNet_deep_Beta(X_train,Y_train,Var)
-#    model=ResNet_wide_Beta(X_train,Y_train,Var)
+    model=ResNet_wide_Beta(X_train,Y_train,Var)
     
     
     from keras.utils.vis_utils import plot_model    

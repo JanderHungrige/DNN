@@ -111,7 +111,8 @@ def leave_one_out_cross_validation(babies,AnnotMatrix_each_patient,FeatureMatrix
 #        weights_all=[[weights_dict.get(x, 0) for x in sublist.flatten()] for sublist in y_labeled]
 
 # ONE HOT ENCODING OF Y-LABELS      
-       y_labeled = [np_utils.to_categorical(y_labeled[i]) for i in range(len(y_labeled)) ]      
+#       y_labeled = [np_utils.to_categorical(y_labeled[i]) for i in range(len(y_labeled)) ]      
+       y_labeled = [np_utils.to_categorical(Var.label) for i in range(len(y_labeled)) ]      
 
 #PREPARING SHIFT FOR FOLD       
        Testing_Train_Val_Test=list(percentage_split(X_labeled,Var.split)) 

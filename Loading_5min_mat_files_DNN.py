@@ -57,7 +57,7 @@ def Loading_data_all(Var,Varplus):
               if Var.usedPC=='Philips':
                      folder=('C:/Users/310122653/Documents/PhD/Article_4_(MMC)/Processed_data/DNN_Matrices/Matrices_Features/')              
               if Var.usedPC=='c3po':
-                     folder=('C:/Users/C3PO/Desktop/Processed data/DNN_Matrices/Matrices_Features/') 
+                     folder=('C:/Users/C3PO/Desktop/Processed_data/DNN_Matrices/Matrices_Features/') 
                      
        if 'MMC+cECG'== Var.dataset:        
               if Var.usedPC=='Cluster':
@@ -65,7 +65,7 @@ def Loading_data_all(Var,Varplus):
               if Var.usedPC=='Philips':
                      folder=('C:/Users/310122653/Documents/PhD/Article_4_(MMC)/Processed_data/DNN_Matrices/Matrices_Features_Mix/')              
               if Var.usedPC=='c3po':
-                     folder=('C:/Users/C3PO/Desktop/Processed data/DNN_Matrices/Matrices_Features_Mix/')                      
+                     folder=('C:/Users/C3PO/Desktop/Processed_data/DNN_Matrices/Matrices_Features_Mix/')                      
               
        # ONLY 5 MIN FEATURES AND ANNOTATIONS
        dateien_each_patient="FeatureMatrix_","Annotations_" #non scaled values. The values should be scaled over all patient and not per patient. Therfore this is better
@@ -75,7 +75,7 @@ def Loading_data_all(Var,Varplus):
        if 'MMC'== Var.dataset:
            Neonate_all='1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20','21','22' 
        if 'MMC+cECG'== Var.dataset:
-           Neonate_all='4','5','6','7','9','10','11','12','13','21','22','23','24','25','26','27','28','29','30','31','32','33','34','35','36','37','38','39','40','41','42'            
+           Neonate_all='4','5','6','7','8','9','10','11','12','13','21','22','23','24','25','26','27','28','29','30','31','32','33','34','35','36','37','38','39','40','41','42'            
        babies=[i for i in range(len(Var.selectedbabies))]# return to main function
        
        Neonate=[(Neonate_all[i]) for i in Var.selectedbabies];Neonate=tuple(Neonate)
@@ -101,6 +101,7 @@ def Loading_data_all(Var,Varplus):
                elif j==1:
                    AnnotMatrix_each_patient[k]=matlabfile.get('Annotations')  
                    AnnotMatrix_each_patient[k]=AnnotMatrix_each_patient[k].transpose() # transpose to datapoints,annotations
+                   AnnotMatrix_each_patient[k]=AnnotMatrix_each_patient[k].astype(int) # if mat file was cell or int..make them equal
                    t_a[k]=np.linspace(0,len(AnnotMatrix_each_patient[k])*30/60,len(AnnotMatrix_each_patient[k]))  
 #                   if plotting:
 #                        plt.figure(k) 
@@ -126,7 +127,6 @@ def Loading_data_all(Var,Varplus):
                      np.convolve(FeatureMatrix_each_patient_all[K][:,F], np.ones((Varplus.Movingwindow,))/Varplus.Movingwindow, mode='same')                
                                           
       
-       
        AnnotMatrix_each_patient=AnnotationChanger(AnnotMatrix_each_patient,0,0,0,0,0,0,Var.merge34)
        
 # NORMALIZATION PER fEATURE (COLUMN) 

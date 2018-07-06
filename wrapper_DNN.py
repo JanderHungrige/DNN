@@ -72,7 +72,7 @@ class Variablen:
        lst= [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33] 
        label=[1,2,3,4,6] # 1=AS 2=QS 3=Wake 4=Care-taking 5=NA 6= transition
        usedPC='Philips' #Philips or c3po or Cluster
-       dataset='MMC'  #"ECG" "cECG" "MMC" "MMC+cECG" 
+       dataset='MMC+cECG'  #"ECG" "cECG" "MMC" "MMC+cECG" 
        merge34=1
        WhichMix='all' #perSession or all  # determine how the data was scaled. PEr session or just per patient
        saving_model=1
@@ -82,7 +82,7 @@ class Variablen:
 #       split=[0.60,0.2,0.2];# HOw to split the dataset in [Train, Validation, Test] e.g.70:15:15  or 50:25:25 ,... # The split is done for each fold. Just for the chekout phase use fold one. Later calculate how often the test split fits into the total data, that is the fold. e.g. 30 patients with 15% test -> 4.5 (round to 5) patients per fold. Now see how many times the 30 can be folded with 5 patients in the test set to cover all patients. 30/5=6 -> 6 fold
        split=[0.70,0.30];
        batchsize=5  # LSTM needs [batchsize, timestep, feature] your batch size divides nb_samples from the original tensor. So batchsize should be smaller than samples
-       Epochs=2
+       Epochs=3
        hidden_units=32 # 2-64 or even 1000 as used by sleepnet best: multible of 32
        Dense_Unit=20
        dropout=0.5 #0.5; 0.9  dropout can be between 0-1  as %  DROPOUT CAN BE ADDED TO EACH LAYER
@@ -108,7 +108,7 @@ if Var.dataset=='ECG' or 'cECG':
 if Var.dataset == 'MMC':
        Var.selectedbabies=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21] #0-21
 if Var.dataset == 'MMC+cECG':
-       Var.selectedbabies=[0,1,2,3,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27] #0-27    # first 9 cECG rest MMC   
+       Var.selectedbabies=[0,1,2,3,5,6,7,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30] #0-27    # first 10 cECG rest MMC   
 
 if Var.scalerange==(0,1) :
        Var.activationF='sigmoid'
