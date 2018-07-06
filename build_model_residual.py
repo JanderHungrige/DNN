@@ -40,12 +40,12 @@ def ResNet_deep_Beta(X_train,Y_train,Var):
             def unit(x):
                  ident = x
                  x=layers.Bidirectional(LSTM(Var.hidden_units, activation=Var.activationF, return_sequences=True,   
-                                kernel_regularizer=regularizers.l2(0.01),
-                                activity_regularizer=regularizers.l2(0.01),
+                                kernel_regularizer=regularizers.l2(Var.Kr),
+                                activity_regularizer=regularizers.l2(Var.Ar),
                                 kernel_constraint=max_norm(max_value=3.), dropout=Var.dropout, recurrent_dropout=Var.dropout))(x)
                  x=layers.Bidirectional(LSTM(Var.hidden_units, return_sequences=True,
-                                kernel_regularizer=regularizers.l2(0.01),
-                                activity_regularizer=regularizers.l2(0.01),
+                                kernel_regularizer=regularizers.l2(Var.Kr),
+                                activity_regularizer=regularizers.l2(Var.Ar),
                                 kernel_constraint=max_norm(max_value=3.), dropout=Var.dropout, recurrent_dropout=Var.dropout))(x)                         
                  x=layers.Dropout(Var.dropout, noise_shape=(None, 1, Var.hidden_units*2))(x) 
                  x=layers.Dense(Var.Dense_Unit, activation=Var.activationF, kernel_constraint=max_norm(max_value=3.))(x)                                                  
@@ -87,12 +87,12 @@ def ResNet_wide_Beta(X_train,Y_train,Var):
             def unit(x):
                  ident = x
                  x=layers.Bidirectional(LSTM(hidden_units, activation=Var.activationF, return_sequences=True,   
-                                kernel_regularizer=regularizers.l2(0.01),
-                                activity_regularizer=regularizers.l2(0.01),
+                                kernel_regularizer=regularizers.l2(Var.Kr),
+                                activity_regularizer=regularizers.l2(Var.Ar),
                                 kernel_constraint=max_norm(max_value=3.), dropout=Var.dropout, recurrent_dropout=Var.dropout))(x)
                  x=layers.Bidirectional(LSTM(hidden_units, return_sequences=True,
-                                kernel_regularizer=regularizers.l2(0.01),
-                                activity_regularizer=regularizers.l2(0.01),
+                                kernel_regularizer=regularizers.l2(Var.Kr),
+                                activity_regularizer=regularizers.l2(Var.Ar),
                                 kernel_constraint=max_norm(max_value=3.), dropout=Var.dropout, recurrent_dropout=Var.dropout))(x)                                      
                  x=layers.Dropout(Var.dropout, noise_shape=(None, 1, hidden_units*2))(x) 
                  x=layers.Dense(Var.Dense_Unit, activation=Var.activationF, kernel_constraint=max_norm(max_value=3.))(x)                                                  

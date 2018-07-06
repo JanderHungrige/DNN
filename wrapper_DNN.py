@@ -98,8 +98,6 @@ class Variablen:
        Ar=0.01 #ACtivity regularizers
        residual_blocks=1
         
-              
-       
 Var=Variablen()    
 
 

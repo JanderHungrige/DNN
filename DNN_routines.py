@@ -66,9 +66,10 @@ def KeraS(X_train, Y_train, X_val, Y_val, X_test, Y_test, Var):
 #    model=ResNet_deep_Beta(X_train,Y_train,Var)
     model=ResNet_wide_Beta(X_train,Y_train,Var)
     
-    
-    from keras.utils.vis_utils import plot_model    
-    plot_model(model, to_file='model_plot.png', show_shapes=True, show_layer_names=True)   
+    if Var.usedPC=='Philips': # Plotting model
+           from keras.utils.vis_utils import plot_model    
+           plot_model(model, to_file='model_plot.png', show_shapes=True, show_layer_names=True) 
+           
 #MODEL PARAMETERS    
     model.compile(loss=Var.Loss_Function, 
                   optimizer='adam',
@@ -77,8 +78,7 @@ def KeraS(X_train, Y_train, X_val, Y_val, X_test, Y_test, Var):
     model.optimizer.lr=Var.learning_rate #0.0001 to 0.01 default =0.001
     model.optimizer.decay=Var.learning_rate_decay
     
-    from keras.utils.vis_utils import plot_model    
-    plot_model(model, to_file='model_plot.png', show_shapes=True, show_layer_names=True)
+
 
 # TRAIN MODEL (in silent mode, verbose=0)       
     history=model.fit(X_train,
