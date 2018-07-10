@@ -53,7 +53,7 @@ def Loading_data_all(Var,Varplus):
                      
        if 'MMC'== Var.dataset:        
               if Var.usedPC=='Cluster':
-                     folder=('/home/310122653/Pyhton_Folder/DNN/Matrices/')
+                     folder=('/home/310122653/2012-0120_nicu_impuls_Link/Werth/DNN_Matrices/Matrices_Features/')
               if Var.usedPC=='Philips':
                      folder=('C:/Users/310122653/Documents/PhD/Article_4_(MMC)/Processed_data/DNN_Matrices/Matrices_Features/')              
               if Var.usedPC=='c3po':
@@ -61,7 +61,7 @@ def Loading_data_all(Var,Varplus):
                      
        if 'MMC+cECG'== Var.dataset:        
               if Var.usedPC=='Cluster':
-                     folder=('/home/310122653/Pyhton_Folder/DNN/Matrices/')
+                     folder=('/home/310122653/2012-0120_nicu_impuls_Link/Werth/DNN_Matrices/Matrices_Features_Mix/')
               if Var.usedPC=='Philips':
                      folder=('C:/Users/310122653/Documents/PhD/Article_4_(MMC)/Processed_data/DNN_Matrices/Matrices_Features_Mix/')              
               if Var.usedPC=='c3po':

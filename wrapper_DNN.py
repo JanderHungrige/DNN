@@ -84,7 +84,7 @@ class Variablen:
        batchsize=5  # LSTM needs [batchsize, timestep, feature] your batch size divides nb_samples from the original tensor. So batchsize should be smaller than samples
        Epochs=3
        hidden_units=32 # 2-64 or even 1000 as used by sleepnet best: multible of 32
-       Dense_Unit=20
+       Dense_Unit=34
        dropout=0.5 #0.5; 0.9  dropout can be between 0-1  as %  DROPOUT CAN BE ADDED TO EACH LAYER
        learning_rate=0.001 #0.0001 to 0.01 default =0.001
        learning_rate_decay=0.0 #0.0 default
@@ -106,7 +106,7 @@ if Var.dataset=='ECG' or 'cECG':
 if Var.dataset == 'MMC':
        Var.selectedbabies=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21] #0-21
 if Var.dataset == 'MMC+cECG':
-       Var.selectedbabies=[0,1,2,3,5,6,7,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30] #0-27    # first 10 cECG rest MMC   
+       Var.selectedbabies=[0,1,2,3,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30] #0-27    # first 10 cECG rest MMC   
 
 if Var.scalerange==(0,1) :
        Var.activationF='sigmoid'
