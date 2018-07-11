@@ -50,28 +50,33 @@ def Loading_data_all(Var,Varplus):
                      folder=('/home/310122653/Pyhton_Folder/cECG/cMatrices/')
               else:
 #                     folder=('C:/Users/310122653/Dropbox/PHD/python/cECG/cMatrices/')
-                      folder=('C:/Users/310122653/Documents/PhD/Article_3_(cECG)/Processed Data/Matrix_Intellivue')
-                     
+                      folder=('C:/Users/310122653/Documents/PhD/Article_3_(cECG)/Processed Data/Matrix_Intellivue')                     
        if 'MMC'== Var.dataset:        
               if Var.usedPC=='Cluster':
-                     folder=('/home/310122653/2012-0120_nicu_impuls_Link/Werth/DNN_Matrices/Matrices_Features/')
+                     folder=('/home/310122653/DNN_Matrices/Matrices_Features/')
               if Var.usedPC=='Philips':
                      folder=('C:/Users/310122653/Documents/PhD/Article_4_(MMC)/Processed_data/DNN_Matrices/Matrices_Features/')              
               if Var.usedPC=='c3po':
-                     folder=('C:/Users/C3PO/Desktop/Processed_data/DNN_Matrices/Matrices_Features/') 
-                     
+                     folder=('C:/Users/C3PO/Desktop/Processed_data/DNN_Matrices/Matrices_Features/')                     
        if 'MMC+cECG'== Var.dataset:        
               if Var.usedPC=='Cluster':
-                     folder=('/home/310122653/2012-0120_nicu_impuls_Link/Werth/DNN_Matrices/Matrices_Features_Mix/')
+                     folder=('/home/310122653/DNN_Matrices/Matrices_Features_Mix/')
               if Var.usedPC=='Philips':
                      folder=('C:/Users/310122653/Documents/PhD/Article_4_(MMC)/Processed_data/DNN_Matrices/Matrices_Features_Mix/')              
               if Var.usedPC=='c3po':
                      folder=('C:/Users/C3PO/Desktop/Processed_data/DNN_Matrices/Matrices_Features_Mix/')                      
-              
+       if 'cECGDNN'== Var.dataset:        
+              if Var.usedPC=='Cluster':
+                     folder=('/home/310122653/DNN_Matrices/cMatrices/')
+              if Var.usedPC=='Philips':
+                     folder=('C:/Users/310122653/Documents/PhD/Article_3_(cECG)/Processed Data/Matrix_Intellivue/')              
+              if Var.usedPC=='c3po':
+                     folder=('C:/Users/C3PO/Desktop/Processed_data/DNN_Matrices/cMatrix/')                      
+                            
        # ONLY 5 MIN FEATURES AND ANNOTATIONS
        dateien_each_patient="FeatureMatrix_","Annotations_" #non scaled values. The values should be scaled over all patient and not per patient. Therfore this is better
 #       windowlength="30"
-       if 'ECG'== Var.dataset or 'cECG'== Var.dataset:
+       if 'ECG'== Var.dataset or 'cECG'== Var.dataset or 'cECGDNN'== Var.dataset:
            Neonate_all='4','5','6','7','9','10','11','12','13'
        if 'MMC'== Var.dataset:
            Neonate_all='1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20','21','22' 

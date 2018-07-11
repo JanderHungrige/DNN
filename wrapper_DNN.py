@@ -72,7 +72,7 @@ class Variablen:
        lst= [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33] 
        label=[1,2,3,4,6] # 1=AS 2=QS 3=Wake 4=Care-taking 5=NA 6= transition
        usedPC='Philips' #Philips or c3po or Cluster
-       dataset='MMC+cECG'  #"ECG" "cECG" "MMC" "MMC+cECG" 
+       dataset='cECGDNN'  #"ECG" "cECG" "MMC" "MMC+cECG" "cECGDNN"
        merge34=1
        WhichMix='all' #perSession or all  # determine how the data was scaled. PEr session or just per patient
        saving_model=1
@@ -101,7 +101,7 @@ class Variablen:
 Var=Variablen()    
 
 
-if Var.dataset=='ECG' or 'cECG':
+if Var.dataset=='ECG' or 'cECG' or 'cECGDNN':
          Var.selectedbabies =[0,1,2,3,5,6,7,8] #0-8 ('4','5','6','7','9','10','11','12','13')
 if Var.dataset == 'MMC':
        Var.selectedbabies=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21] #0-21
