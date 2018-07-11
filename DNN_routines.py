@@ -89,7 +89,7 @@ def KeraS(X_train, Y_train, X_val, Y_val, X_test, Y_test, Var):
                   optimizer='adam',
                   metrics=Var.Perf_Metric,
                   sample_weight_mode="temporal")       
-    model.optimizer.lr=Var.learning_rate #0.0001 to 0.01 default =0.001
+    model.optimizer.lr=Var.learning_rate #0.0001 to 0.9 default =0.001
     model.optimizer.decay=Var.learning_rate_decay
     
 

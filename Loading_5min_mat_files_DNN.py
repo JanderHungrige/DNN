@@ -81,7 +81,7 @@ def Loading_data_all(Var,Varplus):
        if 'MMC'== Var.dataset:
            Neonate_all='1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20','21','22' 
        if 'MMC+cECG'== Var.dataset:
-           Neonate_all='4','5','6','7','8','9','10','11','12','13','21','22','23','24','25','26','27','28','29','30','31','32','33','34','35','36','37','38','39','40','41','42'            
+           Neonate_all='4','5','6','7','9','10','11','12','13','21','22','23','24','25','26','27','28','29','30','31','32','33','34','35','36','37','38','39','40','41','42'            
        babies=[i for i in range(len(Var.selectedbabies))]# return to main function
        
        Neonate=[(Neonate_all[i]) for i in Var.selectedbabies];Neonate=tuple(Neonate)

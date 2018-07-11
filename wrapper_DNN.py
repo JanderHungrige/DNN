@@ -123,19 +123,19 @@ if Var.Lookback==1337: # The problem is that the patients have different lenght.
        
 if Var.merge34 and 3 in Var.label:
               Var.label.remove(3)      
+              
 info={'label': Var.label,'Features':'all','Lookback': Var.Lookback,'split': Var.split,'batchsize': Var.batchsize,'Epochs': Var.Epochs,'hidden_units':Var.hidden_units, 
       'dropout': Var.dropout,'learning_rate': Var.learning_rate,'learning_rate_decay': Var.learning_rate_decay, 
       'fold': Var.fold, 'Scale': Var.scalerange,'Loss_Function': Var.Loss_Function,
       'Perf_Metric': Var.Perf_Metric,'Activation_funtion': Var.activationF,'Dens_unit': Var.Dense_Unit, 
-      'Kernel Regularizer': Var.Kr , 'Activity regularizer': Var.Ar, model:Var.model}
-#---------------------------
-#AVERAGING
+      'Kernel Regularizer': Var.Kr , 'Activity regularizer': Var.Ar, 'model' :Var.model}
+
+
 class Variablenplus:
        FensterQS=20 
        ExFeatQS=1; 
        FEATaQS=[Var.lst.index(0),Var.lst.index(25),Var.lst.index(33)]# 9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26
-
-#POLY
+       #POLY
        PolyTQS=0; 
        FEATpQS=[11,14,29,30,31]#[lstIS.index(11),lstIS.index(12),lstIS.index(13),lstIS.index(14),lstIS.index(10),lstIS.index(24),lstIS.index(29),lstIS.index(32)]#[0,3,4,5]#12
 
@@ -150,16 +150,16 @@ class Variablenplus:
        exceptNOF=ExFeatQS #Which Number of Features (NOF) should be used with moving average?  all =oth tzero; only some or all except some defined in FEAT
        onlyNOF=0 # [0,1,2,27,28,29]
        FEAT=FEATaQS
-#----------------------------
+       #----------------------------
        PolyTrans=PolyTQS#use polinominal transformation on the Features specified in FEATp
        ExpFactor=2# which degree of polinomonal (2)
        exceptNOpF= 0#Which Number of Features (NOpF) should be used with polynominal fit?  all =0; only some or all except some defined in FEATp
        onlyNOpF=1 # [0,1,2,27,28,29]
        FEATp=FEATpQS
-#---------------------------
+       #---------------------------
        SamplingMeth='NONE'  # 'NONE' 'SMOTE'  or 'ADASYN' #For up and downsampling of data
        ChoosenKind=0   # 0-3['regular','borderline1','borderline2','svm'] only when using SMOTE
-#---------------------------
+       #---------------------------
        probability_threshold=1 # 1 to use different probabilities tan 0.5 to decide on the class. At the moment it is >=0.2 for any other calss then AS
        ASprobLimit=ASQS# Determine the AS lower limit for the probability for which another class is chosen than AS. For: [3 labels, >3 labels]
 

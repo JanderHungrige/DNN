@@ -149,9 +149,29 @@ def model_3_LSTM_advanced_no_bi(X_train,Y_train,Var):
    model.add(Dense(Y_train.shape[-1], activation='softmax', kernel_constraint=max_norm(max_value=3.)))
    model.summary()
    
-   return model     
+   return model 
 #%%
 def model_4_GRU(X_train,Y_train,Var):   
+   model = Sequential()
+   model.add(Masking(mask_value=666, input_shape=(X_train.shape[1],X_train.shape[2])))
+   model.add(Dropout(0.2, noise_shape=(None, 1, X_train.shape[2]) ))   
+   model.add(Dense(Var.Dense_Unit, activation=Var.activationF, kernel_constraint=max_norm(max_value=3.)))
+   model.add(GRU(Var.hidden_units, return_sequences=True,   
+                                kernel_regularizer=regularizers.l2(Var.Kr),
+                                activity_regularizer=regularizers.l2(Var.Ar),
+                                kernel_constraint=max_norm(max_value=3.), dropout=Var.dropout, recurrent_dropout=Var.dropout))
+   model.add(GRU(Var.hidden_units, return_sequences=True,
+                                kernel_regularizer=regularizers.l2(Var.Kr),
+                                activity_regularizer=regularizers.l2(Var.Ar),
+                                kernel_constraint=max_norm(max_value=3.), dropout=Var.dropout, recurrent_dropout=Var.dropout))
+   model.add(Dropout(0.5, noise_shape=(None, 1, Var.hidden_units)))
+   model.add(Dense(Y_train.shape[-1], activation='softmax', kernel_constraint=max_norm(max_value=3.)))
+   model.summary()
+   
+   return model   
+
+#%%
+def model_4_GRU_advanced(X_train,Y_train,Var):   
    model = Sequential()
    model.add(Masking(mask_value=666, input_shape=(X_train.shape[1],X_train.shape[2])))
    model.add(Dropout(0.2, noise_shape=(None, 1, X_train.shape[2]) ))   
@@ -172,20 +192,22 @@ def model_4_GRU(X_train,Y_train,Var):
    
    return model   
 
+
+
 #%%
-def model_4_GRU_advanced(X_train,Y_train,Var):   
+def model_5_CNN(X_train,Y_train,Var):   
    model = Sequential()
    model.add(Masking(mask_value=666, input_shape=(X_train.shape[1],X_train.shape[2])))
    model.add(Dropout(0.2, noise_shape=(None, 1, X_train.shape[2]) ))   
-   model.add(Dense(Var.Dense_Unit, activation=Var.activationF, kernel_constraint=max_norm(max_value=3.)))
-   model.add(GRU(Var.hidden_units, return_sequences=True,   
+#   model.add(Dense(Var.Dense_Unit, activation=Var.activationF, kernel_constraint=max_norm(max_value=3.)))
+   model.add(Conv1D(Var.hidden_units, activation='relu',strides=1  , data_format="channels_last", 
                                 kernel_regularizer=regularizers.l2(Var.Kr),
                                 activity_regularizer=regularizers.l2(Var.Ar),
-                                kernel_constraint=max_norm(max_value=3.), dropout=Var.dropout, recurrent_dropout=Var.dropout))
-   model.add(GRU(Var.hidden_units, return_sequences=True,
+                                kernel_constraint=max_norm(max_value=3.)))
+   model.add(Conv1D(Var.hidden_units, activation='relu',strides=1  , data_format="channels_last", 
                                 kernel_regularizer=regularizers.l2(Var.Kr),
                                 activity_regularizer=regularizers.l2(Var.Ar),
-                                kernel_constraint=max_norm(max_value=3.), dropout=Var.dropout, recurrent_dropout=Var.dropout))
+                                kernel_constraint=max_norm(max_value=3.)))   
    model.add(Dropout(0.5, noise_shape=(None, 1, Var.hidden_units*2)))
    model.add(Dense(Y_train.shape[-1], activation='softmax', kernel_constraint=max_norm(max_value=3.)))
    model.summary()
