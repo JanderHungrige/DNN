@@ -76,6 +76,7 @@ class Variablen:
        merge34=1
        WhichMix='all' #perSession or all  # determine how the data was scaled. PEr session or just per patient
        saving_model=1
+       model='model_4_GRU' # check DNN_routines KeraS for options
        
        
        Lookback= 1337# 1337 or anything else . #Loockback for the LSTM. The data is separated samples with timestep=loockback; #Loockback of 1337 mean all data per patient. Otherwise it is in nr of 30s epochs. e.g. 60=30min  120=1h 10=5min
@@ -126,7 +127,7 @@ info={'label': Var.label,'Features':'all','Lookback': Var.Lookback,'split': Var.
       'dropout': Var.dropout,'learning_rate': Var.learning_rate,'learning_rate_decay': Var.learning_rate_decay, 
       'fold': Var.fold, 'Scale': Var.scalerange,'Loss_Function': Var.Loss_Function,
       'Perf_Metric': Var.Perf_Metric,'Activation_funtion': Var.activationF,'Dens_unit': Var.Dense_Unit, 
-      'Kernel Regularizer': Var.Kr , 'Activity regularizer': Var.Ar}
+      'Kernel Regularizer': Var.Kr , 'Activity regularizer': Var.Ar, model:Var.model}
 #---------------------------
 #AVERAGING
 class Variablenplus:

@@ -30,13 +30,16 @@ from build_model import basic_dense_model
 from build_model import LSTM_model_1
 from build_model import LSTM_model_1_gen
 from build_model import LSTM_model_2
-from build_model import LSTM_model_3
-from build_model import LSTM_model_3_advanced
-from build_model import LSTM_model_3_advanced_no_bi
+from build_model import model_3_LSTM
+from build_model import model_3_LSTM_advanced
+from build_model import model_3_LSTM_advanced_no_bi
+from build_model import model_4_GRU
+from build_model import model_4_GRU_advanced
 
 
-from build_model_residual import ResNet_deep_Beta
-from build_model_residual import ResNet_wide_Beta
+from build_model_residual import ResNet_deep_Beta_LSTM
+from build_model_residual import ResNet_wide_Beta_LSTM
+from build_model_residual import ResNet_wide_Beta_GRU
 
 #from build_model_residual import ResNet_LSTM_1
 
@@ -60,14 +63,23 @@ def KeraS(X_train, Y_train, X_val, Y_val, X_test, Y_test, Var):
               
     
 #BUILT MODEL    
-#    model=basic_dense_model(X_train,Y_train)
-#    model=LSTM_model_1(X_train,Y_train,Var)
-#    model=LSTM_model_2(X_train,Y_train,Var)
-    model=LSTM_model_3_advanced(X_train,Y_train,Var)
-    
-#    model=ResNet_deep_Beta(X_train,Y_train,Var)
-#    model=ResNet_wide_Beta(X_train,Y_train,Var)
-    
+    if Var.model=='model_3_LSTM_advanced':
+           model=model_3_LSTM_advanced(X_train,Y_train,Var)
+    if Var.model=='model_3__LSTM_advanced_no_bi':
+           model=model_3__LSTM_advanced_no_bi(X_train,Y_train,Var)
+    if Var.model=='model_4_GRU':
+           model=model_4_GRU(X_train,Y_train,Var)
+    if Var.model=='model_4_GRU_advanced':
+           model=model_4_GRU_advanced(X_train,Y_train,Var)   
+           
+    if Var.model=='ResNet_deep_Beta_LSTM':
+           model=ResNet_deep_Beta_LSTM(X_train,Y_train,Var)           
+    if Var.model=='ResNet_wide_Beta_LSTM':
+           model=ResNet_wide_Beta_LSTM(X_train,Y_train,Var)             
+    if Var.model=='ResNet_wide_Beta_GRU':
+           model=ResNet_wide_Beta_GRU(X_train,Y_train,Var)  
+           
+
     if Var.usedPC=='Philips': # Plotting model
            from keras.utils.vis_utils import plot_model    
            plot_model(model, to_file='model_plot.png', show_shapes=True, show_layer_names=True) 
