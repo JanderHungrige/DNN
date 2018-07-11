@@ -11,15 +11,15 @@ import keras
 
 from keras.models import Model
 
-from keras import optimizers 
-from keras import losses
-from keras import metrics
-from keras import models
+#from keras import optimizers 
+#from keras import losses
+#from keras import metrics
+#from keras import models
 from keras import layers
-from keras import callbacks
+#from keras import callbacks
 from keras import regularizers
 
-from keras.utils import np_utils
+#from keras.utils import np_utils
 
 from keras.layers import Input
 from keras.layers import Dense
@@ -49,7 +49,9 @@ def ResNet_deep_Beta(X_train,Y_train,Var):
                                 kernel_constraint=max_norm(max_value=3.), dropout=Var.dropout, recurrent_dropout=Var.dropout))(x)                         
                  x=layers.Dropout(Var.dropout, noise_shape=(None, 1, Var.hidden_units*2))(x) 
                  x=layers.Dense(Var.Dense_Unit, activation=Var.activationF, kernel_constraint=max_norm(max_value=3.))(x)                                                  
-                 x = merge([ident,x], mode = 'sum') #mode 'sum' concat
+#                 x = merge([ident,x], mode = 'sum') #mode 'sum' concat
+                 x=layers.add([ident,x]) 
+                 
                  return x
             return unit
                              
@@ -96,7 +98,7 @@ def ResNet_wide_Beta(X_train,Y_train,Var):
                                 kernel_constraint=max_norm(max_value=3.), dropout=Var.dropout, recurrent_dropout=Var.dropout))(x)                                      
                  x=layers.Dropout(Var.dropout, noise_shape=(None, 1, hidden_units*2))(x) 
                  x=layers.Dense(Var.Dense_Unit, activation=Var.activationF, kernel_constraint=max_norm(max_value=3.))(x)                                                  
-                 x = merge([ident,x], mode = 'sum') #mode 'sum' concat
+                 x=layers.add([ident,x]) 
                  return x
             return unit
                              
@@ -126,8 +128,6 @@ def ResNet_wide_Beta(X_train,Y_train,Var):
        
        i = layers.concatenate([Pfad1, Pfad2, Pfad3])
 
-       
-               
        Outro_out=layers.Bidirectional(LSTM(Var.hidden_units, return_sequences=True, kernel_constraint=max_norm(max_value=3.), dropout=Var.dropout, recurrent_dropout=Var.dropout))(i)                   
        Outro_out = Dense(Y_train.shape[-1],activation='softmax', kernel_constraint=max_norm(max_value=3.))(Outro_out)
 

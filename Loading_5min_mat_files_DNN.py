@@ -49,7 +49,8 @@ def Loading_data_all(Var,Varplus):
               if ux:
                      folder=('/home/310122653/Pyhton_Folder/cECG/cMatrices/')
               else:
-                     folder=('C:/Users/310122653/Dropbox/PHD/python/cECG/cMatrices/')
+#                     folder=('C:/Users/310122653/Dropbox/PHD/python/cECG/cMatrices/')
+                      folder=('C:/Users/310122653/Documents/PhD/Article_3_(cECG)/Processed Data/Matrix_Intellivue')
                      
        if 'MMC'== Var.dataset:        
               if Var.usedPC=='Cluster':
