@@ -43,6 +43,7 @@ from sklearn.linear_model import Perceptron
 import sys #to add strings together
 import pdb # use pdb.set_trace() as breakpoint
 
+import pickle # to save objects
 
 
 #from compute_class_weight import *   
@@ -55,8 +56,8 @@ Whichmix=['perSession', 'all']
 
 #_Labels_ECG_Featurelist_Scoring_classweigt_C_gamma
 
-description='_123456_cECG_lst_micro_'
-consoleinuse='4'
+description='All_MMC_GRU4'
+runningNumber='4'
 dispinfo=0
 """
 **************************************************************************
@@ -67,7 +68,13 @@ Loading data declaration & Wrapper variables
 29,30,31,32,33= HRV nonlinear
 **************************************************************************
 """
+SavingResults=1
 class Variablen:
+       description='All_MMC_GRU4'
+       runningNumber='4'
+       saving_model=1
+       SavingResults=1
+       
        FeatureSet='Features' #Features ECG, EDR, HRV
        lst= [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33] 
        label=[1,2,3,4,6] # 1=AS 2=QS 3=Wake 4=Care-taking 5=NA 6= transition
@@ -75,7 +82,6 @@ class Variablen:
        dataset='MMC'  #"ECG" "cECG" "MMC" "MMC+cECG" "cECGDNN"
        merge34=1
        WhichMix='all' #perSession or all  # determine how the data was scaled. PEr session or just per patient
-       saving_model=1
        model='model_4_GRU_advanced' # check DNN_routines KeraS for options
        
        
@@ -83,13 +89,13 @@ class Variablen:
 #       split=[0.60,0.2,0.2];# HOw to split the dataset in [Train, Validation, Test] e.g.70:15:15  or 50:25:25 ,... # The split is done for each fold. Just for the chekout phase use fold one. Later calculate how often the test split fits into the total data, that is the fold. e.g. 30 patients with 15% test -> 4.5 (round to 5) patients per fold. Now see how many times the 30 can be folded with 5 patients in the test set to cover all patients. 30/5=6 -> 6 fold
        split=[0.70,0.30];
        batchsize=5  # LSTM needs [batchsize, timestep, feature] your batch size divides nb_samples from the original tensor. So batchsize should be smaller than samples
-       Epochs=700
+       Epochs=2
        hidden_units=32 # 2-64 or even 1000 as used by sleepnet best: multible of 32
        Dense_Unit=34
        dropout=0.5 #0.5; 0.9  dropout can be between 0-1  as %  DROPOUT CAN BE ADDED TO EACH LAYER
        learning_rate=0.001 #0.0001 to 0.01 default =0.001
        learning_rate_decay=0.0 #0.0 default
-       fold=3
+       fold=1
        scalerange=(0, 2) #(0,1) or (-1,1) #If you are using sigmoid activation functions, rescale your data to values between 0-and-1. If you’re using the Hyperbolic Tangent (tanh), rescale to values between -1 and 1.
        scaler = MinMaxScaler(feature_range=scalerange) #define function
        Loss_Function='categorical_crossentropy'# categorical_crossentropy OR mean_squared_error IF BINARY : binary_crossentropy
@@ -100,7 +106,6 @@ class Variablen:
        residual_blocks=1
         
 Var=Variablen()    
-
 
 if Var.dataset=='ECG' or 'cECG' or 'cECGDNN':
          Var.selectedbabies =[0,1,2,3,5,6,7,8] #0-8 ('4','5','6','7','9','10','11','12','13')
@@ -124,11 +129,14 @@ if Var.Lookback==1337: # The problem is that the patients have different lenght.
 if Var.merge34 and 3 in Var.label:
               Var.label.remove(3)      
               
-info={'label': Var.label,'Features':'all','Lookback': Var.Lookback,'split': Var.split,'batchsize': Var.batchsize,'Epochs': Var.Epochs,'hidden_units':Var.hidden_units, 
-      'dropout': Var.dropout,'learning_rate': Var.learning_rate,'learning_rate_decay': Var.learning_rate_decay, 
+info={'label': Var.label,'Features':'all','Lookback': Var.Lookback,'split': Var.split,
+      'batchsize': Var.batchsize,'Epochs': Var.Epochs,
+      'hidden_units':Var.hidden_units, 'Dens_unit': Var.Dense_Unit,
+      'dropout': Var.dropout, 'Kernel Regularizer': Var.Kr , 'Activity regularizer': Var.Ar,
+      'learning_rate': Var.learning_rate,'learning_rate_decay': Var.learning_rate_decay, 
       'fold': Var.fold, 'Scale': Var.scalerange,'Loss_Function': Var.Loss_Function,
-      'Perf_Metric': Var.Perf_Metric,'Activation_funtion': Var.activationF,'Dens_unit': Var.Dense_Unit, 
-      'Kernel Regularizer': Var.Kr , 'Activity regularizer': Var.Ar, 'model' :Var.model}
+      'Perf_Metric': Var.Perf_Metric,'Activation_funtion': Var.activationF,
+      'model' :Var.model}
 
 
 class Variablenplus:
@@ -167,6 +175,10 @@ class Variablenplus:
 Varplus=Variablenplus()
 # fix random seed for reproducibility
 np.random.seed(42)
+class Results:
+       Info=info
+
+Ergebnisse=Results()       
 #%%
 """
 Loading Data
@@ -195,44 +207,48 @@ LOOCV
 laenge=[sum(len(FeatureMatrix_each_patient[i]) for i in range(len(FeatureMatrix_each_patient))) ]
 print('Total amount of epochs: {}'.format(laenge))
 
-model,y_each_patient, mean_Kappa, mean_train_metric, mean_train_loss, mean_val_metric, mean_val_loss, mean_test_metric, mean_test_loss\
+model,\
+y_each_patient,\
+Ergebnisse.mean_Kappa,\
+Ergebnisse.mean_train_metric,\
+Ergebnisse.mean_train_loss,\
+Ergebnisse.mean_val_metric,\
+Ergebnisse.mean_val_loss,\
+Ergebnisse.mean_test_metric,\
+Ergebnisse.mean_test_loss\
 =leave_one_out_cross_validation(babies,AnnotMatrix_each_patient,FeatureMatrix_each_patient,Var,Varplus)
 
 if Var.fold>1:
-       mean_test_metric_overall=np.mean(mean_test_metric) # Kappa is not calculated per epoch but just per fold. Therefor we generate on mean Kappa
-       mean_train_metric_overall=np.mean(mean_train_metric,axis=0)
-       mean_val_metric_overall=np.mean(mean_val_metric,axis=0)    
-       mean_test_loss_overall=mean(mean_test_loss,axis=0)    
-       mean_train_loss_overall=np.mean(mean_train_loss,axis=0)
-       mean_val_loss_overall=np.mean(mean_val_loss,axis=0)      
-       mean_Kappa_overall=np.mean(mean_Kappa)
-
+       Ergebnisse.mean_test_metric_overall=np.mean(Ergebnisse.mean_test_metric) # Kappa is not calculated per epoch but just per fold. Therefor we generate on mean Kappa
+       Ergebnisse.mean_train_metric_overall=np.mean(Ergebnisse.mean_train_metric,axis=0)
+       Ergebnisse.mean_val_metric_overall=np.mean(Ergebnisse.mean_val_metric,axis=0)    
+       Ergebnisse.mean_test_loss_overall=mean(Ergebnisse.mean_test_loss,axis=0)    
+       Ergebnisse.mean_train_loss_overall=np.mean(Ergebnisse.mean_train_loss,axis=0)
+       Ergebnisse.mean_val_loss_overall=np.mean(Ergebnisse.mean_val_loss,axis=0)      
+       Ergebnisse.mean_Kappa_overall=np.mean(Ergebnisse.mean_Kappa)
+       
+#SAVING STUFF
 if Var.saving_model:
+       from keras.models import model_from_json
        from keras.models import load_model
-       model.save('my_model.h5')  # creates a HDF5 file 'my_model.h5'
+       
+       def save_Model(model_json, filename):
+              with open(filename, "w") as json_file:
+                     json_file.write(model_json)
+        
+       model_json = model.to_json()
+       save_Model(model_json,'Results/'+runningNumber+'_'+description+"model.json")              
+       # serialize weights to HDF5
+       model.save_weights('Results/'+runningNumber+'_'+description+'model_weigths.h5')  # creates a HDF5 file 'my_model.h5'
+       print('Model saved')
 #
-
-## Kappa over all annotations and predictions merged together
-#tmp_orig=vstack(y_each_patient)
-#tmp_pred=hstack(classpredictions)
-#
-##Performance of optimized predictions 
-#RES_MEA_all=zeros(shape=(len(babies),len(label)))
-#KonfMAT=list()
-#KonfMATall=list()
-#RES_Kappa=list()
-#
-#for K in range(len(babies)):
-#       KonfMAT.append(confusion_matrix(y_each_patient[K].ravel(), classpredictions[K], labels=label, sample_weight=None))
-#       RES_Kappa.append(cohen_kappa_score(y_each_patient[K].ravel(),classpredictions[K],labels=label)) # Find the threshold where Kapaa gets max
-#RES1_kappa_STD=std(RES1_Kappa)       
-#RES1_Kappa.append(mean(RES1_Kappa))
-#RES1_F1_all_mean=array(mean(RES1_F1_all,0))    
-#RES1_KAPPA_overall=cohen_kappa_score(tmp_orig.ravel(),tmp_pred.ravel(),labels=label)
-#KonfMATall.append(confusion_matrix(tmp_orig.ravel(), tmp_pred.ravel(), labels=label, sample_weight=None))
-#
-
-#PlottingFeatureImportance(Fimportance_QS,Fimportance_CT,Fimportance_IS,features_dict)
+if Var.SavingResults:
+       def save_object(obj, filename):
+              with open(filename, 'wb') as output:  # Overwrites any existing file.
+                     pickle.dump(obj, output, pickle.HIGHEST_PROTOCOL)
+        
+       save_object(Ergebnisse, 'Results/'+runningNumber+'_'+description+'.pkl' )  
+       print('Results saved')
 
 """
 END
@@ -246,7 +262,7 @@ t=time.localtime()
 zeit=time.asctime()
 Minuten=(time.time() - start_time)/60
 Stunden=(time.time() - start_time)/3600
-print('FINISHED Console ' + consoleinuse)
+print('FINISHED ' + runningNumber + description )
 print("--- %i seconds ---" % (time.time() - start_time))
 print("--- %i min ---" % Minuten)
 print("--- %i h ---" % Stunden)
