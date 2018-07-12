@@ -72,31 +72,31 @@ class Variablen:
        lst= [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33] 
        label=[1,2,3,4,6] # 1=AS 2=QS 3=Wake 4=Care-taking 5=NA 6= transition
        usedPC='Philips' #Philips or c3po or Cluster
-       dataset='cECGDNN'  #"ECG" "cECG" "MMC" "MMC+cECG" "cECGDNN"
+       dataset='MMC'  #"ECG" "cECG" "MMC" "MMC+cECG" "cECGDNN"
        merge34=1
        WhichMix='all' #perSession or all  # determine how the data was scaled. PEr session or just per patient
        saving_model=1
-       model='model_4_GRU' # check DNN_routines KeraS for options
+       model='model_4_GRU_advanced' # check DNN_routines KeraS for options
        
        
        Lookback= 1337# 1337 or anything else . #Loockback for the LSTM. The data is separated samples with timestep=loockback; #Loockback of 1337 mean all data per patient. Otherwise it is in nr of 30s epochs. e.g. 60=30min  120=1h 10=5min
 #       split=[0.60,0.2,0.2];# HOw to split the dataset in [Train, Validation, Test] e.g.70:15:15  or 50:25:25 ,... # The split is done for each fold. Just for the chekout phase use fold one. Later calculate how often the test split fits into the total data, that is the fold. e.g. 30 patients with 15% test -> 4.5 (round to 5) patients per fold. Now see how many times the 30 can be folded with 5 patients in the test set to cover all patients. 30/5=6 -> 6 fold
        split=[0.70,0.30];
        batchsize=5  # LSTM needs [batchsize, timestep, feature] your batch size divides nb_samples from the original tensor. So batchsize should be smaller than samples
-       Epochs=200
+       Epochs=700
        hidden_units=32 # 2-64 or even 1000 as used by sleepnet best: multible of 32
        Dense_Unit=34
        dropout=0.5 #0.5; 0.9  dropout can be between 0-1  as %  DROPOUT CAN BE ADDED TO EACH LAYER
        learning_rate=0.001 #0.0001 to 0.01 default =0.001
        learning_rate_decay=0.0 #0.0 default
-       fold=2
+       fold=3
        scalerange=(0, 2) #(0,1) or (-1,1) #If you are using sigmoid activation functions, rescale your data to values between 0-and-1. If you’re using the Hyperbolic Tangent (tanh), rescale to values between -1 and 1.
        scaler = MinMaxScaler(feature_range=scalerange) #define function
        Loss_Function='categorical_crossentropy'# categorical_crossentropy OR mean_squared_error IF BINARY : binary_crossentropy
        Perf_Metric=['categorical_accuracy']# 'categorical_accuracy' OR 'binary_accuray'
        activationF='sigmoid' # 'relu', 'tanh', 'sigmoid' ,...  Only in case the data is not normalized , only standardised
-       Kr=0.01 # Kernel regularizers
-       Ar=0.01 #ACtivity regularizers
+       Kr=0.0 # Kernel regularizers
+       Ar=0.0 #ACtivity regularizers
        residual_blocks=1
         
 Var=Variablen()    
@@ -166,7 +166,7 @@ class Variablenplus:
 
 Varplus=Variablenplus()
 # fix random seed for reproducibility
-np.random.seed(7)
+np.random.seed(42)
 #%%
 """
 Loading Data
