@@ -136,7 +136,7 @@ info={'label': Var.label,'Features':'all','Lookback': Var.Lookback,'split': Var.
       'learning_rate': Var.learning_rate,'learning_rate_decay': Var.learning_rate_decay, 
       'fold': Var.fold, 'Scale': Var.scalerange,'Loss_Function': Var.Loss_Function,
       'Perf_Metric': Var.Perf_Metric,'Activation_funtion': Var.activationF,
-      'model' :Var.model}
+      'ResidualBlocks':Var.residual_blocks,'model' :Var.model}
 
 
 class Variablenplus:
@@ -229,6 +229,7 @@ if Var.fold>1:
        
 #SAVING STUFF
 if Var.saving_model:
+       #info https://stackoverflow.com/questions/42763094/how-to-save-final-model-using-keras
        from keras.models import model_from_json
        from keras.models import load_model
        
