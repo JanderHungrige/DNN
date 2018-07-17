@@ -56,8 +56,7 @@ Whichmix=['perSession', 'all']
 
 #_Labels_ECG_Featurelist_Scoring_classweigt_C_gamma
 
-description='All_MMC_GRU4'
-runningNumber='4'
+
 dispinfo=0
 """
 **************************************************************************
@@ -178,7 +177,9 @@ np.random.seed(42)
 class Results:
        Info=info
 
-Ergebnisse=Results()       
+Ergebnisse=Results()     
+
+  
 #%%
 """
 Loading Data
@@ -226,7 +227,8 @@ if Var.fold>1:
        Ergebnisse.mean_train_loss_overall=np.mean(Ergebnisse.mean_train_loss,axis=0)
        Ergebnisse.mean_val_loss_overall=np.mean(Ergebnisse.mean_val_loss,axis=0)      
        Ergebnisse.mean_Kappa_overall=np.mean(Ergebnisse.mean_Kappa)
-       
+
+Ergebnisse.info=info       
 #SAVING STUFF
 if Var.saving_model:
        #info https://stackoverflow.com/questions/42763094/how-to-save-final-model-using-keras
@@ -238,9 +240,9 @@ if Var.saving_model:
                      json_file.write(model_json)
         
        model_json = model.to_json()
-       save_Model(model_json,'Results/'+runningNumber+'_'+description+"model.json")              
+       save_Model(model_json,'Results/'+Var.runningNumber+'_'+Var.description+"model.json")              
        # serialize weights to HDF5
-       model.save_weights('Results/'+runningNumber+'_'+description+'model_weigths.h5')  # creates a HDF5 file 'my_model.h5'
+       model.save_weights('Results/'+Var.runningNumber+'_'+Var.description+'model_weigths.h5')  # creates a HDF5 file 'my_model.h5'
        print('Model saved')
 #
 if Var.SavingResults:
@@ -248,7 +250,7 @@ if Var.SavingResults:
               with open(filename, 'wb') as output:  # Overwrites any existing file.
                      pickle.dump(obj, output, pickle.HIGHEST_PROTOCOL)
         
-       save_object(Ergebnisse, 'Results/'+runningNumber+'_'+description+'.pkl' )  
+       save_object(Ergebnisse, 'Results/'+Var.runningNumber+'_'+Var.description+'.pkl' )  
        print('Results saved')
 
 """
@@ -263,7 +265,7 @@ t=time.localtime()
 zeit=time.asctime()
 Minuten=(time.time() - start_time)/60
 Stunden=(time.time() - start_time)/3600
-print('FINISHED ' + runningNumber + description )
+print('FINISHED ' + Var.runningNumber + Var.description )
 print("--- %i seconds ---" % (time.time() - start_time))
 print("--- %i min ---" % Minuten)
 print("--- %i h ---" % Stunden)

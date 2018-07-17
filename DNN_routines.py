@@ -140,12 +140,12 @@ def KeraS(X_train, Y_train, X_val, Y_val, X_test, Y_test, Var):
 #    mean_test_metric=np.mean(all_test_metric) # Kappa is not calculated per epoch but just per fold. Therefor we generate on mean Kappa
 #    mean_train_metric=np.mean(all_train_metric,axis=0)
     mean_test_metric=all_test_metric # Kappa is not calculated per epoch but just per fold. Therefor we generate on mean Kappa
-    mean_train_metric=all_train_metric    
-    mean_val_metric=np.mean(all_val_metric,axis=0)    
-    mean_test_loss=mean(all_test_loss,axis=0)    
-    mean_train_loss=np.mean(all_train_loss,axis=0)
-    mean_val_loss=np.mean(all_val_loss,axis=0)      
-    mean_k=np.mean(resultsK)
+    mean_train_metric= np.mean(all_train_metric,axis=0)
+    mean_val_metric=   np.mean(all_val_metric,axis=0)    
+    mean_test_loss=    np.mean(all_test_loss,axis=0)    
+    mean_train_loss=   np.mean(all_train_loss,axis=0)
+    mean_val_loss=     np.mean(all_val_loss,axis=0)      
+    mean_k=            np.mean(resultsK)
     
 #    from sklearn.metrics import classification_report
 #    target_names = ['AS', 'QS', 'CTW','IS']
@@ -266,7 +266,7 @@ def KeraS_Gen(X_Train_Val_Test,Y_Train_Val_Test,
     mean_test_metric=np.mean(all_test_metric) # Kappa is not calculated per epoch but just per fold. Therefor we generate on mean Kappa
     mean_train_metric=np.mean(all_train_metric,axis=0)
     mean_val_metric=np.mean(all_val_metric,axis=0)    
-    mean_test_loss=mean(all_test_loss,axis=0)    
+    mean_test_loss=np.mean(all_test_loss,axis=0)    
     mean_train_loss=np.mean(all_train_loss,axis=0)
     mean_val_loss=np.mean(all_val_loss,axis=0)      
     mean_k=np.mean(resultsK)
