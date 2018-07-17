@@ -24,6 +24,8 @@ from keras import regularizers
 from keras.layers import Input
 from keras.layers import Dense
 from keras.layers import LSTM
+from keras.layers import GRU
+
 from keras.layers import Masking
 from keras.layers import Dropout
 from keras.layers import Activation
@@ -182,7 +184,8 @@ def ResNet_wide_Beta_GRU(X_train,Y_train,Var):
        i = layers.concatenate([Pfad1, Pfad2, Pfad3])
 
 #       Outro_out=layers.Bidirectional(GRU(Var.hidden_units, return_sequences=True, kernel_constraint=max_norm(max_value=3.), dropout=Var.dropout, recurrent_dropout=Var.dropout))(i)                   
-       Outro_out = Dense(Y_train.shape[-1],activation='softmax', kernel_constraint=max_norm(max_value=3.))(Outro_out)
+#       Outro_out = Dense(Y_train.shape[-1],activation='softmax', kernel_constraint=max_norm(max_value=3.))(Outro_out)
+       Outro_out = Dense(Y_train.shape[-1],activation='softmax', kernel_constraint=max_norm(max_value=3.))(i)
 
        model = Model(inputs=inp,outputs=Outro_out)  
        
