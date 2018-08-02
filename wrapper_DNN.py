@@ -81,7 +81,7 @@ class Variablen:
        dataset='MMC'  #"ECG" "cECG" "MMC" "MMC+cECG" "cECGDNN"
        merge34=1
        WhichMix='all' #perSession or all  # determine how the data was scaled. PEr session or just per patient
-       model='model_4_GRU_advanced' # check DNN_routines KeraS for options
+       model='Transfer_wide_Beta_GRU' # check DNN_routines KeraS for options
        
        
        Lookback= 1337# 1337 or anything else . #Loockback for the LSTM. The data is separated samples with timestep=loockback; #Loockback of 1337 mean all data per patient. Otherwise it is in nr of 30s epochs. e.g. 60=30min  120=1h 10=5min

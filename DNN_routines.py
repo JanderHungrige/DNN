@@ -41,6 +41,9 @@ from build_model_residual import ResNet_deep_Beta_LSTM
 from build_model_residual import ResNet_wide_Beta_LSTM
 from build_model_residual import ResNet_wide_Beta_GRU
 
+from build_model_transfer import Transfer_wide_Beta_GRU
+
+
 #from build_model_residual import ResNet_LSTM_1
 
 
@@ -78,7 +81,9 @@ def KeraS(X_train, Y_train, X_val, Y_val, X_test, Y_test, Var):
            model=ResNet_wide_Beta_LSTM(X_train,Y_train,Var)             
     if Var.model=='ResNet_wide_Beta_GRU':
            model=ResNet_wide_Beta_GRU(X_train,Y_train,Var)  
-           
+     
+    if Var.model=='Transfer_wide_Beta_GRU':
+           model=Transfer_wide_Beta_GRU(X_train,Y_train,Var)         
 
     if Var.usedPC=='Philips': # Plotting model
            from keras.utils.vis_utils import plot_model    

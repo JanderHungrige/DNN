@@ -34,6 +34,8 @@ from keras.layers import merge
 from keras.layers import Bidirectional
 from keras.layers import BatchNormalization
 
+
+
 from keras.constraints import max_norm
 #%%   
 def ResNet_deep_Beta_LSTM(X_train,Y_train,Var):   
