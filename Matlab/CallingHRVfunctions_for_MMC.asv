@@ -38,33 +38,23 @@ onlyAnnotations=0;
 
 if strcmp(user,'c3po')
     basepath='C:\Users\C3PO';
-    basepath2='D:\PhD\Article_4_(MMC)';
 elseif strcmp(user,'Philips')
     basepath='C:\Users\310122653';
 end
 
-Matlabbase=[basepath '\Documents\GitHub\DNN\Matlab\HRV feature creation\'];
+Matlabbase=[basepath '\Documents\PhD\Matlab\MMC Data specific\HRV feature creation\']];
 
 addpath(Matlabbase)
-addpath([basepath '\Documents\GitHub\DNN\Matlab'])
-addpath([basepath '\Documents\GitHub\DNN\Matlab\R peak detection'])
-addpath([basepath '\Documents\GitHub\DNN\Matlab\Annotation'])
-addpath([basepath '\Documents\GitHub\DNN\Matlab\ECG feature creation'])
-addpath([basepath '\Documents\GitHub\DNN\Matlab\Create data'])
+addpath([basepath '\Documents\PhD\Matlab\MMC Data specific'])
+addpath([basepath '\Documents\PhD\Matlab\MMC Data specific\R peak detection'])
+addpath([basepath '\Documents\PhD\Matlab\MMC Data specific\Annotation'])
+addpath([basepath '\Documents\PhD\Matlab\MMC Data specific\ECG feature creation'])
 
+loadfolder=([basepath '\Documents\PhD\Article_4_(MMC)\Data\']);
+loadfolderA=([basepath '\Documents\PhD\Article_4_(MMC)\Annotations\']);
 
-if strcmp (user,'c3po')
-    loadfolder=([basepath2 '\Raw Data\Data\']);
-    loadfolderA=([basepath2 '\Raw Data\Annotations\']);
-    savefolder= ([basepath2 '\Processed data\']);
-    SavefolderAnnotations=([ savefolder 'Annotations\']);    
-elseif strcmp(user,'Philips')
-    loadfolder=([basepath '\Documents\PhD\Article_4_(MMC)\Data\']);
-    loadfolderA=([basepath '\Documents\PhD\Article_4_(MMC)\Annotations\']);
-    savefolder= ([basepath '\Documents\PhD\Article_4_(MMC)\Processed data\']);
-    SavefolderAnnotations=([ savefolder 'Annotations\']);
-end
-
+savefolder= ([basepath '\Documents\PhD\Article_4_(MMC)\Processed data\']);
+SavefolderAnnotations=([ savefolder 'Annotations\']);
 
 if (exist([savefolder 'HRV_features\RR\']) )==0;  mkdir([savefolder 'HRV_features\RR\']);end
 if (exist([savefolder 'HRV_features\EDR\']) )==0;  mkdir([savefolder 'HRV_features\EDR\']);end
