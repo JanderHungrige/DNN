@@ -43,15 +43,15 @@ elseif strcmp(user,'Philips')
     basepath='C:\Users\310122653';
 end
 
-Matlabbase=[basepath '\Documents\GitHub\DNN\Matlab\HRV feature creation\'];
-
-addpath(Matlabbase)
-addpath([basepath '\Documents\GitHub\DNN\Matlab'])
-addpath([basepath '\Documents\GitHub\DNN\Matlab\R peak detection'])
-addpath([basepath '\Documents\GitHub\DNN\Matlab\Annotation'])
-addpath([basepath '\Documents\GitHub\DNN\Matlab\ECG feature creation'])
+addpath([basepath '\Documents\GitHub\Joined_Matlab'])
+addpath([basepath '\Documents\GitHub\Joined_Matlab\HRV feature creation\'])
+addpath([basepath '\Documents\GitHub\Joined_Matlab\ECG feature creation'])
+addpath([basepath '\Documents\GitHub\Joined_Matlab\R peak detection'])
 addpath([basepath '\Documents\GitHub\DNN\Matlab\Create data'])
-
+addpath([basepath '\Documents\GitHub\DNN\Matlab\Annotation'])
+% Load EDF files 
+addpath([basepath '\Documents\GitHub\Joined_Matlab\read edf files\Without annot'])
+addpath([basepath '\Documents\GitHub\Joined_Matlab\read edf files\With annot'])
 
 if strcmp (user,'c3po')
     loadfolder=([basepath2 '\Raw Data\Data\']);
@@ -111,7 +111,7 @@ savefolderHRVweightAge=([savefolder 'HRV_features\weigthAge\']);
  %% ************ Window  ECG /  Annotation signals 
     if onlyAnnotations ~=1    
         t_ECG=linspace(0,length(ECG)/FS_ecg,length(ECG))';
-        t_EDR=linspace(0,length(EDR)/FS_ecg,length(EDR))';   
+%         t_EDR=linspace(0,length(EDR)/FS_ecg,length(EDR))';   
     %       
         % The differnec in t_300 and t_ECG_300 is that t_ECG_300 is a
         % continuous run of time, while t_300 is 0 to t for each cell element
@@ -135,7 +135,7 @@ savefolderHRVweightAge=([savefolder 'HRV_features\weigthAge\']);
 %Ralph            
     for R=1:length(ECG_win_300)
         t_300{1,R}=linspace(0,length(ECG_win_300{1,R})/FS_ecg,length(ECG_win_300{1,R}))';
-        if all(isnan(ECG_win_300{1,R}))==1 || range(ECG_win_300{1,R})==0  % if only Nan Ralph cannot handle it or if all values are the same (Flat line)
+        if all(isnan(ECG_win_300{1,R}))==1 || range(ECG_win_300{1,R})==0 || length(unique(ECG_win_300{1,R}))<=4  % if only Nan Ralph cannot handle it or if all values are the same (Flat line)
            RR_300{R,1}=NaN(1,length(ECG_win_300{1,R})) ;
         else
             [RR_idx_300{R,1}, ~, ~, ~, ~, RR_300{R,1}, ~] = ecg_find_rpeaks(t_300{1,R},Ralphsfactor*ECG_win_300{1,R}, FS_ecg, 250,plotting,0); %, , , maxrate,plotting,saving   -1* because Ralph optimized for a step s slope, we also have steep Q slope. inverting fixes that probel 
@@ -143,7 +143,7 @@ savefolderHRVweightAge=([savefolder 'HRV_features\weigthAge\']);
     end
     for R=1:length(ECG_win_30)  
         t_30{1,R}=linspace(0,length(ECG_win_30{1,R})/FS_ecg,length(ECG_win_30{1,R}))';        
-        if all(isnan(ECG_win_30{1,R}))==1 || range(ECG_win_30{1,R})==0 % if all elements are NAN or the same value, R peaks cannot be calculated
+        if all(isnan(ECG_win_30{1,R}))==1 || range(ECG_win_30{1,R})==0 || length(unique(ECG_win_30{1,R}))<=4 % if all elements are NAN or the same value, R peaks cannot be calculated
            RR_30{R,1}=NaN(1,length(ECG_win_30{1,R})) ;
         else        
             [RR_idx_30{R,1}, ~, ~, ~, ~, RR_30{R,1}, ~] = ecg_find_rpeaks(t_30{1,R},Ralphsfactor*ECG_win_30{1,R}, FS_ecg, 250,plotting,0); %, , , maxrate,plotting,saving   -1* because Ralph optimized for a step s slope, we also have steep Q slope. inverting fixes that probel             
@@ -175,19 +175,19 @@ savefolderHRVweightAge=([savefolder 'HRV_features\weigthAge\']);
      disp('* Periodogram calculated')
         
     %%  ************ AGE & Weight **************    
-    for k=1:length(RR)
-        Birthweight{k}=Pat_weight(I);
-        GA{k}=Pat_GA(I); 
-        CA{k}=Pat_CA(I);
-        Age_diff{k}=Pat_GACA(I);
-    end
-    if saving
-        Saving(Birthweight,savefolderAGEWEight, Neonate, win)
-        Saving(GA,savefolderAGEWEight, Neonate, win)
-        Saving(CA,savefolderAGEWEight, Neonate, win)
-        Saving(Age_diff,savefolderAGEWEight, Neonate, win)        
-        disp('* Age and Weight saved')
-    end  
+%     for k=1:length(RR_30)
+%         Birthweight{k}=Pat_weight(I);
+%         GA{k}=Pat_GA(I); 
+%         CA{k}=Pat_CA(I);
+%         Age_diff{k}=Pat_GACA(I);
+%     end
+%     if saving
+%         Saving(Birthweight,savefolderAGEWEight, Neonate, win)
+%         Saving(GA,savefolderAGEWEight, Neonate, win)
+%         Saving(CA,savefolderAGEWEight, Neonate, win)
+%         Saving(Age_diff,savefolderAGEWEight, Neonate, win)        
+%         disp('* Age and Weight saved')
+%     end  
         
     %% ************ CALCULATE FEATURES **************
     %%%%%%%% FULL SIGNALS 
@@ -241,7 +241,6 @@ savefolderHRVweightAge=([savefolder 'HRV_features\weigthAge\']);
            disp('- Frequency finished') 
         freqdomainEDR (powerspectrum,f,Neonate,win,saving,savefolderEDR,Sessions(S,1).name,S)
            disp('- EDR requency finished') 
-           
 
 
     %%%%%%% HRV Non linear
@@ -253,7 +252,7 @@ savefolderHRVweightAge=([savefolder 'HRV_features\weigthAge\']);
           disp('- LepelZiv ECG finished')         
         LempelZivRR(RR_300,Neonate,saving,savefolderHRVnonlin,win,Sessions(S,1).name,S);
           disp('- LepelZiv HRV finished')   
-        LempelZivEDR(EDR_300,Neonate,saving,savefolderHRVnonlin,win,Sessions(S,1).name,S);
+%         LempelZivEDR(EDR_300,Neonate,saving,savefolderHRVnonlin,win,Sessions(S,1).name,S);
           disp('- LepelZiv HRV finished')  
 
         clearvars ECG_win_300 ECG_win_30 t_ECG_300 t_ECG_30 RR_idx_300 RR_300 RR_idx_30 RR_30 powerspectrum f
