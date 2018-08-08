@@ -14,6 +14,7 @@ clc
 tic
 PatientID=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22]; % core. Show all patients in the folder
 pat=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22]; 
+ 
 
 user='c3po'; % c3po Philips
 
@@ -25,7 +26,7 @@ win=30;
 faktor=30; % how much is the data moving forward? 30s is classic
 FS_ecg=500;
 S=1;
-
+shutdown=0
 onlyAnnotations=0;
 
 % Pat_weight=[];
@@ -42,7 +43,8 @@ if strcmp(user,'c3po')
 elseif strcmp(user,'Philips')
     basepath='C:\Users\310122653';
 end
-
+cd([basepath '\Documents\GitHub\DNN\Matlab'])
+addpath([basepath '\Documents\GitHub\DNN\Matlab'])
 addpath([basepath '\Documents\GitHub\Joined_Matlab'])
 addpath([basepath '\Documents\GitHub\Joined_Matlab\HRV feature creation\'])
 addpath([basepath '\Documents\GitHub\Joined_Matlab\ECG feature creation'])
@@ -137,6 +139,7 @@ savefolderHRVweightAge=([savefolder 'HRV_features\weigthAge\']);
         t_300{1,R}=linspace(0,length(ECG_win_300{1,R})/FS_ecg,length(ECG_win_300{1,R}))';
         if all(isnan(ECG_win_300{1,R}))==1 || range(ECG_win_300{1,R})==0 || length(unique(ECG_win_300{1,R}))<=4  % if only Nan Ralph cannot handle it or if all values are the same (Flat line)
            RR_300{R,1}=NaN(1,length(ECG_win_300{1,R})) ;
+           RR_idx_300{R,1}=NaN;
         else
             [RR_idx_300{R,1}, ~, ~, ~, ~, RR_300{R,1}, ~] = ecg_find_rpeaks(t_300{1,R},Ralphsfactor*ECG_win_300{1,R}, FS_ecg, 250,plotting,0); %, , , maxrate,plotting,saving   -1* because Ralph optimized for a step s slope, we also have steep Q slope. inverting fixes that probel 
         end
@@ -145,6 +148,7 @@ savefolderHRVweightAge=([savefolder 'HRV_features\weigthAge\']);
         t_30{1,R}=linspace(0,length(ECG_win_30{1,R})/FS_ecg,length(ECG_win_30{1,R}))';        
         if all(isnan(ECG_win_30{1,R}))==1 || range(ECG_win_30{1,R})==0 || length(unique(ECG_win_30{1,R}))<=4 % if all elements are NAN or the same value, R peaks cannot be calculated
            RR_30{R,1}=NaN(1,length(ECG_win_30{1,R})) ;
+           RR_idx_30{R,1}=NaN;
         else        
             [RR_idx_30{R,1}, ~, ~, ~, ~, RR_30{R,1}, ~] = ecg_find_rpeaks(t_30{1,R},Ralphsfactor*ECG_win_30{1,R}, FS_ecg, 250,plotting,0); %, , , maxrate,plotting,saving   -1* because Ralph optimized for a step s slope, we also have steep Q slope. inverting fixes that probel             
         end
@@ -253,13 +257,25 @@ savefolderHRVweightAge=([savefolder 'HRV_features\weigthAge\']);
         LempelZivRR(RR_300,Neonate,saving,savefolderHRVnonlin,win,Sessions(S,1).name,S);
           disp('- LepelZiv HRV finished')   
 %         LempelZivEDR(EDR_300,Neonate,saving,savefolderHRVnonlin,win,Sessions(S,1).name,S);
-          disp('- LepelZiv HRV finished')  
+%           disp('- LepelZiv EDR finished')  
 
         clearvars ECG_win_300 ECG_win_30 t_ECG_300 t_ECG_30 RR_idx_300 RR_300 RR_idx_30 RR_30 powerspectrum f
         
 %     end %Sessionp
  end% Patient
- toc
+ disp('----------------------------------')
+ t1 = toc;
+ dur=datestr(t1/(24*60*60),'DD:HH:MM:SS');
+ disp('Finished' )
+ disp (['Duration: ' dur]);  
+
+
+ if shutdown
+     pause('on');
+     pause(20);
+     system('shutdown -s')
+ end
+ 
  %% Nested saving
     function Saving(Feature,savefolder, Neonate, win)
         if exist('Feature','var')==1
