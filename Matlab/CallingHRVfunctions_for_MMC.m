@@ -19,7 +19,7 @@ pat=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22];
 user='c3po'; % c3po Philips
 
 RRMethod='R'; %M or R to calculate the RR with Michiel or Ralphs algorythm
-saving=1;
+saving=1
 plotting1=0; % raw signals
 plotting=0; % R peaks etc.
 win=30;
@@ -247,17 +247,17 @@ savefolderHRVweightAge=([savefolder 'HRV_features\weigthAge\']);
 
     %%%%%%% HRV Non linear
         disp('Nonlinear analysis start')
-
+% 
         [SampEn,QSE,SEAUC,r_opt]=SampEn_QSE_SEAUC(RR_300,Neonate,saving,savefolderHRVnonlin,win,faktor,Sessions(S,1).name,S ); %
             SavingF(SampEn,savefolderHRVnonlin, Neonate, win,Sessions(S,1).name,S);SavingF(QSE,savefolderHRVnonlin, Neonate, win,Sessions(S,1).name,S);SavingF(SEAUC,savefolderHRVnonlin, Neonate, win,Sessions(S,1).name,S);SavingF(r_opt,savefolderHRVnonlin, Neonate, win,Sessions(S,1).name,S)
-            disp('- SampEn QSE SEAUCfinished')
+            disp('- SampEn QSE SEAUC finished')
         LempelZivECG(ECG_win_300,Neonate,saving,savefolderHRVnonlin,win,Sessions(S,1).name,S)  
           disp('- LepelZiv ECG finished')         
         LempelZivRR(RR_300,Neonate,saving,savefolderHRVnonlin,win,Sessions(S,1).name,S);
           disp('- LepelZiv HRV finished')   
         [SampEn_EDR,QSE_EDR,SEAUC_EDR,r_opt_EDR]=SampEn_QSE_SEAUC(EDR_300,Neonate,saving,savefolderHRVnonlin,win,faktor,Sessions(S,1).name,S ); %
             SavingF(SampEn_EDR,savefolderHRVnonlin, Neonate, win,Sessions(S,1).name,S);SavingF(QSE_EDR,savefolderHRVnonlin, Neonate, win,Sessions(S,1).name,S);SavingF(SEAUC_EDR,savefolderHRVnonlin, Neonate, win,Sessions(S,1).name,S);SavingF(r_opt_EDR,savefolderHRVnonlin, Neonate, win,Sessions(S,1).name,S)
-            disp('- SampEn QSE SEAUCfinished')          
+            disp('- SampEn_EDR QSE_EDR SEAUC_EDR finished')          
         LempelZivEDR(EDR_300,Neonate,saving,savefolderHRVnonlin,win,Sessions(S,1).name,S);
           disp('- LepelZiv EDR finished')  
 
