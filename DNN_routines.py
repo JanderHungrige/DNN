@@ -42,9 +42,9 @@ from build_model_residual import ResNet_wide_Beta_LSTM
 from build_model_residual import ResNet_wide_Beta_GRU
 
 from build_model_transfer import Transfer_wide_Beta_GRU
-
-
-#from build_model_residual import ResNet_LSTM_1
+from keras.callbacks import TensorBoard
+from keras.callbacks import ModelCheckpoint
+from keras.callbacks import EarlyStopping
 
 
 #import __main__  
@@ -89,10 +89,33 @@ def KeraS(X_train, Y_train, X_val, Y_val, X_test, Y_test, Var):
            from keras.utils.vis_utils import plot_model    
            plot_model(model, to_file='model_plot.png', show_shapes=True, show_layer_names=True) 
            
+    tensorboard = TensorBoard(log_dir='./Results/logs') 
+
+    checkpointer = ModelCheckpoint(filepath='./Results/'+Var.runningNumber+'_'+Var.description+'_checkpointbestmodel.hdf5',  
+                                 monitor='val_categorical_accuracy', 
+                                 verbose=1, 
+                                 save_best_only=True, 
+                                 save_weights_only=False,
+                                 mode='auto',
+                                 period=1) 
+       
+    early_stopping_callback = EarlyStopping(monitor='val_categorical_accuracy',
+                                            min_delta=0.001, 
+                                            patience=Var.early_stopping_patience, 
+                                            verbose=0, 
+                                            mode='auto')#from build_model_residual import ResNet_LSTM_1  
+    
+
+
+
+
+
+           
 #MODEL PARAMETERS    
     model.compile(loss=Var.Loss_Function, 
                   optimizer='adam',
                   metrics=Var.Perf_Metric,
+#                  metrics=categorical_accuracy_no_mask,
                   sample_weight_mode="temporal")       
     model.optimizer.lr=Var.learning_rate #0.0001 to 0.9 default =0.001
     model.optimizer.decay=Var.learning_rate_decay
@@ -101,12 +124,14 @@ def KeraS(X_train, Y_train, X_val, Y_val, X_test, Y_test, Var):
 
 # TRAIN MODEL (in silent mode, verbose=0)       
     history=model.fit(X_train,
-                       Y_train,
-                       epochs=Var.Epochs,
-                       batch_size=Var.batchsize,
-                       sample_weight=Var.class_weights,
-                       validation_data=(X_val,Y_val),
-                       shuffle=False)
+                      Y_train,
+                      verbose=1,
+                      epochs=Var.Epochs,
+                      batch_size=Var.batchsize,
+                      sample_weight=Var.class_weights,
+                      validation_data=(X_val,Y_val),                       
+                      shuffle=True,
+                      callbacks=[checkpointer])
 
     print(model.summary()) 
 #EVALUATE MODEL     

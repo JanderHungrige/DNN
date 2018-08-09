@@ -82,7 +82,7 @@ class Variablen:
        merge34=1
        WhichMix='all' #perSession or all  # determine how the data was scaled. PEr session or just per patient
        model='Transfer_wide_Beta_GRU' # check DNN_routines KeraS for options
-       
+       Var.early_stopping_patience=200 #epochs
        
        Lookback= 1337# 1337 or anything else . #Loockback for the LSTM. The data is separated samples with timestep=loockback; #Loockback of 1337 mean all data per patient. Otherwise it is in nr of 30s epochs. e.g. 60=30min  120=1h 10=5min
 #       split=[0.60,0.2,0.2];# HOw to split the dataset in [Train, Validation, Test] e.g.70:15:15  or 50:25:25 ,... # The split is done for each fold. Just for the chekout phase use fold one. Later calculate how often the test split fits into the total data, that is the fold. e.g. 30 patients with 15% test -> 4.5 (round to 5) patients per fold. Now see how many times the 30 can be folded with 5 patients in the test set to cover all patients. 30/5=6 -> 6 fold
