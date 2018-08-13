@@ -36,6 +36,26 @@ Pat_GACA=Pat_CA-Pat_GA; % difference between the birth and recording of data
 NICU_info=[];% NICU=1, NMCU=2
 C02=[1,2,1,2,1,2,1,1,2,1,1,2,2,1,1,2,2,1,2,2,2,1]; %1=CPAP, 2=lowflow 3=no
 
+% Order AGe and weight after 10, 25 and 75 percentiles
+Pat_weight(Pat_weight<=765)=1;
+Pat_weight(Pat_weight>765 & Pat_weight<=1050)=2;
+Pat_weight(Pat_weight>1050 & Pat_weight<=1665)=3;
+Pat_weight(Pat_weight>1665)=4;     
+
+Pat_GA(Pat_GA<=26.9143*7)=1;
+Pat_GA(Pat_GA>26.9143*7 & Pat_GA<=27.8571*7)=2;
+Pat_GA(Pat_GA>27.8571*7 & Pat_GA<=30.4286*7)=3;
+Pat_GA(Pat_GA>30.4286*7)=4;  
+
+Pat_CA(Pat_CA<=30.0571*7)=1;
+Pat_CA(Pat_CA>30.0571*7 & Pat_CA<=31.2857 *7)=2;
+Pat_CA(Pat_CA>31.2857*7 & Pat_CA<=34.6429*7)=3;
+Pat_CA(Pat_CA>34.6429*7)=4;  
+
+Pat_GACA(Pat_GACA<=0.8571*7)=1;
+Pat_GACA(Pat_GACA>0.8571*7 & Pat_GACA<=1.4286  *7)=2;
+Pat_GACA(Pat_GACA>1.4286 *7 & Pat_GACA<=5.8214*7)=3;
+Pat_GACA(Pat_GACA>5.8214*7)=4;  
 
 if strcmp(user,'c3po')
     basepath='C:\Users\C3PO';
