@@ -46,7 +46,7 @@ from keras.callbacks import TensorBoard
 from keras.callbacks import ModelCheckpoint
 from keras.callbacks import EarlyStopping
 
-from Performance_callback import categorical_accuracy_no_mask,f1_precicion_recall_acc
+from Performance_callback import categorical_accuracy_no_mask,f1_precicion_recall_acc,f1_prec_rec_acc_noMasking
 #import __main__  
 
 
@@ -126,7 +126,7 @@ def KeraS(X_train, Y_train, X_val, Y_val, X_test, Y_test, Var):
                       sample_weight=Var.class_weights,
                       validation_data=(X_val,Y_val),                       
                       shuffle=True,
-                      callbacks=[f1_precicion_recall_acc])
+                      callbacks=[f1_prec_rec_acc_noMasking])
 
     print(model.summary()) 
 #EVALUATE MODEL     

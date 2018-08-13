@@ -41,7 +41,6 @@ class f1_prec_rec_acc_noMasking(Callback):
               self.val_accuracy=[]
  
        def on_epoch_end(self, epoch, logs={}):
-              val_training= (np.asarray(self.model.predict(self.model.x[0]))).round()
               val_predict = (np.asarray(self.model.predict(self.model.validation_data[0]))).round()
               val_targ = self.model.validation_data[1] 
               indx=np.where(~val_targ.any(axis=2))[0] #find where all targets are zero. That are the masked once as we masked the target with 0 and the data with 666
@@ -58,14 +57,20 @@ class f1_prec_rec_acc_noMasking(Callback):
               self.val_precisions.append(_val_precision)
               self.val_accuracy.append(_val_accuracy)
 
-              print (" — val_f1: %f — val_precision: %f — val_recall %f" %(_val_f1, _val_precision, _val_recall))
+              print (" — val_f1: %f — val_precision: %f — val_recall %f - __val_accuracy %f" %(_val_f1, _val_precision, _val_recall, _val_accuracy))
               return
  
        
 class categorical_accuracy_no_mask(Callback):
+       
+       
        def on_train_begin(self, logs={}):
               self.train_acc = []
               self.val_acc = []
+              
+
+	   def on_train_end(self, logs={}):
+              return              
  
        def on_epoch_end(self, epoch, logs={}):
               train_predict= (np.asarray(self.model.predict(self.model.x[0]))).round()              
