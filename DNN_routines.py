@@ -46,7 +46,7 @@ from keras.callbacks import TensorBoard
 from keras.callbacks import ModelCheckpoint
 from keras.callbacks import EarlyStopping
 
-
+from Performance_callback import categorical_accuracy_no_mask,f1_precicion_recall_acc
 #import __main__  
 
 
@@ -106,11 +106,6 @@ def KeraS(X_train, Y_train, X_val, Y_val, X_test, Y_test, Var):
                                             mode='auto')#from build_model_residual import ResNet_LSTM_1  
     
 
-
-
-
-
-           
 #MODEL PARAMETERS    
     model.compile(loss=Var.Loss_Function, 
                   optimizer='adam',
@@ -123,15 +118,15 @@ def KeraS(X_train, Y_train, X_val, Y_val, X_test, Y_test, Var):
 
 
 # TRAIN MODEL (in silent mode, verbose=0)       
-    history=model.fit(X_train,
-                      Y_train,
+    history=model.fit(x=X_train,
+                      y=Y_train,
                       verbose=1,
                       epochs=Var.Epochs,
                       batch_size=Var.batchsize,
                       sample_weight=Var.class_weights,
                       validation_data=(X_val,Y_val),                       
                       shuffle=True,
-                      callbacks=[checkpointer])
+                      callbacks=[f1_precicion_recall_acc])
 
     print(model.summary()) 
 #EVALUATE MODEL     
