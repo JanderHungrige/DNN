@@ -42,11 +42,15 @@ from build_model_residual import ResNet_wide_Beta_LSTM
 from build_model_residual import ResNet_wide_Beta_GRU
 
 from build_model_transfer import Transfer_wide_Beta_GRU
+
+
 from keras.callbacks import TensorBoard
 from keras.callbacks import ModelCheckpoint
 from keras.callbacks import EarlyStopping
 
-from Performance_callback import categorical_accuracy_no_mask,f1_precicion_recall_acc,f1_prec_rec_acc_noMasking
+from Performance_callback import categorical_accuracy_no_mask
+from Performance_callback import f1_precicion_recall_acc
+from Performance_callback import f1_prec_rec_acc_noMasking
 #import __main__  
 
 
@@ -91,13 +95,13 @@ def KeraS(X_train, Y_train, X_val, Y_val, X_test, Y_test, Var):
            
     tensorboard = TensorBoard(log_dir='./Results/logs') 
 
-    checkpointer = ModelCheckpoint(filepath='./Results/'+Var.runningNumber+'_'+Var.description+'_checkpointbestmodel.hdf5',  
-                                 monitor='val_categorical_accuracy', 
-                                 verbose=1, 
-                                 save_best_only=True, 
-                                 save_weights_only=False,
-                                 mode='auto',
-                                 period=1) 
+    checkp = ModelCheckpoint(filepath='./Results/'+Var.runningNumber+'_'+Var.description+'_checkpointbestmodel.hdf5',  
+                                   monitor='val_loss', 
+                                   verbose=1, 
+                                   save_best_only=True, 
+                                   save_weights_only=False,
+                                   mode='auto',
+                                   period=1) 
        
     early_stopping_callback = EarlyStopping(monitor='val_categorical_accuracy',
                                             min_delta=0.001, 
@@ -115,8 +119,11 @@ def KeraS(X_train, Y_train, X_val, Y_val, X_test, Y_test, Var):
     model.optimizer.lr=Var.learning_rate #0.0001 to 0.9 default =0.001
     model.optimizer.decay=Var.learning_rate_decay
     
-
-
+    callbackmetric=f1_prec_rec_acc_noMasking()
+    model.X_train_jan = X_train
+    model.Y_train_jan = Y_train
+    model.label=Var.label
+    model.Jmethod=Var.Jmethod
 # TRAIN MODEL (in silent mode, verbose=0)       
     history=model.fit(x=X_train,
                       y=Y_train,
@@ -126,7 +133,7 @@ def KeraS(X_train, Y_train, X_val, Y_val, X_test, Y_test, Var):
                       sample_weight=Var.class_weights,
                       validation_data=(X_val,Y_val),                       
                       shuffle=True,
-                      callbacks=[f1_prec_rec_acc_noMasking])
+                      callbacks=[callbackmetric])
 
     print(model.summary()) 
 #EVALUATE MODEL     
