@@ -32,6 +32,14 @@ Datapack='onlyRAW';   %all onlyECGHRV  onlyRAW  ECGHRVRR
 Pat=[4,5,6,7,9,10,11,12,13];
 % Pat=[7,9,10,11,12,13];
 
+
+if strcmp(user,'c3po')
+    basepath='C:\Users\C3PO';
+    basepath2='D:\PhD\Article_4_(MMC)';
+elseif strcmp(user,'Philips')
+    basepath='C:\Users\310122653';
+end
+
 path='E:\';
 if strcmp('ECG',dataset)==1
     datapath=[path 'cECG_study\C_Processed_Data\HRV_features\'];
@@ -39,52 +47,16 @@ elseif strcmp('cECG',dataset)==1
     datapath=[path 'cECG_study\C_Processed_Data\cHRV_features\'];    
 end
 
-if strcmp(RRMethod,'R')
-    if strcmp('ECG',dataset)==1 && strcmp('onlyECGHRV',Datapack)==1
-        savefolder= ([path 'cECG_study\C_Processed_Data\DNN-Matrices\Matrices_onlyECGHRV\']);
-        savefolderSession=([path 'cECG_study\C_Processed_Data\DNN-Matrices\Matrices_onlyECGHRV\Sessions\']);    
-    elseif strcmp('ECG',dataset)==1 && strcmp('all',Datapack)==1
-        savefolder= ([path 'cECG_study\C_Processed_Data\DNN-Matrices\Matrices_all\']);
-        savefolderSession=([path 'cECG_study\C_Processed_Data\DNN-Matrices\Matrices_all\Sessions\']);            
-    elseif strcmp('ECG',dataset)==1 && strcmp('onlyRAW',Datapack)==1
-        savefolder= ([path 'cECG_study\C_Processed_Data\DNN-Matrices\Matrices_onlyRAW\']);
-        savefolderSession=([path 'cECG_study\C_Processed_Data\DNN-Matrices\Matrices_onlyRAW\Sessions\']);        
-     elseif strcmp('ECG',dataset)==1 && strcmp('ECGHRVRR',Datapack)==1
-        savefolder= ([path 'cECG_study\C_Processed_Data\DNN-Matrices\Matrices_ECGHRVRR\']);
-        savefolderSession=([path 'cECG_study\C_Processed_Data\DNN-Matrices\Matrices_ECGHRVRR\Sessions\']);        
-        
-    elseif strcmp('cECG',dataset)==1 && strcmp('onlyECGHRV',Datapack)==1
-        savefolder= ([path 'cECG_study\C_Processed_Data\DNN-Matrices\cMatrices_onlyECGHRV\']);
-        savefolderSession=([path 'cECG_study\C_Processed_Data\DNN-Matrices\cMatrices_onlyECGHRV\Sessions\']);    
-    elseif strcmp('cECG',dataset)==1 && strcmp('all',Datapack)==1
-        savefolder= ([path 'cECG_study\C_Processed_Data\DNN-Matrices\cMatrices_all\']);
-        savefolderSession=([path 'cECG_study\C_Processed_Data\DNN-Matrices\cMatrices_all\Sessions\']);            
-    elseif strcmp('cECG',dataset)==1 && strcmp('onlyRAW',Datapack)==1
-        savefolder= ([path 'cECG_study\C_Processed_Data\DNN-Matrices\cMatrices_onlyRAW\']);
-        savefolderSession=([path 'cECG_study\C_Processed_Data\DNN-Matrices\cMatrices_onlyRAW\Sessions\']);        
-     elseif strcmp('cECG',dataset)==1 && strcmp('ECGHRVRR',Datapack)==1
-        savefolder= ([path 'cECG_study\C_Processed_Data\DNN-Matrices\cMatrices_ECGHRVRR\']);
-        savefolderSession=([path 'cECG_study\C_Processed_Data\DNN-Matrices\cMatrices_ECGHRVRR\Sessions\']);   
-    end
+    savefolder= ([path 'cECG_study\C_Processed_Data\DNN-Matrices\Matrices_all\']);
+    savefolderSession=([path 'cECG_study\C_Processed_Data\DNN-Matrices\Matrices_all\Sessions\']);            
+    
+    savefolder= ([path 'cECG_study\C_Processed_Data\DNN-Matrices\cMatrices_all\']);
+    savefolderSession=([path 'cECG_study\C_Processed_Data\DNN-Matrices\cMatrices_all\Sessions\']);            
+    
     TFeature_path=[datapath 'timedomain\'];
     FFeature_path=[datapath 'freqdomain\'];
     NLFeature_path=[datapath 'nonlinear\'];    
     
-elseif strcmp(RRMethod,'M')
-     if strcmp('ECG',dataset)==1
-        savefolder= ([path 'cECG_study\C_Processed_Data\MatricesM\']);
-        savefolderSession=([path 'cECG_study\C_Processed_Data\MatricesM\Sessions\']);    
-
-    elseif strcmp('cECG',dataset)==1
-        savefolder= ([path 'cECG_study\C_Processed_Data\cMatricesM\']);
-        savefolderSession=([path 'cECG_study\C_Processed_Data\cMatricesM\Sessions\']);    
-     end 
-    TFeature_path=[datapath 'timedomainM\'];
-    FFeature_path=[datapath 'freqdomainM\'];
-    NLFeature_path=[datapath 'nonlinearM\'];
-    
-end
-
 
 loadfolderAnnotation= [path 'cECG_study\C_Processed_Data\Annotations\'];
 
@@ -95,8 +67,8 @@ if strcmp('all',Datapack)==1
         'EDR' ;...
         'Resp';...
         'BpE';...
-        'lineLength';...
-        'meanlineLength';...
+        'LL';...
+        'aLL';...
         'NN10'; 'NN20';'NN30';'NN50';...
         'pNN10'; 'pNN20';'pNN30';'pNN50';...
         'RMSSD';...
@@ -120,6 +92,14 @@ if strcmp('all',Datapack)==1
         'uHF';...
         'uHFnorm';...
         'VLF';...
+        'HFR';...
+        'HFnormR';...
+        'LFnormR';...
+        'MFR';...
+        'MFnormR';...
+        'ratioLFHFR';...
+        'ratioMFHFR';...
+        'totpowR';...   
         };
 
     Featurenames_nonlinear={...
@@ -128,7 +108,20 @@ if strcmp('all',Datapack)==1
         'SEAUC';...
         'LZNN';...
         'LZECG';... 
+        'LZEDR';...
+        'QSE_EDR';...
+        'SampEn_EDR';...
+        'SEAUC_EDR';...
         };
+    
+    Featurenames_AgeWeight={...
+        'Age_diff';...
+        'Birthweight'...
+        'CA'...
+        'GA'...
+        };
+        
+
 elseif strcmp('onlyECGHRV',Datapack)==1
         Featurenames_time={...
         'ECG';...
@@ -236,7 +229,6 @@ Sessionlength=length(cellfun('isempty',{Sessionlength.name}));
         tmp={};
 
     % all from on patient FREQUENCY DOMAIN
-    if strcmp('onlyECGHRV',Datapack)==1 || strcmp('all',Datapack)==1    
         for j=1:length(Featurenames_frequency) 
             dateiname=dir([FFeature_path Featurenames_frequency{j,1} '_Session_' num2str(i) '_win_' num2str(win) '_*_' num2str(Neonate) '.mat']);
             load([FFeature_path dateiname.name]);
@@ -290,7 +282,7 @@ Sessionlength=length(cellfun('isempty',{Sessionlength.name}));
         end
         tmp4=[tmp4 ,tmp]; % Adding the long single line of Feature into the Feature Matrix, where each row is one Feature
         tmp={};
-    end
+    
         FeatureMatrix=[tmp2; tmp3 ;tmp4]; % Adding the long single line of Feature into the Feature Matrix, where each row is one Feature
         tmp2={};tmp3={};tmp4={}; % Resetting 
     
