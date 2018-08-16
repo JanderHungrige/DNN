@@ -9,8 +9,11 @@ if isempty(idx)
 end
 
 [~,Annotat,~]=xlsread([loadfolderA annotnames(idx).name], 'B:B');
-
-Annotat=Annotat(6:end);
+if size(Annotat,2)==1
+    Annotat=Annotat(6:end);
+else
+    Annotat=Annotat(6:end,2); %6 or 7 ???chekc
+end
 idxT=find(strcmp(Annotat,'T'));
 idxR=find(strcmp(Annotat,'R'));
 idxN=find(strcmp(Annotat,'N'));
