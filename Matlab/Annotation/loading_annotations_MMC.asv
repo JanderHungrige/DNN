@@ -8,19 +8,16 @@ if isempty(idx)
     idx=find(contains({annotnames.name},[C '_'])==1);
 end
 
+if strcmp(user,'c3po')
+    Annotat=readtable(loadfolderA )
 if strcmp(user,'Philips')
-    Annotat=readtable([loadfolderA annotnames(idx).name]);
-    Annotat=table2array(Annotat);
-    Annotat=Annotat(6:end,2);
+    [~,Annotat,~]=xlsread([loadfolderA annotnames(idx).name], 'B:B');
+    if size(Annotat,2)==1
+        Annotat=Annotat(6:end);
+    else
+        Annotat=Annotat(6:end,2); %6 or 7 ???chekc
+    end
 end
-% if strcmp(user,'Philips')
-%     [~,Annotat,~]=xlsread([loadfolderA annotnames(idx).name], 'B:B');
-%     if size(Annotat,2)==1
-%         Annotat=Annotat(6:end);
-%     else
-%         Annotat=Annotat(6:end,2); %6 or 7 ???chekc
-%     end
-% end
 idxT=find(strcmp(Annotat,'T'));
 idxR=find(strcmp(Annotat,'R'));
 idxN=find(strcmp(Annotat,'N'));

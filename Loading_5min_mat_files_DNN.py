@@ -55,21 +55,21 @@ def Loading_data_all(Var,Varplus):
               if Var.usedPC=='Cluster':
                      folder=('/home/310122653/DNN_Matrices/Matrices_Features/')
               if Var.usedPC=='Philips':
-                     folder=('C:/Users/310122653/Documents/PhD/Article_4_(MMC)/Processed_data/DNN_Matrices/Matrices_Features/')              
+                     folder=('C:/Users/310122653/Documents/PhD/Article_4_(MMC)/Processed data/Matrices/')              
               if Var.usedPC=='c3po':
                      folder=('C:/Users/C3PO/Desktop/Processed_data/DNN_Matrices/Matrices_Features/')                     
        if 'MMC+cECG'== Var.dataset:        
               if Var.usedPC=='Cluster':
                      folder=('/home/310122653/DNN_Matrices/Matrices_Features_Mix/')
               if Var.usedPC=='Philips':
-                     folder=('C:/Users/310122653/Documents/PhD/Article_4_(MMC)/Processed_data/DNN_Matrices/Matrices_Features_Mix/')              
+                     folder=('C:/Users/310122653/Documents/PhD/Article_4_(MMC)/Processed data/DNN_Matrices/Matrices_Features_Mix/')              
               if Var.usedPC=='c3po':
                      folder=('C:/Users/C3PO/Desktop/Processed_data/DNN_Matrices/Matrices_Features_Mix/')                      
        if 'cECGDNN'== Var.dataset:        
               if Var.usedPC=='Cluster':
                      folder=('/home/310122653/DNN_Matrices/cMatrices/')
               if Var.usedPC=='Philips':
-                     folder=('C:/Users/310122653/Documents/PhD/Article_3_(cECG)/Processed Data/Matrix_Intellivue/')              
+                     folder=('C:/Users/310122653/Documents/PhD/Article_3_(cECG)/Processed data/Matrix_Intellivue/')              
               if Var.usedPC=='c3po':
                      folder=('C:/Users/C3PO/Desktop/Processed_data/DNN_Matrices/cMatrix/')                      
                             

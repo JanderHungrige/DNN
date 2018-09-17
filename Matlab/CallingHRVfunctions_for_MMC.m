@@ -14,14 +14,14 @@ clc
 tic
 PatientID=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22]; % core. Show all patients in the folder
 pat=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22]; 
-pat=22
-user='c3po'; % c3po Philips
+
+user='Philips'; % c3po Philips
 
 RRMethod='R'; %M or R to calculate the RR with Michiel or Ralphs algorythm
 saving=1
 plotting1=0; % raw signals
 plotting=0; % R peaks etc.
-win=30;
+win=300;
 faktor=30; % how much is the data moving forward? 30s is classic
 FS_ecg=500;
 S=1;
@@ -80,8 +80,8 @@ if strcmp (user,'c3po')
     savefolder= ([basepath2 '\Processed data\']);
     SavefolderAnnotations=([ savefolder 'Annotations\']);    
 elseif strcmp(user,'Philips')
-    loadfolder=([basepath '\Documents\PhD\Article_4_(MMC)\Data\']);
-    loadfolderA=([basepath '\Documents\PhD\Article_4_(MMC)\Annotations\']);
+    loadfolder=([basepath '\Documents\PhD\Article_4_(MMC)\Raw Data\Data\']);
+    loadfolderA=([basepath '\Documents\PhD\Article_4_(MMC)\Raw Data\Annotations\']);
     savefolder= ([basepath '\Documents\PhD\Article_4_(MMC)\Processed data\']);
     SavefolderAnnotations=([ savefolder 'Annotations\']);
 end
@@ -93,6 +93,8 @@ if (exist([savefolder 'HRV_features\timedomain\']) )==0;  mkdir([savefolder 'HRV
 if (exist([savefolder 'HRV_features\freqdomain\']) )==0;  mkdir([savefolder 'HRV_features\freqdomain\']);end
 if (exist([savefolder 'HRV_features\nonlinear\']) )==0;   mkdir([savefolder 'HRV_features\nonlinear\']);end
 if (exist([savefolder 'HRV_features\weigthAge\']) )==0;   mkdir([savefolder 'HRV_features\weigthAge\']);end    
+if (exist(SavefolderAnnotations))==0;   mkdir(SavefolderAnnotations);end    
+
 
 savefolderECG= ([ savefolder 'HRV_features\ECG\']);
 savefolderRR= ([ savefolder 'HRV_features\RR\']);
@@ -112,15 +114,15 @@ savefolderHRVweightAge=([savefolder 'HRV_features\weigthAge\']);
     Sessions.name=num2str(Neonate);
   
 %% ************ Load data **************
-    Loadsession=dir(loadfolder);Loadsession=Loadsession(3:end,:);
+    Loadsession=dir([loadfolder 'Patient_' num2str(Neonate)]);Loadsession=Loadsession(3:end,:);
     if onlyAnnotations ~=1
-        [ECG,Resp,EMG, EOG, Chin]=readin_edf_Data(loadfolder,[loadfolder Loadsession(N_I).name],plotting1);
+        [ECG,Resp,EMG, EOG, Chin]=readin_edf_Data([loadfolder 'Patient_' num2str(Neonate)],[loadfolder 'Patient_' num2str(Neonate) '\' Loadsession.name],plotting1);
     end
   
 
 %% ************ Load annotations (1s) **************  
 
-    Annotation=loading_annotations_MMC(Loadsession(N_I).name, loadfolderA);
+    Annotation=loading_annotations_MMC(Loadsession.name, [loadfolderA 'Patient_' num2str(Neonate) '\'],1,user);
     disp('* Annotation loaded')
     if saving % saving annotations
        Annotations=num2cell(Annotation');% In the cECG set the annotations where on 1s base. Therfore they needed to be cut into 30s. MMC data is based on 30s
@@ -272,11 +274,11 @@ savefolderHRVweightAge=([savefolder 'HRV_features\weigthAge\']);
     %%%%%%% HRV Non linear
         disp('Nonlinear analysis start')
 
-%         [SampEn,QSE,SEAUC,r_opt]=SampEn_QSE_SEAUC(RR_300,faktor);Saving(SampEn,savefolderHRVnonlin, Neonate, win); Saving(QSE,savefolderHRVnonlin, Neonate, win);Saving(SEAUC,savefolderHRVnonlin, Neonate, win);Saving(r_opt,savefolderHRVnonlin, Neonate, win)
-%           disp('- SampEn QSE SEAUC finished')
-%         LZECG=LempelZivECG(ECG_win_300); Saving(LZECG,savefolderHRVnonlin, Neonate, win )
-%           disp('- LepelZiv ECG finished')         
-%         LZNN=LempelZivRR(RR_300); Saving(LZNN,savefolderHRVnonlin, Neonate, win)
+        [SampEn,QSE,SEAUC,r_opt]=SampEn_QSE_SEAUC(RR_300,faktor);Saving(SampEn,savefolderHRVnonlin, Neonate, win); Saving(QSE,savefolderHRVnonlin, Neonate, win);Saving(SEAUC,savefolderHRVnonlin, Neonate, win);Saving(r_opt,savefolderHRVnonlin, Neonate, win)
+          disp('- SampEn QSE SEAUC finished')
+        LZECG=LempelZivECG(ECG_win_300); Saving(LZECG,savefolderHRVnonlin, Neonate, win )
+          disp('- LepelZiv ECG finished')         
+        LZNN=LempelZivRR(RR_300); Saving(LZNN,savefolderHRVnonlin, Neonate, win)
           disp('- LepelZiv HRV finished')   
         [SampEn_EDR,QSE_EDR,SEAUC_EDR,r_opt_EDR]=SampEn_QSE_SEAUC(EDR_300,faktor);Saving(SampEn_EDR,savefolderHRVnonlin, Neonate, win);Saving(QSE_EDR,savefolderHRVnonlin, Neonate, win);Saving(SEAUC_EDR,savefolderHRVnonlin, Neonate, win);Saving(r_opt_EDR,savefolderHRVnonlin, Neonate, win)  
           disp('- SampEn_EDR QSE_EDR SEAUC_EDR finished')          

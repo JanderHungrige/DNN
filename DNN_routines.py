@@ -32,6 +32,7 @@ from build_model import LSTM_model_1_gen
 from build_model import LSTM_model_2
 from build_model import model_3_LSTM
 from build_model import model_3_LSTM_advanced
+from build_model import model_3_LSTM_advanced_seq
 from build_model import model_3_LSTM_advanced_no_bi
 from build_model import model_4_GRU
 from build_model import model_4_GRU_advanced
@@ -42,6 +43,7 @@ from build_model_residual import ResNet_wide_Beta_LSTM
 from build_model_residual import ResNet_wide_Beta_GRU
 
 from build_model_transfer import Transfer_wide_Beta_GRU
+from build_model_transfer import Transfer_wide_Beta_GRU_2
 
 
 from keras.callbacks import TensorBoard
@@ -67,10 +69,14 @@ def KeraS(X_train, Y_train, X_val, Y_val, X_test, Y_test, Var):
     F1_all_collect=[];K_collect=[]
     all_test_metric=[];all_test_loss=[];all_train_metric=[];all_train_loss=[];all_val_metric=[];all_val_loss=[]
     resultsK=[];mean_test_metric=[];mean_train_metric=[]
+    all_val_f1=[];all_val_recall=[];all_val_precisions=[];all_val_no_mask_acc=[]
+    all_train_f1=[];all_train_recall=[];all_train_precisions=[];all_train_no_mask_acc=[]
               
     
 #BUILT MODEL    
     if Var.model=='model_3_LSTM_advanced':
+           model=model_3_LSTM_advanced(X_train,Y_train,Var)
+    if Var.model=='model_3_LSTM_advanced_seq':
            model=model_3_LSTM_advanced(X_train,Y_train,Var)
     if Var.model=='model_3__LSTM_advanced_no_bi':
            model=model_3__LSTM_advanced_no_bi(X_train,Y_train,Var)
@@ -87,7 +93,9 @@ def KeraS(X_train, Y_train, X_val, Y_val, X_test, Y_test, Var):
            model=ResNet_wide_Beta_GRU(X_train,Y_train,Var)  
      
     if Var.model=='Transfer_wide_Beta_GRU':
-           model=Transfer_wide_Beta_GRU(X_train,Y_train,Var)         
+           model=Transfer_wide_Beta_GRU(X_train,Y_train,Var)   
+    if Var.model=='Transfer_wide_Beta_GRU_2':
+           model=Transfer_wide_Beta_GRU_2(X_train,Y_train,Var)               
 
     if Var.usedPC=='Philips': # Plotting model
            from keras.utils.vis_utils import plot_model    
@@ -109,21 +117,39 @@ def KeraS(X_train, Y_train, X_val, Y_val, X_test, Y_test, Var):
                                             verbose=0, 
                                             mode='auto')#from build_model_residual import ResNet_LSTM_1  
     
-
-#MODEL PARAMETERS    
+#    def w_categorical_crossentropy(y_true, y_pred, weights):
+#           nb_cl = len(weights)
+#           final_mask = K.zeros_like(y_pred[:, 0])
+#           y_pred_max = K.max(y_pred, axis=1)
+#           y_pred_max = K.reshape(y_pred_max, (K.shape(y_pred)[0], 1))
+#           y_pred_max_mat = K.cast(K.equal(y_pred, y_pred_max), K.floatx())
+#           for c_p, c_t in product(range(nb_cl), range(nb_cl)):
+#                  final_mask += (weights[c_t, c_p] * y_pred_max_mat[:, c_p] * y_true[:, c_t])
+#           return K.categorical_crossentropy(y_pred, y_true) * final_mask
+    
+    #https://github.com/keras-team/keras/issues/2115
+#    w_array = np.ones((3,3))
+#    w_array[2,1] = 1.2
+#    w_array[1,2] = 1.2
+#    ncce = partial(w_categorical_crossentropy, weights=w_array)
+    
+    
+#MODEL PARAMETERS   
+    adam = keras.optimizers.Adam(lr=Var.learning_rate, decay=Var.learning_rate_decay)
     model.compile(loss=Var.Loss_Function, 
-                  optimizer='adam',
+                  optimizer=adam,
                   metrics=Var.Perf_Metric,
 #                  metrics=categorical_accuracy_no_mask,
-                  sample_weight_mode="temporal")       
-    model.optimizer.lr=Var.learning_rate #0.0001 to 0.9 default =0.001
-    model.optimizer.decay=Var.learning_rate_decay
-    
+                  sample_weight_mode="temporal")    
+
     callbackmetric=f1_prec_rec_acc_noMasking()
     model.X_train_jan = X_train
     model.Y_train_jan = Y_train
     model.label=Var.label
     model.Jmethod=Var.Jmethod
+    model.train_f1=[];model.train_precision=[];model.train_recall=[];model.train_accuracy=[];model.train_accuracy=[]
+    model.val_f1=[];model.val_precision=[];model.val_recall=[];model.val_accuracy=[];model.val_accuracy=[]
+    
 # TRAIN MODEL (in silent mode, verbose=0)       
     history=model.fit(x=X_train,
                       y=Y_train,
@@ -133,7 +159,7 @@ def KeraS(X_train, Y_train, X_val, Y_val, X_test, Y_test, Var):
                       sample_weight=Var.class_weights,
                       validation_data=(X_val,Y_val),                       
                       shuffle=True,
-                      callbacks=[callbackmetric])
+                      callbacks=[checkp,callbackmetric,early_stopping_callback])
 
     print(model.summary()) 
 #EVALUATE MODEL     
@@ -168,6 +194,15 @@ def KeraS(X_train, Y_train, X_val, Y_val, X_test, Y_test, Var):
     all_val_metric.append(val_metric)
     all_val_loss.append(val_loss)   
     
+    all_val_f1.append(model.val_f1)
+    all_val_recall.append(model.val_recall)
+    all_val_precisions.append(model.val_precision)
+    all_val_no_mask_acc.append(model.val_accuracy)
+    all_train_f1.append(model.val_f1)
+    all_train_recall.append(model.val_recall)
+    all_train_precisions.append(model.val_precision)
+    all_train_no_mask_acc.append(model.val_accuracy)
+     
        
 #    mean_test_metric=np.mean(all_test_metric) # Kappa is not calculated per epoch but just per fold. Therefor we generate on mean Kappa
 #    mean_train_metric=np.mean(all_train_metric,axis=0)
@@ -179,13 +214,23 @@ def KeraS(X_train, Y_train, X_val, Y_val, X_test, Y_test, Var):
     mean_val_loss=     np.mean(all_val_loss,axis=0)      
     mean_k=            np.mean(resultsK)
     
+    mean_val_f1=np.mean(all_val_f1)
+    mean_val_recall=np.mean(all_val_recall)
+    mean_val_precicion=np.mean(all_val_precisions)
+    mean_val_no_mask_acc=np.mean(all_val_no_mask_acc)
+    
+    mean_train_f1=np.mean(all_train_f1)
+    mean_train_recall=np.mean(all_train_recall)
+    mean_train_precicion=np.mean(all_train_precisions)
+    mean_train_no_mask_acc=np.mean(all_train_no_mask_acc)
 #    from sklearn.metrics import classification_report
 #    target_names = ['AS', 'QS', 'CTW','IS']
 #    Report=(classification_report(Y_test_Result.ravel(), prediction_base, target_names=target_names))
 #
 #      
-    
-    return model, resultsK, mean_k, mean_train_metric, mean_val_metric, mean_train_loss, mean_val_loss, mean_test_metric, mean_test_loss
+    model.perfmatrix= callbackmetric
+    return model, resultsK, mean_k, mean_train_metric, mean_val_metric, mean_train_loss, mean_val_loss, mean_test_metric, mean_test_loss,\
+    mean_val_f1,mean_val_recall,mean_val_precicion,mean_val_no_mask_acc,mean_train_f1,mean_train_recall,mean_train_precicion,mean_train_no_mask_acc
 
 #%%
 def KeraS_Gen(X_Train_Val_Test,Y_Train_Val_Test,

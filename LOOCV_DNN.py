@@ -47,7 +47,15 @@ def leave_one_out_cross_validation(babies,AnnotMatrix_each_patient,FeatureMatrix
        mean_val_metric=list()
        mean_val_loss=list()
        mean_test_metric=list()
-       mean_test_loss=list()
+       mean_test_loss=list() 
+       mean_val_f1=list()
+       mean_val_recall=list()
+       mean_val_precicion=list()
+       mean_val_no_mask_acc=list()   
+       mean_train_f1=list()
+       mean_train_recall=list()
+       mean_train_precicion=list()
+       mean_train_no_mask_acc=list()        
        
        def percentage_split(seq, percentages): #Generator function: Create split based on percentage
            assert sum(percentages) == 1.0
@@ -191,7 +199,8 @@ def leave_one_out_cross_validation(babies,AnnotMatrix_each_patient,FeatureMatrix
 #           class_weights_one_hot=dict(enumerate(class_weights_one_hot)) # it seems that Keras likes dicts. I am not 100% sure if that is the latest info or if an array also works
 #FORWARD SETS TO KERAS WHERE THE MODEL IS BUILT, TRAINED, VALIDATED AND TESTED           
            print ('Training data shape is:[%i, %i, %i]' %(X_Train.shape))
-           model, resultsK_fold, mean_k_fold, mean_train_metric_fold, mean_val_metric_fold, mean_train_loss_fold, mean_val_loss_fold, mean_test_metric_fold, mean_test_loss_fold\
+           model, resultsK_fold, mean_k_fold, mean_train_metric_fold, mean_val_metric_fold, mean_train_loss_fold, mean_val_loss_fold, mean_test_metric_fold, mean_test_loss_fold,\
+           mean_val_f1_fold,mean_val_recall_fold,mean_val_precicion_fold,mean_val_no_mask_acc_fold,mean_train_f1_fold,mean_train_recall_fold,mean_train_precicion_fold,mean_train_no_mask_acc_fold\
            =KeraS(X_Train, Y_Train, X_Val, Y_Val, X_Test, Y_Test, Var)
 
 #GATHERING THE RESULTS OF THE TESTING           
@@ -203,7 +212,16 @@ def leave_one_out_cross_validation(babies,AnnotMatrix_each_patient,FeatureMatrix
            mean_val_loss.append(mean_val_loss_fold)
            mean_test_metric.append(mean_test_metric_fold)
            mean_test_loss.append(mean_test_loss_fold)
+
+           mean_val_f1.append(mean_val_f1_fold)
+           mean_val_recall.append(mean_val_recall_fold)
+           mean_val_precicion.append(mean_val_precicion_fold)
+           mean_val_no_mask_acc.append(mean_val_no_mask_acc_fold)
            
+           mean_train_f1.append(mean_train_f1_fold)
+           mean_train_recall.append(mean_train_recall_fold)
+           mean_train_precicion.append(mean_train_precicion_fold)
+           mean_train_no_mask_acc.append(mean_train_no_mask_acc_fold)       
        
 #           if plotting:
 #                  t_a.append(np.linspace(0,len(y_each_patient_test[V])*30/60,len(y_each_patient_test[V])))
@@ -230,6 +248,14 @@ def leave_one_out_cross_validation(babies,AnnotMatrix_each_patient,FeatureMatrix
               mean_val_loss,\
               mean_test_metric,\
               mean_test_loss,\
+              mean_val_f1,\
+              mean_val_recall,\
+              mean_val_precicion,\
+              mean_val_no_mask_acc,\
+              mean_train_f1,\
+              mean_train_recall,\
+              mean_train_precicion,\
+              mean_train_no_mask_acc
               
               
               

@@ -20,6 +20,7 @@ from keras import regularizers
 from keras.utils import np_utils
 
 from keras.models import Sequential
+from keras.models import Model
 
 from keras.layers import Dense
 from keras.layers import LSTM
@@ -30,6 +31,7 @@ from keras.layers import Activation
 from keras.layers import Lambda
 from keras.layers import Bidirectional
 from keras.layers import BatchNormalization
+from keras.layers import Input
 
 from keras.constraints import max_norm
 
@@ -119,13 +121,57 @@ def model_3_LSTM_advanced(X_train,Y_train,Var):
                                 kernel_regularizer=regularizers.l2(Var.Kr),
                                 activity_regularizer=regularizers.l2(Var.Ar),
                                 kernel_constraint=max_norm(max_value=3.), 
-                                dropout=Var.dropout, recurrent_dropout=Var.dropout)))   
+                                dropout=Var.dropout, recurrent_dropout=Var.dropout)))  
+   model.add(Bidirectional(LSTM(Var.hidden_units, return_sequences=True,
+                                kernel_regularizer=regularizers.l2(Var.Kr),
+                                activity_regularizer=regularizers.l2(Var.Ar),
+                                kernel_constraint=max_norm(max_value=3.), 
+                                dropout=Var.dropout, recurrent_dropout=Var.dropout))) 
+   model.add(Bidirectional(LSTM(Var.hidden_units, return_sequences=True,
+                                kernel_regularizer=regularizers.l2(Var.Kr),
+                                activity_regularizer=regularizers.l2(Var.Ar),
+                                kernel_constraint=max_norm(max_value=3.), 
+                                dropout=Var.dropout, recurrent_dropout=Var.dropout)))    
    model.add(Dropout(0.5, noise_shape=(None, 1, Var.hidden_units*2)))
    model.add(Dense(Y_train.shape[-1], activation='softmax', kernel_constraint=max_norm(max_value=3.)))
    model.summary()
    
    return model  
-
+#%% written as functional API instead of sequential
+def model_3_LSTM_advanced_seq(X_train,Y_train,Var):   
+   inp = Input(shape=(X_train.shape[1],X_train.shape[2]))
+   maxnorm=3.
+   batch_size=X_train.shape[0]
+   n_frames=X_train.shape[2]
+   x=Masking(mask_value=666)(inputs)(x)
+   x=Dropout(0.2, noise_shape=(None, 1, X_train.shape[2]) )(x)   
+   x=Dense(Var.Dense_Unit, activation=Var.activationF, kernel_constraint=max_norm(max_value=3.))(x)
+   x=Bidirectional(LSTM(Var.hidden_units, return_sequences=True,   
+                                kernel_regularizer=regularizers.l2(Var.Kr),
+                                activity_regularizer=regularizers.l2(Var.Ar),
+                                kernel_constraint=max_norm(max_value=3.), 
+                                dropout=Var.dropout, recurrent_dropout=Var.dropout))(x)
+   x=Bidirectional(LSTM(Var.hidden_units, return_sequences=True,
+                                kernel_regularizer=regularizers.l2(Var.Kr),
+                                activity_regularizer=regularizers.l2(Var.Ar),
+                                kernel_constraint=max_norm(max_value=3.), 
+                                dropout=Var.dropout, recurrent_dropout=Var.dropout))(x)  
+   x=Bidirectional(LSTM(Var.hidden_units, return_sequences=True,
+                                kernel_regularizer=regularizers.l2(Var.Kr),
+                                activity_regularizer=regularizers.l2(Var.Ar),
+                                kernel_constraint=max_norm(max_value=3.), 
+                                dropout=Var.dropout, recurrent_dropout=Var.dropout))(x)  
+   x=Bidirectional(LSTM(Var.hidden_units, return_sequences=True,
+                                kernel_regularizer=regularizers.l2(Var.Kr),
+                                activity_regularizer=regularizers.l2(Var.Ar),
+                                kernel_constraint=max_norm(max_value=3.), 
+                                dropout=Var.dropout, recurrent_dropout=Var.dropout))(x)     
+   x=Dropout(0.5, noise_shape=(None, 1, Var.hidden_units*2))(x)
+   predictions=Dense(Y_train.shape[-1], activation='softmax', kernel_constraint=max_norm(max_value=3.))(x)
+   model=Model(inputs=inp, output=predictions)
+   model.summary()
+   
+   return model  
 #%%
 def model_3_LSTM_advanced_no_bi(X_train,Y_train,Var):   
    maxnorm=3.

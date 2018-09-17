@@ -69,7 +69,7 @@ Loading data declaration & Wrapper variables
 """
 SavingResults=1
 class Variablen:
-       description='All_MMC_GRU4'
+       description='Create_weighs666'
        runningNumber='4'
        saving_model=1
        SavingResults=1
@@ -81,11 +81,11 @@ class Variablen:
        dataset='MMC'  #"ECG" "cECG" "MMC" "MMC+cECG" "cECGDNN"
        merge34=1
        WhichMix='all' #perSession or all  # determine how the data was scaled. PEr session or just per patient
-       model='model_4_GRU_advanced' # check DNN_routines KeraS for options
+       model='Transfer_wide_Beta_GRU_2' # check DNN_routines KeraS for options
        early_stopping_patience=100 #epochs
        
        
-       Jmethod='samples' # the method used for f1 precicion /recall ...       
+       Jmethod='weighted' # the method used for f1 precicion /recall ...       
        Lookback= 1337# 1337 or anything else . #Loockback for the LSTM. The data is separated samples with timestep=loockback; #Loockback of 1337 mean all data per patient. Otherwise it is in nr of 30s epochs. e.g. 60=30min  120=1h 10=5min
 #       split=[0.60,0.2,0.2];# HOw to split the dataset in [Train, Validation, Test] e.g.70:15:15  or 50:25:25 ,... # The split is done for each fold. Just for the chekout phase use fold one. Later calculate how often the test split fits into the total data, that is the fold. e.g. 30 patients with 15% test -> 4.5 (round to 5) patients per fold. Now see how many times the 30 can be folded with 5 patients in the test set to cover all patients. 30/5=6 -> 6 fold
        split=[0.70,0.30];
@@ -218,8 +218,18 @@ Ergebnisse.mean_train_loss,\
 Ergebnisse.mean_val_metric,\
 Ergebnisse.mean_val_loss,\
 Ergebnisse.mean_test_metric,\
-Ergebnisse.mean_test_loss\
+Ergebnisse.mean_test_loss,\
+Ergebnisse.mean_val_f1,\
+Ergebnisse.mean_val_recall,\
+Ergebnisse.mean_val_precicion,\
+Ergebnisse.mean_val_no_mask_acc,\
+Ergebnisse.mean_train_f1,\
+Ergebnisse.mean_train_recall,\
+Ergebnisse.mean_train_precicion,\
+Ergebnisse.mean_train_no_mask_acc\
 =leave_one_out_cross_validation(babies,AnnotMatrix_each_patient,FeatureMatrix_each_patient,Var,Varplus)
+
+
 
 if Var.fold>1:
        Ergebnisse.mean_test_metric_overall=np.mean(Ergebnisse.mean_test_metric) # Kappa is not calculated per epoch but just per fold. Therefor we generate on mean Kappa
@@ -229,6 +239,7 @@ if Var.fold>1:
        Ergebnisse.mean_train_loss_overall=np.mean(Ergebnisse.mean_train_loss,axis=0)
        Ergebnisse.mean_val_loss_overall=np.mean(Ergebnisse.mean_val_loss,axis=0)      
        Ergebnisse.mean_Kappa_overall=np.mean(Ergebnisse.mean_Kappa)
+
 
 Ergebnisse.info=info       
 #SAVING STUFF
@@ -242,9 +253,9 @@ if Var.saving_model:
                      json_file.write(model_json)
         
        model_json = model.to_json()
-       save_Model(model_json,'Results/'+Var.runningNumber+'_'+Var.description+"model.json")              
+       save_Model(model_json,'Results/'+Var.runningNumber+'_'+Var.description+".json")              
        # serialize weights to HDF5
-       model.save_weights('Results/'+Var.runningNumber+'_'+Var.description+'model_weigths.h5')  # creates a HDF5 file 'my_model.h5'
+       model.save_weights('Results/'+Var.runningNumber+'_'+Var.description+'_weigths.h5')  # creates a HDF5 file 'my_model.h5'
        print('Model saved')
 #
 if Var.SavingResults:
