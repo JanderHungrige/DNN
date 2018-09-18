@@ -14,8 +14,8 @@ clc
 tic
 PatientID=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22]; % core. Show all patients in the folder
 pat=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22]; 
-
-user='Philips'; % c3po Philips
+pat=6
+user='c3po'; % c3po Philips
 
 RRMethod='R'; %M or R to calculate the RR with Michiel or Ralphs algorythm
 saving=1
@@ -119,6 +119,7 @@ savefolderHRVweightAge=([savefolder 'HRV_features\weigthAge\']);
         [ECG,Resp,EMG, EOG, Chin]=readin_edf_Data([loadfolder 'Patient_' num2str(Neonate)],[loadfolder 'Patient_' num2str(Neonate) '\' Loadsession.name],plotting1);
     end
   
+  
 
 %% ************ Load annotations (1s) **************  
 
@@ -148,18 +149,22 @@ savefolderHRVweightAge=([savefolder 'HRV_features\weigthAge\']);
         continue 
     end
     %% ************ Creating RR signal for ECG-Signal **************
-    Ralphsfactor=1;%{1;1;1;1;1;-1;1;-1; 1; 1;-1; 1;-1; 1;-1;-1;-1;-1};%Determine if the ECG signal should be turned -1 or not 1. 
+    Ralphsfactor=[1;1;1;1;1;-1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1];%Determine if the ECG signal should be turned -1 or not 1. 
                  %1  2 3  4 5  6 7  8  9  10 11 12 13 14 15 16 17 18
     padding=0; %Determine if the RR should be same length as ECG. Don`t have to be
 
 %Ralph            
     for R=1:length(ECG_win_300)
+        if (mod(R,5)==0)
+            pause(0.4)
+            close all
+        end
         t_300{1,R}=linspace(0,length(ECG_win_300{1,R})/FS_ecg,length(ECG_win_300{1,R}))';
         if all(isnan(ECG_win_300{1,R}))==1 || range(ECG_win_300{1,R})==0 || length(unique(ECG_win_300{1,R}))<=4  % if only Nan Ralph cannot handle it or if all values are the same (Flat line)
            RR_300{R,1}=NaN(1,length(ECG_win_300{1,R})) ;
            RR_idx_300{R,1}=NaN;
         else
-            [RR_idx_300{R,1}, ~, ~, ~, ~, RR_300{R,1}, ~] = ecg_find_rpeaks(t_300{1,R},Ralphsfactor*ECG_win_300{1,R}, FS_ecg, 250,plotting,0); %, , , maxrate,plotting,saving   -1* because Ralph optimized for a step s slope, we also have steep Q slope. inverting fixes that probel 
+            [RR_idx_300{R,1}, ~, ~, ~, ~, RR_300{R,1}, ~] = ecg_find_rpeaks(t_300{1,R},Ralphsfactor(pat)*ECG_win_300{1,R}, FS_ecg, 250,plotting,0); %, , , maxrate,plotting,saving   -1* because Ralph optimized for a step s slope, we also have steep Q slope. inverting fixes that probel 
         end
     end
     for R=1:length(ECG_win_30)  
@@ -168,7 +173,7 @@ savefolderHRVweightAge=([savefolder 'HRV_features\weigthAge\']);
            RR_30{R,1}=NaN(1,length(ECG_win_30{1,R})) ;
            RR_idx_30{R,1}=NaN;
         else        
-            [RR_idx_30{R,1}, ~, ~, ~, ~, RR_30{R,1}, ~] = ecg_find_rpeaks(t_30{1,R},Ralphsfactor*ECG_win_30{1,R}, FS_ecg, 250,plotting,0); %, , , maxrate,plotting,saving   -1* because Ralph optimized for a step s slope, we also have steep Q slope. inverting fixes that probel             
+            [RR_idx_30{R,1}, ~, ~, ~, ~, RR_30{R,1}, ~] = ecg_find_rpeaks(t_30{1,R},Ralphsfactor(pat)*ECG_win_30{1,R}, FS_ecg, 250,plotting,0); %, , , maxrate,plotting,saving   -1* because Ralph optimized for a step s slope, we also have steep Q slope. inverting fixes that probel             
         end
     end        
         
@@ -179,11 +184,11 @@ savefolderHRVweightAge=([savefolder 'HRV_features\weigthAge\']);
        Saving(RR_300,savefolderRR, Neonate, win)           
        disp('* RR saved')
     end
-        
+       
     %% ************ Creating EDR signal from 30s epoch ECG **************
     [EDR_30] =Respiration_from_ECG(ECG_win_30,RR_idx_30,RR_30,500);       
     [EDR_300]=Respiration_from_ECG(ECG_win_300,RR_idx_300,RR_300,500);   
-
+if 1==0 
     if saving
        Saving(EDR_30,savefolderEDR, Neonate, win)
        Saving(EDR_300,savefolderEDR, Neonate, win)           
@@ -289,7 +294,7 @@ savefolderHRVweightAge=([savefolder 'HRV_features\weigthAge\']);
         clearvars ECG_win_300 ECG_win_30 t_ECG_300 t_ECG_30 RR_idx_300 RR_300 RR_idx_30 RR_30 powerspectrum f powerspectrumEDR fEDR ECG Resp EMG EOG Chin...
             EDR_300 EDR_30 t_30 t_300
             
-        
+end   
 %     end %Sessionp
  end% Patient
  disp('----------------------------------')
