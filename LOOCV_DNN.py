@@ -84,6 +84,7 @@ def leave_one_out_cross_validation(babies,AnnotMatrix_each_patient,FeatureMatrix
        def sample_weight_calc_per_class(y_labeled):
               unique, counts = numpy.unique(concatenate(y_labeled), return_counts=True)	 
               weights=len(concatenate(y_labeled))/counts
+              weights= weights/min(weights)#normalize to majority class
               weights_dict=dict(zip(unique.astype(int), weights))
               return weights_dict
        
@@ -115,7 +116,9 @@ def leave_one_out_cross_validation(babies,AnnotMatrix_each_patient,FeatureMatrix
            
 #CALCULATE CLASS WEIGHTS   
        Weights_dict=sample_weight_calc_per_class(y_labeled)
-       Weights_all=create_sample_Weigth(y_labeled,Weights_dict,Var.label) 
+       Var.weight_dict=Weights_dict # saving it in Var
+       Weights_all=create_sample_Weigth(y_labeled,Weights_dict,Var.label)
+       Var.weight_all=Weights_all
 #        weights_all=[[weights_dict.get(x, 0) for x in sublist.flatten()] for sublist in y_labeled]
 
 # ONE HOT ENCODING OF Y-LABELS      

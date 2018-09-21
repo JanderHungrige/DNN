@@ -24,6 +24,8 @@ from keras import models
 from keras import layers
 from keras import callbacks 
 
+import keras.backend as K
+
 from keras.utils import np_utils
 
 from build_model import basic_dense_model
@@ -117,21 +119,26 @@ def KeraS(X_train, Y_train, X_val, Y_val, X_test, Y_test, Var):
                                             verbose=0, 
                                             mode='auto')#from build_model_residual import ResNet_LSTM_1  
     
-#    def w_categorical_crossentropy(y_true, y_pred, weights):
-#           nb_cl = len(weights)
-#           final_mask = K.zeros_like(y_pred[:, 0])
-#           y_pred_max = K.max(y_pred, axis=1)
-#           y_pred_max = K.reshape(y_pred_max, (K.shape(y_pred)[0], 1))
-#           y_pred_max_mat = K.cast(K.equal(y_pred, y_pred_max), K.floatx())
-#           for c_p, c_t in product(range(nb_cl), range(nb_cl)):
-#                  final_mask += (weights[c_t, c_p] * y_pred_max_mat[:, c_p] * y_true[:, c_t])
-#           return K.categorical_crossentropy(y_pred, y_true) * final_mask
+    def weighted_cat_crossentropy(y_true, y_pred, weights):
+           nb_cl = len(weights)
+           final_mask = K.zeros_like(y_pred[:, 0])
+           y_pred_max = K.max(y_pred, axis=1)
+           y_pred_max = K.reshape(y_pred_max, (K.shape(y_pred)[0], 1))
+           y_pred_max_mat = K.cast(K.equal(y_pred, y_pred_max), K.floatx())
+           for c_p, c_t in product(range(nb_cl), range(nb_cl)):
+                  final_mask += (weights[c_t, c_p] * y_pred_max_mat[:, c_p] * y_true[:, c_t])
+           return K.categorical_crossentropy(y_pred, y_true) * final_mask
     
+       
+   # calculating the wight matrix for the classes which will be used by the weighted loss function  
+    weights_per_class=list(Var.weight_dict.values())
     #https://github.com/keras-team/keras/issues/2115
-#    w_array = np.ones((3,3))
-#    w_array[2,1] = 1.2
-#    w_array[1,2] = 1.2
-#    ncce = partial(w_categorical_crossentropy, weights=w_array)
+    weight_Matrix = np.ones((len(Var.label),len(Var.label)))
+    for i in range(len(Var.label)):
+           for j in range(len(Var.label)):
+                  weight_Matrix[i][j]=weights_per_class[i]/weights_per_class[j]
+         
+    ncce = partial(weighted_cat_crossentropy, weights=weight_Matrix)
     
     
 #MODEL PARAMETERS   

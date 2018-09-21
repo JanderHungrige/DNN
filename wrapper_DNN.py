@@ -81,7 +81,7 @@ class Variablen:
        dataset='MMC'  #"ECG" "cECG" "MMC" "MMC+cECG" "cECGDNN"
        merge34=1
        WhichMix='all' #perSession or all  # determine how the data was scaled. PEr session or just per patient
-       model='Transfer_wide_Beta_GRU_2' # check DNN_routines KeraS for options
+       model='model_3_LSTM_advanced_seq' # check DNN_routines KeraS for options
        early_stopping_patience=100 #epochs
        
        
