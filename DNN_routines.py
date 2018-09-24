@@ -27,6 +27,8 @@ from keras import callbacks
 import keras.backend as K
 
 from keras.utils import np_utils
+from itertools import product
+from functools import partial
 
 from build_model import basic_dense_model
 from build_model import LSTM_model_1
@@ -118,32 +120,62 @@ def KeraS(X_train, Y_train, X_val, Y_val, X_test, Y_test, Var):
                                             patience=Var.early_stopping_patience, 
                                             verbose=0, 
                                             mode='auto')#from build_model_residual import ResNet_LSTM_1  
-    
-    def weighted_cat_crossentropy(y_true, y_pred, weights):
-           nb_cl = len(weights)
-           final_mask = K.zeros_like(y_pred[:, 0])
-           y_pred_max = K.max(y_pred, axis=1)
-           y_pred_max = K.reshape(y_pred_max, (K.shape(y_pred)[0], 1))
-           y_pred_max_mat = K.cast(K.equal(y_pred, y_pred_max), K.floatx())
-           for c_p, c_t in product(range(nb_cl), range(nb_cl)):
-                  final_mask += (weights[c_t, c_p] * y_pred_max_mat[:, c_p] * y_true[:, c_t])
-           return K.categorical_crossentropy(y_pred, y_true) * final_mask
-    
+
+    #https://github.com/keras-team/keras/issues/2115#issuecomment-315571824    
+    class WeightedCategoricalCrossEntropy(object):
+
+      def __init__(self, weights):
+             nb_cl = len(weights)
+             self.weights = np.ones((nb_cl, nb_cl))
+             for class_idx, class_weight in weights.items():
+                    self.weights[0][class_idx] = class_weight
+                    self.weights[class_idx][0] = class_weight
+             self.__name__ = 'w_categorical_crossentropy'
+
+      def __call__(self, y_true, y_pred):
+             return self.w_categorical_crossentropy(y_true, y_pred)
+
+      def w_categorical_crossentropy(self, y_true, y_pred):
+             nb_cl = len(self.weights)
+             final_mask = K.zeros_like(y_pred[..., 0])
+             y_pred_max = K.max(y_pred, axis=-1)
+             y_pred_max = K.expand_dims(y_pred_max, axis=-1)
+             y_pred_max_mat = K.equal(y_pred, y_pred_max)
+             for c_p, c_t in itertools.product(range(nb_cl), range(nb_cl)):
+                    w = K.cast(self.weights[c_t, c_p], K.floatx())
+                    y_p = K.cast(y_true[..., c_p], K.floatx())
+                    y_t = K.cast(y_true[..., c_t], K.floatx())
+                    final_mask += w * y_p * y_t
+             return K.categorical_crossentropy(y_true,y_pred) * final_mask
+
+
        
    # calculating the wight matrix for the classes which will be used by the weighted loss function  
-    weights_per_class=list(Var.weight_dict.values())
-    #https://github.com/keras-team/keras/issues/2115
-    weight_Matrix = np.ones((len(Var.label),len(Var.label)))
-    for i in range(len(Var.label)):
-           for j in range(len(Var.label)):
-                  weight_Matrix[i][j]=weights_per_class[i]/weights_per_class[j]
+#    weights_per_class=list(Var.weight_dict.values())
+#    #https://github.com/keras-team/keras/issues/2115
+#    #https://github.com/keras-team/keras/issues/2115#issuecomment-315571824
+#    weight_Matrix = np.ones((len(Var.label),len(Var.label)))
+#    for i in range(len(Var.label)):
+#           for j in range(len(Var.label)):
+#                  weight_Matrix[i][j]=weights_per_class[i]/weights_per_class[j]
          
-    ncce = partial(weighted_cat_crossentropy, weights=weight_Matrix)
-    
+#    ncce = partial(w_categorical_crossentropy, weights=Var.weight_dict)
+#    ncce.__name__ ='w_categorical_crossentropy'    
     
 #MODEL PARAMETERS   
-    adam = keras.optimizers.Adam(lr=Var.learning_rate, decay=Var.learning_rate_decay)
-    model.compile(loss=Var.Loss_Function, 
+   
+    Var.weight_dict2=dict() # need to rename keys of the dict to be used in weighted loss function
+    for i,j in zip(range(len(Var.label)), Var.weight_dict):
+           Var.weight_dict2[i] = Var.weight_dict[j]
+
+#    adam = keras.optimizers.Adam(lr=Var.learning_rate, decay=Var.learning_rate_decay)          
+    adam = keras.optimizers.Adam()
+    if Var.Loss_Function=='Weighted_cat_crossentropy' :
+           lossf=WeightedCategoricalCrossEntropy(Var.weight_dict2)
+    else: 
+           lossf=Var.Loss_Function
+
+    model.compile(loss=lossf, 
                   optimizer=adam,
                   metrics=Var.Perf_Metric,
 #                  metrics=categorical_accuracy_no_mask,
@@ -166,7 +198,7 @@ def KeraS(X_train, Y_train, X_val, Y_val, X_test, Y_test, Var):
                       sample_weight=Var.class_weights,
                       validation_data=(X_val,Y_val),                       
                       shuffle=True,
-                      callbacks=[checkp,callbackmetric,early_stopping_callback])
+                      callbacks=[checkp,callbackmetric])
 
     print(model.summary()) 
 #EVALUATE MODEL     

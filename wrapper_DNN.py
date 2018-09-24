@@ -75,10 +75,10 @@ class Variablen:
        SavingResults=1
        
        FeatureSet='Features' #Features ECG, EDR, HRV
-       lst= [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33] 
+       lst= [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46] 
        label=[1,2,3,4,6] # 1=AS 2=QS 3=Wake 4=Care-taking 5=NA 6= transition
-       usedPC='Philips' #Philips or c3po or Cluster
-       dataset='MMC'  #"ECG" "cECG" "MMC" "MMC+cECG" "cECGDNN"
+       usedPC='Cluster' #Philips or c3po or Cluster
+       dataset='MMC+ECG+InSe'  #"ECG" "cECG" "MMC" InSe "MMC+cECG" 'MMC+InSe' 'ECG+InSe' 'MMC+ECG+InSe' 
        merge34=1
        WhichMix='all' #perSession or all  # determine how the data was scaled. PEr session or just per patient
        model='model_3_LSTM_advanced_seq' # check DNN_routines KeraS for options
@@ -96,10 +96,10 @@ class Variablen:
        dropout=0.5 #0.5; 0.9  dropout can be between 0-1  as %  DROPOUT CAN BE ADDED TO EACH LAYER
        learning_rate=0.001 #0.0001 to 0.01 default =0.001
        learning_rate_decay=0.0 #0.0 default
-       fold=1
+       fold=3
        scalerange=(0, 2) #(0,1) or (-1,1) #If you are using sigmoid activation functions, rescale your data to values between 0-and-1. If you’re using the Hyperbolic Tangent (tanh), rescale to values between -1 and 1.
        scaler = MinMaxScaler(feature_range=scalerange) #define function
-       Loss_Function='categorical_crossentropy'# categorical_crossentropy OR mean_squared_error IF BINARY : binary_crossentropy
+       Loss_Function='Weighted_cat_crossentropy'#Weighted_cat_crossentropy or categorical_crossentropy OR mean_squared_error IF BINARY : binary_crossentropy
        Perf_Metric=['categorical_accuracy']# 'categorical_accuracy' OR 'binary_accuray'
        activationF='sigmoid' # 'relu', 'tanh', 'sigmoid' ,...  Only in case the data is not normalized , only standardised
        Kr=0.0 # Kernel regularizers
@@ -110,10 +110,19 @@ Var=Variablen()
 
 if Var.dataset=='ECG' or 'cECG' or 'cECGDNN':
          Var.selectedbabies =[0,1,2,3,5,6,7,8] #0-8 ('4','5','6','7','9','10','11','12','13')
+if Var.dataset == 'InSe':
+         Var.selectedbabies =[0,1,2,3,5,6,7] #0-7      '3','4','5','6','8','9','13','15'              
 if Var.dataset == 'MMC':
        Var.selectedbabies=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21] #0-21
-if Var.dataset == 'MMC+cECG':
-       Var.selectedbabies=[0,1,2,3,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30] #0-27    # first 10 cECG rest MMC   
+if Var.dataset == 'MMC+ECG':
+       Var.selectedbabies=[0,1,2,3,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30] #0-27    # first 9 cECG rest MMC   
+if Var.dataset == 'MMC+InSe':
+       Var.selectedbabies=[0,1,2,3,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29] #0-27    # first 8 InSen rest MMC    
+if Var.dataset == 'ECG+InSe':
+       Var.selectedbabies=[0,1,2,3,5,6,7,8,9,10,11,12,13,14,15,16] #0-17    # first 8 InSe rest cECG               
+if Var.dataset == 'MMC+ECG+InSe':
+       Var.selectedbabies=[0,1,2,3,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38] #0-17    # first 8 InSe,8-16 cECG, rest MMC           
+
 
 if Var.scalerange==(0,1) :
        Var.activationF='sigmoid'
@@ -137,7 +146,8 @@ info={'label': Var.label,'Features':'all','Lookback': Var.Lookback,'split': Var.
       'learning_rate': Var.learning_rate,'learning_rate_decay': Var.learning_rate_decay, 
       'fold': Var.fold, 'Scale': Var.scalerange,'Loss_Function': Var.Loss_Function,
       'Perf_Metric': Var.Perf_Metric,'Activation_funtion': Var.activationF,
-      'ResidualBlocks':Var.residual_blocks,'model' :Var.model}
+      'ResidualBlocks':Var.residual_blocks,'model' :Var.model, 'earlystoppingpatience': Var.early_stopping_patience,
+      'Metric weighting method':Jmethod}
 
 
 class Variablenplus:
@@ -232,7 +242,7 @@ Ergebnisse.mean_train_no_mask_acc\
 
 
 if Var.fold>1:
-       Ergebnisse.mean_test_metric_overall=np.mean(Ergebnisse.mean_test_metric) # Kappa is not calculated per epoch but just per fold. Therefor we generate on mean Kappa
+       Ergebnisse.mean_test_metric_overall=np.mean(Ergebnisse.mean_test_metric,axis=0) # Kappa is not calculated per epoch but just per fold. Therefor we generate on mean Kappa
        Ergebnisse.mean_train_metric_overall=np.mean(Ergebnisse.mean_train_metric,axis=0)
        Ergebnisse.mean_val_metric_overall=np.mean(Ergebnisse.mean_val_metric,axis=0)    
        Ergebnisse.mean_test_loss_overall=mean(Ergebnisse.mean_test_loss,axis=0)    

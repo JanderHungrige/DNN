@@ -41,48 +41,64 @@ def Loading_data_all(Var,Varplus):
        """
        if 'ECG'== Var.dataset:
               if ux:
-                     folder=('/home/310122653/Pyhton_Folder/cECG/Matrices/')
-              else:
-                     folder=('C:/Users/310122653/Dropbox/PHD/python/cECG/Matrices/')
+                     folder=('/home/310122653/DNN_Matrices/Matrix_sets_21_9/Single_Matrices/cECG/')
      
-       if 'cECG'==Var.dataset:
+       if 'InSe'==Var.dataset:
               if ux:
-                     folder=('/home/310122653/Pyhton_Folder/cECG/cMatrices/')
-              else:
-#                     folder=('C:/Users/310122653/Dropbox/PHD/python/cECG/cMatrices/')
-                      folder=('C:/Users/310122653/Documents/PhD/Article_3_(cECG)/Processed Data/Matrix_Intellivue')                     
+                     folder=('/home/310122653/DNN_Matrices/Matrix_sets_21_9/Single_Matrices/InnerSense/')
+                     
        if 'MMC'== Var.dataset:        
               if Var.usedPC=='Cluster':
-                     folder=('/home/310122653/DNN_Matrices/Matrices_Features/')
+                     folder=('/home/310122653/DNN_Matrices/Matrix_sets_21_9/Single_Matrices/MMC/')
               if Var.usedPC=='Philips':
                      folder=('C:/Users/310122653/Documents/PhD/Article_4_(MMC)/Processed data/Matrices/')              
               if Var.usedPC=='c3po':
                      folder=('C:/Users/C3PO/Desktop/Processed_data/DNN_Matrices/Matrices_Features/')                     
-       if 'MMC+cECG'== Var.dataset:        
+       if 'MMC+ECG'== Var.dataset:        
               if Var.usedPC=='Cluster':
-                     folder=('/home/310122653/DNN_Matrices/Matrices_Features_Mix/')
+                     folder=('/home/310122653/DNN_Matrices/Matrix_sets_21_9/cECG_MMc/')
               if Var.usedPC=='Philips':
                      folder=('C:/Users/310122653/Documents/PhD/Article_4_(MMC)/Processed data/DNN_Matrices/Matrices_Features_Mix/')              
               if Var.usedPC=='c3po':
                      folder=('C:/Users/C3PO/Desktop/Processed_data/DNN_Matrices/Matrices_Features_Mix/')                      
-       if 'cECGDNN'== Var.dataset:        
+       if 'MMC+InSe'== Var.dataset:        
               if Var.usedPC=='Cluster':
-                     folder=('/home/310122653/DNN_Matrices/cMatrices/')
-              if Var.usedPC=='Philips':
-                     folder=('C:/Users/310122653/Documents/PhD/Article_3_(cECG)/Processed data/Matrix_Intellivue/')              
-              if Var.usedPC=='c3po':
-                     folder=('C:/Users/C3PO/Desktop/Processed_data/DNN_Matrices/cMatrix/')                      
+                     folder=('/home/310122653/DNN_Matrices/Matrix_sets_21_9/Inner_Sence_MMC/')
+#              if Var.usedPC=='Philips':
+#                     folder=('C:/Users/310122653/Documents/PhD/Article_3_(cECG)/Processed data/Matrix_Intellivue/')              
+#              if Var.usedPC=='c3po':
+#                     folder=('C:/Users/C3PO/Desktop/Processed_data/DNN_Matrices/cMatrix/')                      
+       if 'ECG+InSe'== Var.dataset:        
+              if Var.usedPC=='Cluster':
+                     folder=('/home/310122653/DNN_Matrices/Matrix_sets_21_9/Inner_Sense_cECG/')
+                     
+       if 'MMC+ECG+InSe'== Var.dataset:        
+              if Var.usedPC=='Cluster':
+                     folder=('/home/310122653/DNN_Matrices/Matrix_sets_21_9/All/')
+
+
                             
        # ONLY 5 MIN FEATURES AND ANNOTATIONS
        dateien_each_patient="FeatureMatrix_","Annotations_" #non scaled values. The values should be scaled over all patient and not per patient. Therfore this is better
 #       windowlength="30"
        if 'ECG'== Var.dataset or 'cECG'== Var.dataset or 'cECGDNN'== Var.dataset:
            Neonate_all='4','5','6','7','9','10','11','12','13'
+       if 'InSe'== Var.dataset :
+           Neonate_all='3','4','5','6','8','9','13','15'          
        if 'MMC'== Var.dataset:
            Neonate_all='1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20','21','22' 
-       if 'MMC+cECG'== Var.dataset:
-           Neonate_all='4','5','6','7','9','10','11','12','13','21','22','23','24','25','26','27','28','29','30','31','32','33','34','35','36','37','38','39','40','41','42'            
-           
+       if 'MMC+ECG'== Var.dataset:
+           Neonate_all='1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20','21','22','23','24','25','26','27','28','29','30','31'            
+       if 'MMC+InSe'== Var.dataset:
+           Neonate_all='1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20','21','22','23','24','25','26','27','28','29','30'            
+       if 'ECG+InSe'== Var.dataset:
+           Neonate_all='1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17'            
+       if 'MMC+ECG+InSe'== Var.dataset:
+           Neonate_all='1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20','21','22','23','24','25','26','27','28','29','30','31','32','33','34','35','36','37','38','39'            
+#       if 'MMC+cECG'== Var.dataset:
+#           Neonate_all='4','5','6','7','9','10','11','12','13','21','22','23','24','25','26','27','28','29','30','31','32','33','34','35','36','37','38','39','40','41','42'            
+
+                                                                             
        babies=[i for i in range(len(Var.selectedbabies))]# return to main function
        Neonate=[(Neonate_all[i]) for i in Var.selectedbabies];Neonate=tuple(Neonate)
        FeatureMatrix_each_patient_all=[0]*len(Neonate)
