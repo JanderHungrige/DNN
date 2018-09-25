@@ -143,13 +143,12 @@ def KeraS(X_train, Y_train, X_val, Y_val, X_test, Y_test, Var):
              y_pred_max_mat = K.equal(y_pred, y_pred_max)
              for c_p, c_t in itertools.product(range(nb_cl), range(nb_cl)):
                     w = K.cast(self.weights[c_t, c_p], K.floatx())
-                    y_p = K.cast(y_true[..., c_p], K.floatx())
+                    y_p = K.cast(y_pred_max_mat[..., c_p], K.floatx())
                     y_t = K.cast(y_true[..., c_t], K.floatx())
                     final_mask += w * y_p * y_t
              return K.categorical_crossentropy(y_true,y_pred) * final_mask
 
-
-       
+      
    # calculating the wight matrix for the classes which will be used by the weighted loss function  
 #    weights_per_class=list(Var.weight_dict.values())
 #    #https://github.com/keras-team/keras/issues/2115
@@ -158,9 +157,11 @@ def KeraS(X_train, Y_train, X_val, Y_val, X_test, Y_test, Var):
 #    for i in range(len(Var.label)):
 #           for j in range(len(Var.label)):
 #                  weight_Matrix[i][j]=weights_per_class[i]/weights_per_class[j]
+#                  
+#    custom_loss  = partial(w_categorical_crossentropy,weights=weight_Matrix)               
          
 #    ncce = partial(w_categorical_crossentropy, weights=Var.weight_dict)
-#    ncce.__name__ ='w_categorical_crossentropy'    
+#    custom_loss.__name__ ='w_categorical_crossentropy'    
     
 #MODEL PARAMETERS   
    
@@ -170,15 +171,14 @@ def KeraS(X_train, Y_train, X_val, Y_val, X_test, Y_test, Var):
 
 #    adam = keras.optimizers.Adam(lr=Var.learning_rate, decay=Var.learning_rate_decay)          
     adam = keras.optimizers.Adam()
-    if Var.Loss_Function=='Weighted_cat_crossentropy' :
-           lossf=WeightedCategoricalCrossEntropy(Var.weight_dict2)
-    else: 
-           lossf=Var.Loss_Function
+#    if Var.Loss_Function=='Weighted_cat_crossentropy' :
+#           lossf=WeightedCategoricalCrossEntropy(Var.weight_dict2)
+#    else: 
+#           lossf=Var.Loss_Function
 
-    model.compile(loss=lossf, 
+    model.compile(loss=WeightedCategoricalCrossEntropy(Var.weight_dict2), 
                   optimizer=adam,
                   metrics=Var.Perf_Metric,
-#                  metrics=categorical_accuracy_no_mask,
                   sample_weight_mode="temporal")    
 
     callbackmetric=f1_prec_rec_acc_noMasking()

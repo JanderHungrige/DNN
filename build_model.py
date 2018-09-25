@@ -232,6 +232,16 @@ def model_4_GRU_advanced(X_train,Y_train,Var):
                                 activity_regularizer=regularizers.l2(Var.Ar),
                                 kernel_constraint=max_norm(max_value=3.), 
                                 dropout=Var.dropout, recurrent_dropout=Var.dropout)))
+   model.add(Bidirectional(GRU(Var.hidden_units, return_sequences=True,
+                                kernel_regularizer=regularizers.l2(Var.Kr),
+                                activity_regularizer=regularizers.l2(Var.Ar),
+                                kernel_constraint=max_norm(max_value=3.), 
+                                dropout=Var.dropout, recurrent_dropout=Var.dropout)))   
+   model.add(Bidirectional(GRU(Var.hidden_units, return_sequences=True,
+                                kernel_regularizer=regularizers.l2(Var.Kr),
+                                activity_regularizer=regularizers.l2(Var.Ar),
+                                kernel_constraint=max_norm(max_value=3.), 
+                                dropout=Var.dropout, recurrent_dropout=Var.dropout)))   
    model.add(Dropout(0.5, noise_shape=(None, 1, Var.hidden_units*2)))
    model.add(Dense(Y_train.shape[-1], activation='softmax', kernel_constraint=max_norm(max_value=3.)))
    model.summary()

@@ -9,6 +9,9 @@ The data is already standard scaled (z-scale mean=1 std=0) in MAtlab. For each s
 
 
 """
+#! /bin/sh -p
+#PBS -l nodes=1:ppn=1
+#PBS -N JobName
 
 from platform import python_version
 print ('Python version: ', sep=' ', end='', flush=True);print( python_version())	
@@ -20,6 +23,7 @@ print ('Python version: ', sep=' ', end='', flush=True);print( python_version())
 #from Classifier_routines import Classifier_random_forest
 from Loading_5min_mat_files_DNN import Loading_data_all,Loading_data_perSession,Feature_names,Loading_Annotations
 from LOOCV_DNN import leave_one_out_cross_validation
+from send_mail import noticeEMail
 #from LOOCV_DNN_using_generator import leave_one_out_cross_validation
 
 import itertools
@@ -147,7 +151,7 @@ info={'label': Var.label,'Features':'all','Lookback': Var.Lookback,'split': Var.
       'fold': Var.fold, 'Scale': Var.scalerange,'Loss_Function': Var.Loss_Function,
       'Perf_Metric': Var.Perf_Metric,'Activation_funtion': Var.activationF,
       'ResidualBlocks':Var.residual_blocks,'model' :Var.model, 'earlystoppingpatience': Var.early_stopping_patience,
-      'Metric weighting method':Jmethod}
+      'Metric weighting method':Var.Jmethod}
 
 
 class Variablenplus:
@@ -293,7 +297,15 @@ print("--- %i seconds ---" % (time.time() - start_time))
 print("--- %i min ---" % Minuten)
 print("--- %i h ---" % Stunden)
 
+# Fill these in with the appropriate info...
+urs='ScriptCallback@gmail.com'
+psw='$Siegel#1'
+fromaddr='ScriptCallback@gmail.com
+toaddr='jan.werth@philips.com'
+starttime=datetime.now()
 
+# Send notification email
+noticeEMail(starttime, usr, psw, fromaddr, toaddr)
 #disp(  RES1_Kappa[-1])
 #disp(RES1_kappa_STD)
 #disp (RES1_KAPPA_overall)

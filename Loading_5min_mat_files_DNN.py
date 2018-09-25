@@ -40,11 +40,11 @@ def Loading_data_all(Var,Varplus):
        START *************************************************************************
        """
        if 'ECG'== Var.dataset:
-              if ux:
+              if Var.usedPC=='Cluster':
                      folder=('/home/310122653/DNN_Matrices/Matrix_sets_21_9/Single_Matrices/cECG/')
      
        if 'InSe'==Var.dataset:
-              if ux:
+              if Var.usedPC=='Cluster':
                      folder=('/home/310122653/DNN_Matrices/Matrix_sets_21_9/Single_Matrices/InnerSense/')
                      
        if 'MMC'== Var.dataset:        
