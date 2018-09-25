@@ -9,7 +9,7 @@ import smtplib
 from datetime import datetime
 
 
-def noticeEMail(starttime, usr, psw, fromaddr, toaddr):
+def noticeEMail(starttime, usr, psw, fromaddr, toaddr,runningNumber,description):
     """
     Sends an email message through GMail once the script is completed.  
     Developed to be used with AWS so that instances can be terminated 
@@ -35,11 +35,10 @@ def noticeEMail(starttime, usr, psw, fromaddr, toaddr):
     
     # Send email
     senddate=datetime.strftime(datetime.now(), '%Y-%m-%d')
-    subject="Your job has completed"
+    subject="Your job " + runningNumber + " has completed"
     m="Date: %s\r\nFrom: %s\r\nTo: %s\r\nSubject: %s\r\nX-Mailer: My-Mail\r\n\r\n" % (senddate, fromaddr, toaddr, subject)
-    msg='''
+    msg= runningNumber+description+'\n Job runtime: '+str(runtime)
     
-    Job runtime: '''+str(runtime)
     
     server.sendmail(fromaddr, toaddr, m+msg)
     server.quit()

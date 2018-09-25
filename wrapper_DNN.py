@@ -15,7 +15,7 @@ The data is already standard scaled (z-scale mean=1 std=0) in MAtlab. For each s
 
 from platform import python_version
 print ('Python version: ', sep=' ', end='', flush=True);print( python_version())	
-
+starttime=datetime.now()
 
 #from Loading_5min_mat_files_cECG import \
 #babies, AnnotMatrix_each_patient, FeatureMatrix_each_patient_all, Class_dict, features_dict, features_indx, \
@@ -24,6 +24,8 @@ print ('Python version: ', sep=' ', end='', flush=True);print( python_version())
 from Loading_5min_mat_files_DNN import Loading_data_all,Loading_data_perSession,Feature_names,Loading_Annotations
 from LOOCV_DNN import leave_one_out_cross_validation
 from send_mail import noticeEMail
+from datetime import datetime
+
 #from LOOCV_DNN_using_generator import leave_one_out_cross_validation
 
 import itertools
@@ -298,14 +300,14 @@ print("--- %i min ---" % Minuten)
 print("--- %i h ---" % Stunden)
 
 # Fill these in with the appropriate info...
-urs='ScriptCallback@gmail.com'
+usr='ScriptCallback@gmail.com'
 psw='$Siegel#1'
-fromaddr='ScriptCallback@gmail.com
+fromaddr='ScriptCallback@gmail.com'
 toaddr='jan.werth@philips.com'
-starttime=datetime.now()
+
 
 # Send notification email
-noticeEMail(starttime, usr, psw, fromaddr, toaddr)
+noticeEMail(starttime, usr, psw, fromaddr, toaddr,Var.runningNumber,Var.description)
 #disp(  RES1_Kappa[-1])
 #disp(RES1_kappa_STD)
 #disp (RES1_KAPPA_overall)
