@@ -15,7 +15,6 @@ The data is already standard scaled (z-scale mean=1 std=0) in MAtlab. For each s
 
 from platform import python_version
 print ('Python version: ', sep=' ', end='', flush=True);print( python_version())	
-starttime=datetime.now()
 
 #from Loading_5min_mat_files_cECG import \
 #babies, AnnotMatrix_each_patient, FeatureMatrix_each_patient_all, Class_dict, features_dict, features_indx, \
@@ -25,7 +24,7 @@ from Loading_5min_mat_files_DNN import Loading_data_all,Loading_data_perSession,
 from LOOCV_DNN import leave_one_out_cross_validation
 from send_mail import noticeEMail
 from datetime import datetime
-
+starttime=datetime.now()
 #from LOOCV_DNN_using_generator import leave_one_out_cross_validation
 
 import itertools
@@ -51,13 +50,13 @@ import pdb # use pdb.set_trace() as breakpoint
 
 import pickle # to save objects
 
-
 #from compute_class_weight import *   
-import time
-start_time = time.time()
+#import time
+#start_time = time.time()
 Klassifier=['RF','ERF','TR','GB', 'LR']
 SampMeth=['NONE','SMOTE','ADASYN']
 Whichmix=['perSession', 'all']
+
 
 
 #_Labels_ECG_Featurelist_Scoring_classweigt_C_gamma
@@ -289,15 +288,17 @@ disp('-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  - ')
 
 if len(Var.split)<3:
        disp('don`t give a f** about Kappa. Data is only plit for train and val' )
-import time
-t=time.localtime()
-zeit=time.asctime()
-Minuten=(time.time() - start_time)/60
-Stunden=(time.time() - start_time)/3600
+runtime=datetime.now() - starttime       
+#import time
+#t=time.localtime()
+#zeit=time.asctime()
+#Minuten=(time.time() - start_time)/60
+#Stunden=(time.time() - start_time)/3600
 print('FINISHED ' + Var.runningNumber + Var.description )
-print("--- %i seconds ---" % (time.time() - start_time))
-print("--- %i min ---" % Minuten)
-print("--- %i h ---" % Stunden)
+print ('Runtime ' + runtime)
+#print("--- %i seconds ---" % (time.time() - start_time))
+#print("--- %i min ---" % Minuten)
+#print("--- %i h ---" % Stunden)
 
 # Fill these in with the appropriate info...
 usr='ScriptCallback@gmail.com'
