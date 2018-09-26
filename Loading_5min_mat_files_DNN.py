@@ -328,11 +328,24 @@ def Feature_names():
                       26:"uHF",
                       27:"uHFnorm",
                       28:"VLF",
-                      29:"SampEN",
-                      30:"QSE",
-                      31:"SEAUC",                     
-                      32:"LZNN",
-                      33:"LZECG"
+                      29:"HFR",
+                      30:"HFnormR",
+                      31:"LFnormR",
+                      32:"MFR",
+                      33:"MFnormR",
+                      34:"ratioLFHFR",
+                      35:"ratioMFHFR",
+                      36:"totpowR", 
+                      37:"SampEN",
+                      38:"QSE",
+                      39:"SEAUC",                     
+                      40:"LZNN",
+                      41:"LZECG",
+                      42:"LZEDR",
+                      43:"Age_diff",
+                      44:"Birthweight",
+                      45:"CA",
+                      46:"GA"
                       }                      
        features_indx = dict((y,x) for x,y in features_dict.items())       
        return Class_dict, features_dict, features_indx

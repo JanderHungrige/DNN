@@ -23,15 +23,18 @@ print ('Python version: ', sep=' ', end='', flush=True);print( python_version())
 from Loading_5min_mat_files_DNN import Loading_data_all,Loading_data_perSession,Feature_names,Loading_Annotations
 from LOOCV_DNN import leave_one_out_cross_validation
 from send_mail import noticeEMail
-from datetime import datetime
-starttime=datetime.now()
+import datetime as dt
+starttime=dt.datetime.now()
 #from LOOCV_DNN_using_generator import leave_one_out_cross_validation
 
+
 import itertools
+
 from matplotlib import *
 #from numpy import *
 from pylab import *
 import numpy as np
+
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.preprocessing import StandardScaler
 from sklearn.cross_validation import StratifiedKFold
@@ -45,6 +48,7 @@ from sklearn.metrics import roc_curve, auc
 from sklearn import svm, cross_validation
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
 from sklearn.linear_model import Perceptron
+
 import sys #to add strings together
 import pdb # use pdb.set_trace() as breakpoint
 
@@ -52,7 +56,7 @@ import pickle # to save objects
 
 #from compute_class_weight import *   
 #import time
-#start_time = time.time()
+start_time = time.time()
 Klassifier=['RF','ERF','TR','GB', 'LR']
 SampMeth=['NONE','SMOTE','ADASYN']
 Whichmix=['perSession', 'all']
@@ -74,34 +78,33 @@ Loading data declaration & Wrapper variables
 """
 SavingResults=1
 class Variablen:
-       description='Create_weighs666'
-       runningNumber='4'
+       description='Bi_ASQS'
+       runningNumber='40'
+       label=[1,2,3,4,6] # 1=AS 2=QS 3=Wake 4=Care-taking 5=NA 6= transition
+       usedPC='Cluster' #Philips or c3po or Cluster
+       dataset='MMC+ECG+InSe'  #"ECG" "cECG" "MMC" InSe "MMC+cECG" 'MMC+InSe' 'ECG+InSe' 'MMC+ECG+InSe' 
+       Epochs=800
+       fold=3   
+       model='model_3_LSTM_advanced_seq' # check DNN_routines KeraS for options
+       
        saving_model=1
        SavingResults=1
        
        FeatureSet='Features' #Features ECG, EDR, HRV
        lst= [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46] 
-       label=[1,2,3,4,6] # 1=AS 2=QS 3=Wake 4=Care-taking 5=NA 6= transition
-       usedPC='Cluster' #Philips or c3po or Cluster
-       dataset='MMC+ECG+InSe'  #"ECG" "cECG" "MMC" InSe "MMC+cECG" 'MMC+InSe' 'ECG+InSe' 'MMC+ECG+InSe' 
        merge34=1
        WhichMix='all' #perSession or all  # determine how the data was scaled. PEr session or just per patient
-       model='model_3_LSTM_advanced_seq' # check DNN_routines KeraS for options
        early_stopping_patience=100 #epochs
-       
-       
        Jmethod='weighted' # the method used for f1 precicion /recall ...       
        Lookback= 1337# 1337 or anything else . #Loockback for the LSTM. The data is separated samples with timestep=loockback; #Loockback of 1337 mean all data per patient. Otherwise it is in nr of 30s epochs. e.g. 60=30min  120=1h 10=5min
 #       split=[0.60,0.2,0.2];# HOw to split the dataset in [Train, Validation, Test] e.g.70:15:15  or 50:25:25 ,... # The split is done for each fold. Just for the chekout phase use fold one. Later calculate how often the test split fits into the total data, that is the fold. e.g. 30 patients with 15% test -> 4.5 (round to 5) patients per fold. Now see how many times the 30 can be folded with 5 patients in the test set to cover all patients. 30/5=6 -> 6 fold
        split=[0.70,0.30];
        batchsize=5  # LSTM needs [batchsize, timestep, feature] your batch size divides nb_samples from the original tensor. So batchsize should be smaller than samples
-       Epochs=2
        hidden_units=32 # 2-64 or even 1000 as used by sleepnet best: multible of 32
        Dense_Unit=34
        dropout=0.5 #0.5; 0.9  dropout can be between 0-1  as %  DROPOUT CAN BE ADDED TO EACH LAYER
        learning_rate=0.001 #0.0001 to 0.01 default =0.001
        learning_rate_decay=0.0 #0.0 default
-       fold=3
        scalerange=(0, 2) #(0,1) or (-1,1) #If you are using sigmoid activation functions, rescale your data to values between 0-and-1. If you’re using the Hyperbolic Tangent (tanh), rescale to values between -1 and 1.
        scaler = MinMaxScaler(feature_range=scalerange) #define function
        Loss_Function='Weighted_cat_crossentropy'#Weighted_cat_crossentropy or categorical_crossentropy OR mean_squared_error IF BINARY : binary_crossentropy
@@ -201,6 +204,7 @@ Ergebnisse=Results()
 """
 Loading Data
 """
+
 Class_dict, features_dict, features_indx=Feature_names()
 
 # CHOOSING WHICH FEATURE MATRIX IS USED
@@ -288,24 +292,24 @@ disp('-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  - ')
 
 if len(Var.split)<3:
        disp('don`t give a f** about Kappa. Data is only plit for train and val' )
-runtime=datetime.now() - starttime       
-#import time
-#t=time.localtime()
-#zeit=time.asctime()
-#Minuten=(time.time() - start_time)/60
-#Stunden=(time.time() - start_time)/3600
+       
+   
+import time
+t=time.localtime()
+zeit=time.asctime()
+Minuten=(time.time() - start_time)/60
+Stunden=(time.time() - start_time)/3600
 print('FINISHED ' + Var.runningNumber + Var.description )
-print ('Runtime ' + runtime)
-#print("--- %i seconds ---" % (time.time() - start_time))
-#print("--- %i min ---" % Minuten)
-#print("--- %i h ---" % Stunden)
+#print ('Runtime ' + runtime)
+print("--- %i seconds ---" % (time.time() - start_time))
+print("--- %i min ---" % Minuten)
+print("--- %i h ---" % Stunden)
 
 # Fill these in with the appropriate info...
 usr='ScriptCallback@gmail.com'
 psw='$Siegel#1'
 fromaddr='ScriptCallback@gmail.com'
 toaddr='jan.werth@philips.com'
-
 
 # Send notification email
 noticeEMail(starttime, usr, psw, fromaddr, toaddr,Var.runningNumber,Var.description)
