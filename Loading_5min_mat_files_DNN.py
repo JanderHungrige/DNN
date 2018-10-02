@@ -41,40 +41,40 @@ def Loading_data_all(Var,Varplus):
        """
        if 'ECG'== Var.dataset:
               if Var.usedPC=='Cluster':
-                     folder=('/home/310122653/DNN_Matrices/Matrix_sets_21_9/Single_Matrices/cECG/')
+                     folder=('/home/310122653/DNN_Matrices/Matrix_sets_27_9/Single_Matrices/cECG/')
      
        if 'InSe'==Var.dataset:
               if Var.usedPC=='Cluster':
-                     folder=('/home/310122653/DNN_Matrices/Matrix_sets_21_9/Single_Matrices/InnerSense/')
+                     folder=('/home/310122653/DNN_Matrices/Matrix_sets_27_9/Single_Matrices/InnerSense/')
                      
        if 'MMC'== Var.dataset:        
               if Var.usedPC=='Cluster':
-                     folder=('/home/310122653/DNN_Matrices/Matrix_sets_21_9/Single_Matrices/MMC/')
+                     folder=('/home/310122653/DNN_Matrices/Matrix_sets_27_9/Single_Matrices/MMC/')
               if Var.usedPC=='Philips':
                      folder=('C:/Users/310122653/Documents/PhD/Article_4_(MMC)/Processed data/Matrices/')              
               if Var.usedPC=='c3po':
                      folder=('C:/Users/C3PO/Desktop/Processed_data/DNN_Matrices/Matrices_Features/')                     
        if 'MMC+ECG'== Var.dataset:        
               if Var.usedPC=='Cluster':
-                     folder=('/home/310122653/DNN_Matrices/Matrix_sets_21_9/cECG_MMc/')
+                     folder=('/home/310122653/DNN_Matrices/Matrix_sets_27_9/cECG_MMc/')
               if Var.usedPC=='Philips':
                      folder=('C:/Users/310122653/Documents/PhD/Article_4_(MMC)/Processed data/DNN_Matrices/Matrices_Features_Mix/')              
               if Var.usedPC=='c3po':
                      folder=('C:/Users/C3PO/Desktop/Processed_data/DNN_Matrices/Matrices_Features_Mix/')                      
        if 'MMC+InSe'== Var.dataset:        
               if Var.usedPC=='Cluster':
-                     folder=('/home/310122653/DNN_Matrices/Matrix_sets_21_9/Inner_Sence_MMC/')
+                     folder=('/home/310122653/DNN_Matrices/Matrix_sets_27_9/Inner_Sence_MMC/')
 #              if Var.usedPC=='Philips':
 #                     folder=('C:/Users/310122653/Documents/PhD/Article_3_(cECG)/Processed data/Matrix_Intellivue/')              
 #              if Var.usedPC=='c3po':
 #                     folder=('C:/Users/C3PO/Desktop/Processed_data/DNN_Matrices/cMatrix/')                      
        if 'ECG+InSe'== Var.dataset:        
               if Var.usedPC=='Cluster':
-                     folder=('/home/310122653/DNN_Matrices/Matrix_sets_21_9/Inner_Sense_cECG/')
+                     folder=('/home/310122653/DNN_Matrices/Matrix_sets_27_9/Inner_Sense_cECG/')
                      
        if 'MMC+ECG+InSe'== Var.dataset:        
               if Var.usedPC=='Cluster':
-                     folder=('/home/310122653/DNN_Matrices/Matrix_sets_21_9/All/')
+                     folder=('/home/310122653/DNN_Matrices/Matrix_sets_27_9/All/')
 
 
                             

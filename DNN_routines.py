@@ -105,9 +105,9 @@ def KeraS(X_train, Y_train, X_val, Y_val, X_test, Y_test, Var):
            from keras.utils.vis_utils import plot_model    
            plot_model(model, to_file='model_plot.png', show_shapes=True, show_layer_names=True) 
            
-    tensorboard = TensorBoard(log_dir='./Results/logs') 
+    tensorboard = TensorBoard(log_dir=Var.resultpath +'/logs') 
 
-    checkp = ModelCheckpoint(filepath='./Results/'+Var.runningNumber+'_'+Var.description+'_checkpointbestmodel.hdf5',  
+    checkp = ModelCheckpoint(filepath=Var.resultpath + '/'+Var.runningNumber+'_'+Var.description+'_checkpointbestmodel.hdf5',  
                                    monitor='val_loss', 
                                    verbose=1, 
                                    save_best_only=True, 

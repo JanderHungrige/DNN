@@ -78,17 +78,22 @@ Loading data declaration & Wrapper variables
 """
 SavingResults=1
 class Variablen:
-       description='Bi_ASQS'
-       runningNumber='40'
-       label=[1,2,3,4,6] # 1=AS 2=QS 3=Wake 4=Care-taking 5=NA 6= transition
+       description='Bi_ISCTW'
+       runningNumber='122'
+       label=[3,4,6] # 1=AS 2=QS 3=Wake 4=Care-taking 5=NA 6= transition
        usedPC='Cluster' #Philips or c3po or Cluster
-       dataset='MMC+ECG+InSe'  #"ECG" "cECG" "MMC" InSe "MMC+cECG" 'MMC+InSe' 'ECG+InSe' 'MMC+ECG+InSe' 
+       dataset='InSe'  #'MMC+ECG+InSe' "MMC+cECG" 'MMC+InSe' 'ECG+InSe' "MMC" "ECG" InSe    "cECG"   
        Epochs=800
        fold=3   
-       model='model_3_LSTM_advanced_seq' # check DNN_routines KeraS for options
+       model='model_3_LSTM_advanced' # check DNN_routines KeraS for options model_4_GRU_advanced  model_3_LSTM_advanced
        
        saving_model=1
        SavingResults=1
+       if usedPC=='Cluster':
+           resultpath='/home/310122653/Git/DNN/Results/'
+       else:
+           resultpath='./Results/'
+    
        
        FeatureSet='Features' #Features ECG, EDR, HRV
        lst= [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46] 
@@ -137,10 +142,10 @@ if Var.scalerange==(0,1) :
 elif Var.scalerange==(-1,1):
        Var.activationF='tanh'    
 
-if len(Var.label)==2:
-       Var.Loss_Function='binary_crossentropy'       
-       Var.Perf_Metric=['categorical_accuracy'] # ['categorical_accuracy'] OR ['binary_accuray']
-       Var.Jmethod='binary'
+#if len(Var.label)==2:
+#       Var.Loss_Function='binary_crossentropy'       
+#       Var.Perf_Metric=['categorical_accuracy'] # ['categorical_accuracy'] OR ['binary_accuray']
+#       Var.Jmethod='binary'
 if Var.Lookback==1337: # The problem is that the patients have different lenght. Then we need to zero pad. Instead of zeropadding we can use diffent length when batchsize==1
        Var.batchsize=1
        
@@ -272,9 +277,9 @@ if Var.saving_model:
                      json_file.write(model_json)
         
        model_json = model.to_json()
-       save_Model(model_json,'Results/'+Var.runningNumber+'_'+Var.description+".json")              
+       save_Model(model_json,Var.resultpath+'/'+Var.runningNumber+'_'+Var.description+".json")              
        # serialize weights to HDF5
-       model.save_weights('Results/'+Var.runningNumber+'_'+Var.description+'_weigths.h5')  # creates a HDF5 file 'my_model.h5'
+       model.save_weights(Var.resultpath+'/'+Var.runningNumber+'_'+Var.description+'_weigths.h5')  # creates a HDF5 file 'my_model.h5'
        print('Model saved')
 #
 if Var.SavingResults:
@@ -282,7 +287,7 @@ if Var.SavingResults:
               with open(filename, 'wb') as output:  # Overwrites any existing file.
                      pickle.dump(obj, output, pickle.HIGHEST_PROTOCOL)
         
-       save_object(Ergebnisse, 'Results/'+Var.runningNumber+'_'+Var.description+'.pkl' )  
+       save_object(Ergebnisse, Var.resultpath+'/'+Var.runningNumber+'_'+Var.description+'.pkl' )  
        print('Results saved')
 
 """

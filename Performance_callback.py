@@ -9,7 +9,7 @@ Created on Tue Aug  7 13:21:53 2018
 import numpy as np
 from keras.callbacks import Callback
 from sklearn.metrics import confusion_matrix, f1_score, precision_score, recall_score, accuracy_score
-
+import sys
 
 class f1_precicion_recall_acc(Callback):
        def on_train_begin(self, logs={}):
@@ -30,7 +30,7 @@ class f1_precicion_recall_acc(Callback):
               self.val_precisions.append(_val_precision)
               self.val_accuracy.append(_val_accuracy)
 
-              print (" — val_f1: %f — val_precision: %f — val_recall %f " %(_val_f1, _val_precision, _val_recall))
+              print ("  val_f1: %f  val_precision: %f  val_recall %f " %(_val_f1, _val_precision, _val_recall))
               return
  
 class callbackexample(Callback):
@@ -50,7 +50,7 @@ class callbackexample(Callback):
         
               self.train_accuracy.append(_train_accuracy)
               self.val_accuracy.append(_val_accuracy)
-              print ("- train_accuracy %f - val_accuracy %f" %(_train_accuracy, _val_accuracy))
+              print (" train_accuracy %f  val_accuracy %f" %(_train_accuracy, _val_accuracy))
               return
  
        
@@ -82,7 +82,7 @@ class categorical_accuracy_no_mask(Callback):
               self.train_acc.append(_train_accuracy)        
               self.val_acc.append(_val_accuracy)
 
-              print (" — train_acc: %f — val_acc: %f " %(_train_accuracy, _val_accuracy))
+              print ("  train_acc: %f  val_acc: %f " %(_train_accuracy, _val_accuracy))
               return
 
 class f1_prec_rec_acc_noMasking(Callback):
@@ -143,6 +143,6 @@ class f1_prec_rec_acc_noMasking(Callback):
               self.val_precision.append(_val_precision)
               self.val_accuracy.append(_val_accuracy)
 
-              print ("— train_accuracy: %f — val_f1: %f — val_precision: %f — val_recall: %f - _val_accuracy: %f" %(_train_accuracy, _val_f1, _val_precision, _val_recall, _val_accuracy))
+              print (" train_accuracy: %f  val_f1: %f  val_precision: %f  val_recall: %f  _val_accuracy: %f" %(_train_accuracy, _val_f1, _val_precision, _val_recall, _val_accuracy))
               return
  
