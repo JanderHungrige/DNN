@@ -5,9 +5,9 @@
 
 python3 /home/310122653/Git/DNN/wrapper_DNN.py $PBS_ARRAYID
 
-#### qsub -t 39-206 Run_main2.sh
+#### qsub -t 39-206 Run_main2
 ### mystat
-###  qdel 3325750[].osios
+###  qdel 3326330[].osios
 ### https://confluence.atlas.philips.com/pages/viewpage.action?pageId=16491197 
 ### Info on qsub and qstat:
 ### http://docs.adaptivecomputing.com/torque/archive/3-0-2/2.1jobsubmission.php

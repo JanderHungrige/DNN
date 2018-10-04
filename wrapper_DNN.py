@@ -76,8 +76,9 @@ Loading data declaration & Wrapper variables
 29,30,31,32,33= HRV nonlinear
 **************************************************************************
 """
-arrayId=sys.argv[1]
-
+arrayId=int(sys.argv[1])
+print('RunningNumber:')
+print(arrayId)
 
 [descriptionID, datasetID, modelID, labelID, Loss_FunctionID]=inputcombinations(arrayId)
 
