@@ -78,14 +78,15 @@ Loading data declaration & Wrapper variables
 """
 SavingResults=1
 class Variablen:
-       description='Bi_ISCTW'
+       description='Bi_ISCTW' # Bi_ASQS  Bi_ASIS  Bi_ASCTW  Bi_QSIS  Bi_QSCTW  Bi_ISCTW
        runningNumber='122'
        label=[3,4,6] # 1=AS 2=QS 3=Wake 4=Care-taking 5=NA 6= transition
+       dataset='InSe' #MMC+ECG+InSe     MMC+ECG   MMC+InSe   ECG+InSe   MMC   ECG   InSe         "cECG"   
+       model='model_4_GRU_advanced' # check DNN_routines KeraS for options model_4_GRU_advanced  model_3_LSTM_advanced
+       
        usedPC='Cluster' #Philips or c3po or Cluster
-       dataset='InSe'  #'MMC+ECG+InSe' "MMC+cECG" 'MMC+InSe' 'ECG+InSe' "MMC" "ECG" InSe    "cECG"   
        Epochs=800
        fold=3   
-       model='model_3_LSTM_advanced' # check DNN_routines KeraS for options model_4_GRU_advanced  model_3_LSTM_advanced
        
        saving_model=1
        SavingResults=1
