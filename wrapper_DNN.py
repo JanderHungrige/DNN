@@ -22,11 +22,11 @@ print ('Python version: ', sep=' ', end='', flush=True);print( python_version())
 #from Classifier_routines import Classifier_random_forest
 from Loading_5min_mat_files_DNN import Loading_data_all,Loading_data_perSession,Feature_names,Loading_Annotations
 from LOOCV_DNN import leave_one_out_cross_validation
+from InputValues import inputcombinations
 from send_mail import noticeEMail
 import datetime as dt
 starttime=dt.datetime.now()
 #from LOOCV_DNN_using_generator import leave_one_out_cross_validation
-
 
 import itertools
 
@@ -76,13 +76,19 @@ Loading data declaration & Wrapper variables
 29,30,31,32,33= HRV nonlinear
 **************************************************************************
 """
+arrayId=sys.argv[1]
+
+
+[descriptionID, datasetID, modelID, labelID, Loss_FunctionID]=inputcombinations(arrayId)
+
 SavingResults=1
 class Variablen:
-       description='Bi_ISCTW' # Bi_ASQS  Bi_ASIS  Bi_ASCTW  Bi_QSIS  Bi_QSCTW  Bi_ISCTW
-       runningNumber='122'
-       label=[3,4,6] # 1=AS 2=QS 3=Wake 4=Care-taking 5=NA 6= transition
-       dataset='InSe' #MMC+ECG+InSe     MMC+ECG   MMC+InSe   ECG+InSe   MMC   ECG   InSe         "cECG"   
-       model='model_4_GRU_advanced' # check DNN_routines KeraS for options model_4_GRU_advanced  model_3_LSTM_advanced
+       description= descriptionID#'Bi_ASCTW' # Bi_ASQS  Bi_ASIS  Bi_ASCTW  Bi_QSIS  Bi_QSCTW  Bi_ISCTW
+       runningNumber=str(arrayId) #'125'
+       label=labelID #[1,2] # 1=AS 2=QS 3=Wake 4=Care-taking 5=NA 6= transition
+       dataset=datasetID  #'MMC+ECG+InSe' #MMC+ECG+InSe     MMC+ECG   MMC+InSe   ECG+InSe   MMC   ECG   InSe         "cECG"   
+       model= modelID  #'model_3_LSTM_advanced' # check DNN_routines KeraS for options model_4_GRU_advanced  model_3_LSTM_advanced
+       Loss_Function=Loss_FunctionID  #'categorical_crossentropy'#Weighted_cat_crossentropy or categorical_crossentropy OR mean_squared_error IF BINARY : binary_crossentropy
        
        usedPC='Cluster' #Philips or c3po or Cluster
        Epochs=800
@@ -113,7 +119,6 @@ class Variablen:
        learning_rate_decay=0.0 #0.0 default
        scalerange=(0, 2) #(0,1) or (-1,1) #If you are using sigmoid activation functions, rescale your data to values between 0-and-1. If you’re using the Hyperbolic Tangent (tanh), rescale to values between -1 and 1.
        scaler = MinMaxScaler(feature_range=scalerange) #define function
-       Loss_Function='Weighted_cat_crossentropy'#Weighted_cat_crossentropy or categorical_crossentropy OR mean_squared_error IF BINARY : binary_crossentropy
        Perf_Metric=['categorical_accuracy']# 'categorical_accuracy' OR 'binary_accuray'
        activationF='sigmoid' # 'relu', 'tanh', 'sigmoid' ,...  Only in case the data is not normalized , only standardised
        Kr=0.0 # Kernel regularizers

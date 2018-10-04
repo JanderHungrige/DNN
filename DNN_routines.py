@@ -174,9 +174,14 @@ def KeraS(X_train, Y_train, X_val, Y_val, X_test, Y_test, Var):
 #    if Var.Loss_Function=='Weighted_cat_crossentropy' :
 #           lossf=WeightedCategoricalCrossEntropy(Var.weight_dict2)
 #    else: 
-#           lossf=Var.Loss_Function
-
-    model.compile(loss=WeightedCategoricalCrossEntropy(Var.weight_dict2), 
+#           lossf=Var.Loss_Function 
+    if Var.Loss_Function=='Weighted_cat_crossentropy':
+        model.compile(loss=WeightedCategoricalCrossEntropy(Var.weight_dict2), 
+                      optimizer=adam,
+                      metrics=Var.Perf_Metric,
+                      sample_weight_mode="temporal") 
+    else:
+        model.compile(loss=Var.Loss_Function,                               
                   optimizer=adam,
                   metrics=Var.Perf_Metric,
                   sample_weight_mode="temporal")    
