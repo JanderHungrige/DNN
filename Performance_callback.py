@@ -16,7 +16,7 @@ class f1_precicion_recall_acc(Callback):
               self.val_f1s = []
               self.val_recalls = []
               self.val_precisions = []
-              self.val_accuracy=[]
+              self.val_accuracy_own=[]
  
        def on_epoch_end(self, epoch, logs={}):
               val_predict = (np.asarray(self.model.predict(self.model.validation_data[0]))).round()
@@ -24,11 +24,11 @@ class f1_precicion_recall_acc(Callback):
               _val_f1 = f1_score(val_targ, val_predict)
               _val_recall = recall_score(val_targ, val_predict)
               _val_precision = precision_score(val_targ, val_predict)
-              _val_accuracy = accuracy_score(val_targ, val_predict)
+              _val_accuracy_own = accuracy_score(val_targ, val_predict)
               self.val_f1s.append(_val_f1)
               self.val_recalls.append(_val_recall)
               self.val_precisions.append(_val_precision)
-              self.val_accuracy.append(_val_accuracy)
+              self.val_accuracy_own.append(_val_accuracy_own)
 
               print ("  val_f1: %f  val_precision: %f  val_recall %f " %(_val_f1, _val_precision, _val_recall))
               return
@@ -45,12 +45,12 @@ class callbackexample(Callback):
               val_predict = (np.asarray(self.model.predict(self.model.validation_data[0]))).round()
               val_targ = self.model.validation_data[1] 
 
-              _train_accuracy = accuracy_score(train_targ, train_predict)
-              _val_accuracy = accuracy_score(val_targ, val_predict)
+              _train_accuracy_own = accuracy_score(train_targ, train_predict)
+              _val_accuracy_own = accuracy_score(val_targ, val_predict)
         
-              self.train_accuracy.append(_train_accuracy)
-              self.val_accuracy.append(_val_accuracy)
-              print (" train_accuracy %f  val_accuracy %f" %(_train_accuracy, _val_accuracy))
+              self.train_accuracy_own.append(_train_accuracy_own)
+              self.val_accuracy_own.append(_val_accuracy_own)
+              print (" train_accuracy %f  val_accuracy %f" %(_train_accuracy_own, _val_accuracy_own))
               return
  
        
@@ -90,11 +90,11 @@ class f1_prec_rec_acc_noMasking(Callback):
               self.val_f1s = []
               self.val_recall = []
               self.val_precision = []
-              self.val_accuracy=[]
+              self.val_accuracy_own=[]
               self.train_f1s = []
               self.train_recall = []
               self.train_precision = []
-              self.train_accuracy=[]
+              self.train_accuracy_own=[]
  
        def on_epoch_end(self, epoch, logs={}):
               #LOAD DATA
@@ -126,22 +126,22 @@ class f1_prec_rec_acc_noMasking(Callback):
               _train_f1=               f1_score(train_true_nomask, train_pred_nomask,labels=self.model.label, pos_label=1, average=self.model.Jmethod)
               _train_recall=       recall_score(train_true_nomask, train_pred_nomask,labels=self.model.label, pos_label=1, average=self.model.Jmethod)
               _train_precision= precision_score(train_true_nomask, train_pred_nomask,labels=self.model.label, pos_label=1, average=self.model.Jmethod)
-              _train_accuracy=   accuracy_score(train_true_nomask, train_pred_nomask,normalize= True)              
+              _train_accuracy_own=   accuracy_score(train_true_nomask, train_pred_nomask,normalize= True)              
               
               _val_f1=               f1_score(val_true_nomask, val_pred_nomask,labels=self.model.label, pos_label=1, average=self.model.Jmethod)
               _val_recall=       recall_score(val_true_nomask, val_pred_nomask,labels=self.model.label, pos_label=1, average=self.model.Jmethod)
               _val_precision= precision_score(val_true_nomask, val_pred_nomask,labels=self.model.label, pos_label=1, average=self.model.Jmethod)
-              _val_accuracy=   accuracy_score(val_true_nomask, val_pred_nomask, normalize= True)
+              _val_accuracy_own=   accuracy_score(val_true_nomask, val_pred_nomask, normalize= True)
               
               self.train_f1s.append(_val_f1)
               self.train_recall.append(_val_recall)
               self.train_precision.append(_val_precision)
-              self.train_accuracy.append(_val_accuracy)
+              self.train_accuracy_own.append(_val_accuracy_own)
               
               self.val_f1s.append(_val_f1)
               self.val_recall.append(_val_recall)
               self.val_precision.append(_val_precision)
-              self.val_accuracy.append(_val_accuracy)
+              self.val_accuracy_own.append(_val_accuracy_own)
 
               print (" train_accuracy: %f  val_f1: %f  val_precision: %f  val_recall: %f  _val_accuracy: %f" %(_train_accuracy, _val_f1, _val_precision, _val_recall, _val_accuracy))
               return

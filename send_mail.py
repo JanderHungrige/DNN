@@ -37,7 +37,7 @@ def noticeEMail(starttime, usr, psw, fromaddr, toaddr,runningNumber,description)
     senddate=datetime.strftime(datetime.now(), '%Y-%m-%d')
     subject="Your job " + runningNumber + " has completed"
     m="Date: %s\r\nFrom: %s\r\nTo: %s\r\nSubject: %s\r\nX-Mailer: My-Mail\r\n\r\n" % (senddate, fromaddr, toaddr, subject)
-    msg= runningNumber+description+'\n Job runtime: '+str(runtime)
+    msg= runningNumber+description+'\n Job runtime: '+str(runtime) + '\n Job start: ' +str(starttime) + '\ the good once started on 5.10. around 11:11' 
     
     
     server.sendmail(fromaddr, toaddr, m+msg)
