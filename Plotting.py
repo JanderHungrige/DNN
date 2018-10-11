@@ -24,15 +24,16 @@ class Ergebnisse:
 class Results:
      def i(self):  
          pass
-Ergebnisse=pickle.load(open("C:/Users/310122653/Documents/PhD/Article_4_(MMC)/Results/24_AS_IS_MMCcECG_4GRU.pkl", "rb") )
- 
+  
+name='95_Bi_ASCTW'       
+Ergebnisse=pickle.load(open("C:/Users/310122653/Documents/PhD/Article_4_(MMC)/Results/" +name+".pkl", "rb") )
 # load json and create model
-json_file = open('C:/Users/310122653/Documents/PhD/Article_4_(MMC)/Results/11_All_MMC_3advmodel.json', 'r')
+json_file = open('C:/Users/310122653/Documents/PhD/Article_4_(MMC)/Results/' +name+'.json', 'r')
 loaded_model_json = json_file.read()
 json_file.close()
 loaded_model = model_from_json(loaded_model_json)
 # load weights into new model
-loaded_model.load_weights("C:/Users/310122653/Documents/PhD/Article_4_(MMC)/Results/11_All_MMC_3advmodel_weigths.h5")
+loaded_model.load_weights("C:/Users/310122653/Documents/PhD/Article_4_(MMC)/Results/" +name+"_weigths.h5")
 print("Loaded model from disk")
 # 
 fold=3
@@ -43,6 +44,18 @@ if fold>1:
        mean_train_loss=Ergebnisse.mean_train_loss_overall
        mean_val_loss=Ergebnisse.mean_val_loss_overall
        
+       mean_train_f1=Ergebnisse.mean_train_f1
+       mean_train_loss_overall=Ergebnisse.mean_train_loss_overall
+       mean_train_no_mask_acc= Ergebnisse.mean_train_no_mask_acc
+       mean_train_precicion=Ergebnisse.mean_train_precicion
+       mean_train_recall= Ergebnisse.mean_train_recall
+       mean_val_f1=Ergebnisse.mean_val_f1
+       mean_val_loss_overall= Ergebnisse.mean_val_loss_overall
+       mean_val_metric_overall=Ergebnisse.mean_val_metric_overall
+       mean_val_no_mask_acc=Ergebnisse.mean_val_no_mask_acc
+       mean_val_precicion=Ergebnisse.mean_val_precicion
+       mean_val_recall=Ergebnisse.mean_val_recall
+
        #XAxse= range(len(Result.mean_train_loss))
        
        mean_train_metric_all=np.asarray(Ergebnisse.mean_train_metric)
