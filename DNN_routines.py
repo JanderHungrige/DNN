@@ -125,12 +125,16 @@ def KeraS(X_train, Y_train, X_val, Y_val, X_test, Y_test, Var):
     class WeightedCategoricalCrossEntropy(object):
 
       def __init__(self, weights):
+          if np.ndim(weights)==1:
              nb_cl = len(weights)
              self.weights = np.ones((nb_cl, nb_cl))
              for class_idx, class_weight in weights.items():
                     self.weights[0][class_idx] = class_weight
                     self.weights[class_idx][0] = class_weight
-             self.__name__ = 'w_categorical_crossentropy'
+          elif np.ndim(weights)>1:
+             self.weights=weights
+              
+          self.__name__ = 'w_categorical_crossentropy'
 
       def __call__(self, y_true, y_pred):
              return self.w_categorical_crossentropy(y_true, y_pred)
@@ -150,13 +154,13 @@ def KeraS(X_train, Y_train, X_val, Y_val, X_test, Y_test, Var):
 
       
    # calculating the wight matrix for the classes which will be used by the weighted loss function  
-#    weights_per_class=list(Var.weight_dict.values())
 #    #https://github.com/keras-team/keras/issues/2115
-#    #https://github.com/keras-team/keras/issues/2115#issuecomment-315571824
-#    weight_Matrix = np.ones((len(Var.label),len(Var.label)))
-#    for i in range(len(Var.label)):
-#           for j in range(len(Var.label)):
-#                  weight_Matrix[i][j]=weights_per_class[i]/weights_per_class[j]
+#    #https://github.com/keras-team/keras/issues/2115#issuecomment-315571824   
+    weights_per_class=list(Var.weight_dict.values())
+    weight_Matrix = np.ones((len(Var.label),len(Var.label)))
+    for i in range(len(Var.label)):
+           for j in range(len(Var.label)):
+                  weight_Matrix[i][j]=weights_per_class[i]/weights_per_class[j]
 #                  
 #    custom_loss  = partial(w_categorical_crossentropy,weights=weight_Matrix)               
          
@@ -176,7 +180,8 @@ def KeraS(X_train, Y_train, X_val, Y_val, X_test, Y_test, Var):
 #    else: 
 #           lossf=Var.Loss_Function 
     if Var.Loss_Function=='Weighted_cat_crossentropy':
-        model.compile(loss=WeightedCategoricalCrossEntropy(Var.weight_dict2), 
+#        model.compile(loss=WeightedCategoricalCrossEntropy(Var.weight_dict2), 
+        model.compile(loss=WeightedCategoricalCrossEntropy(weight_Matrix),        
                       optimizer=adam,
                       metrics=Var.Perf_Metric,
                       sample_weight_mode="temporal") 

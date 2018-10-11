@@ -143,6 +143,6 @@ class f1_prec_rec_acc_noMasking(Callback):
               self.val_precision.append(_val_precision)
               self.val_accuracy_own.append(_val_accuracy_own)
 
-              print (" train_accuracy: %f  val_f1: %f  val_precision: %f  val_recall: %f  _val_accuracy: %f" %(_train_accuracy, _val_f1, _val_precision, _val_recall, _val_accuracy))
+              print (" train_accuracy: %f  val_f1: %f  val_precision: %f  val_recall: %f  _val_accuracy: %f" %(_train_accuracy_own, _val_f1, _val_precision, _val_recall, _val_accuracy_own))
               return
  

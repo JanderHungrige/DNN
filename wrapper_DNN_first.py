@@ -14,9 +14,7 @@ The data is already standard scaled (z-scale mean=1 std=0) in MAtlab. For each s
 #PBS -N JobName
 
 # encoding=utf8
-import sys
-reload(sys)
-sys.setdefaultencoding('utf8')
+
 
 from platform import python_version
 print ('Python version: ', sep=' ', end='', flush=True);print( python_version())	
@@ -88,13 +86,16 @@ class Variablen:
        label=[1,2,3,4,6] # 1=AS 2=QS 3=Wake 4=Care-taking 5=NA 6= transition
        usedPC='Cluster' #Philips or c3po or Cluster
        dataset='MMC+ECG+InSe'  #"ECG" "cECG" "MMC" InSe "MMC+cECG" 'MMC+InSe' 'ECG+InSe' 'MMC+ECG+InSe' 
-       Epochs=800
+       Epochs=2
        fold=3   
        model='model_3_LSTM_advanced_seq' # check DNN_routines KeraS for options
        
-       saving_model=1
-       SavingResults=1
-       
+       saving_model=0
+       SavingResults=0
+       if usedPC=='Cluster':
+           resultpath='/home/310122653/Git/DNN/Results/'
+       else:
+           resultpath='./Results/'       
        FeatureSet='Features' #Features ECG, EDR, HRV
        lst= [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46] 
        merge34=1

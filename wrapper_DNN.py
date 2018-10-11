@@ -92,7 +92,7 @@ class Variablen:
        Loss_Function=Loss_FunctionID  #'categorical_crossentropy'#Weighted_cat_crossentropy or categorical_crossentropy OR mean_squared_error IF BINARY : binary_crossentropy
        
        usedPC='Cluster' #Philips or c3po or Cluster
-       Epochs=800
+       Epochs=600
        fold=3   
        
        saving_model=1
