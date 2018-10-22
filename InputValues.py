@@ -6,7 +6,14 @@ Created on Thu Oct  4 16:35:02 2018
 @author: 310122653
 """
 import numpy as np
+import keras
+from keras import optimizers 
 def inputcombinations(whatID):
+    adam = keras.optimizers.Adam()
+    nadam=keras.optimizers.Nadam()
+    adamax=keras.optimizers.Adamax()
+    adaDelta=keras.optimizers.Adadelta()
+    rmsProp=keras.optimizers.RMSprop()
     
     if whatID in np.arange(39,118,6) or whatID in np.arange(123,202,6):
        description='Bi_ASQS' # Bi_ASQS  Bi_ASIS  Bi_ASCTW  Bi_QSIS  Bi_QSCTW  Bi_ISCTW
@@ -35,7 +42,7 @@ def inputcombinations(whatID):
     if whatID in np.arange(99,111) or whatID in np.arange(183,195):
        dataset='ECG'
     if whatID in np.arange(111,123) or whatID in np.arange(195,207):
-       dataset='ECG'
+       dataset='InSe'
        
     if whatID in np.arange(39,44)   or whatID in np.arange(123,129)\
     or whatID in np.arange(51,57)   or whatID in np.arange(135,141)\
@@ -46,7 +53,7 @@ def inputcombinations(whatID):
     or whatID in np.arange(111,117) or whatID in np.arange(195,201)\
     :
        model='model_3_LSTM_advanced' # check DNN_routines KeraS for options model_4_GRU_advanced  model_3_LSTM_advanced
-
+       Optimizer=adam
     if whatID in np.arange(45,51)   or whatID in np.arange(129,135)\
     or whatID in np.arange(57,63)   or whatID in np.arange(141,147)\
     or whatID in np.arange(69,75)   or whatID in np.arange(153,159)\
@@ -56,7 +63,92 @@ def inputcombinations(whatID):
     or whatID in np.arange(117,123) or whatID in np.arange(201,207)\
     :
        model='model_4_GRU_advanced' # check DNN_routines KeraS for options model_4_GRU_advanced  model_3_LSTM_advanced
-
+       Optimizer=adam
+#The following is only for testing       
+    if whatID in [1]:
+        description='Bi_QSIS'
+        dataset='ECG+InSe'
+        model='model_4_GRU_advanced1'
+        Optimizer=rmsProp  
+    if whatID in [2]:
+        description='Bi_QSIS'
+        dataset='ECG+InSe'
+        model='model_3_LSTM_advanced' 
+        Optimizer=rmsProp        
+    if whatID in [3]:
+        description='Bi_QSIS'
+        dataset='ECG+InSe'
+        model='model_4_GRU_advanced2'  
+        Optimizer=adam        
+    if whatID in [4]:
+        description='Bi_QSIS'
+        dataset='ECG+InSe'
+        model='model_3_LSTM_advanced2' 
+        Optimizer=adam
+    if whatID in [5]:
+        description='Bi_QSIS'
+        dataset='ECG+InSe'
+        model='model_4_GRU_advanced'  
+        Optimizer=nadam        
+    if whatID in [6]:
+        description='Bi_QSIS'
+        dataset='ECG+InSe'
+        model='model_3_LSTM_advanced'   
+        Optimizer=nadam
+    if whatID in [7]:
+        description='Bi_QSIS'
+        dataset='ECG+InSe'
+        model='model_4_GRU_advanced'  
+        Optimizer=adamax        
+    if whatID in [8]:
+        description='Bi_QSIS'
+        dataset='ECG+InSe'
+        model='model_3_LSTM_advanced'   
+        Optimizer=adamax      
+    if whatID in [9]:
+        description='Bi_QSIS'
+        dataset='ECG+InSe'
+        model='model_4_GRU_advanced'
+        adam = keras.optimizers.Adam(clipnorm=0.1)        
+        Optimizer=adam        
+    if whatID in [10]:
+        description='Bi_QSIS'
+        dataset='ECG+InSe'
+        model='model_3_LSTM_advanced' 
+        adam = keras.optimizers.Adam(clipnorm=0.05)        
+        Optimizer=adam             
+    if whatID in [11]:
+        description='Bi_QSIS'
+        dataset='ECG+InSe'
+        model='model_4_GRU_advanced'
+        adam = keras.optimizers.Adam(clipvalue=0.8)        
+        Optimizer=adam        
+    if whatID in [12]:
+        description='Bi_QSIS'
+        dataset='ECG+InSe'
+        model='model_3_LSTM_advanced' 
+        adam = keras.optimizers.Adam(clipvalue=0.5)        
+        Optimizer=adam                  
+        
+    if whatID in np.arange(1,13): 
+        Loss_Function='Weighted_cat_crossentropy1'#Weighted_cat_crossentropy or categorical_crossentropy OR mean_squared_error IF BINARY : binary_crossentropy
+        
+    if whatID in [13]:
+        description='Bi_QSIS'
+        dataset='ECG+InSe'
+        model='model_3_LSTM_advanced' 
+        adam = keras.optimizers.Adam()        
+        Optimizer=adam
+        Loss_Function='mean_squared_error'
+    if whatID in [14]:
+        description='Bi_QSIS'
+        dataset='ECG+InSe'
+        model='model_3_LSTM_advanced' 
+        adam = keras.optimizers.Adam()        
+        Optimizer=adam
+        Loss_Function='categorical_hinge'        
+# test end
+        
     if description=='Bi_ASQS':
         label=[1,2]
     elif description=='Bi_ASIS':
@@ -71,10 +163,8 @@ def inputcombinations(whatID):
         label=[3,4,6]  
 
     if whatID in np.arange(39,123): 
-       Loss_Function='Weighted_cat_crossentropy'#Weighted_cat_crossentropy or categorical_crossentropy OR mean_squared_error IF BINARY : binary_crossentropy
+       Loss_Function='Weighted_cat_crossentropy1'#Weighted_cat_crossentropy or categorical_crossentropy OR mean_squared_error IF BINARY : binary_crossentropy
     if whatID in np.arange(123,207): 
        Loss_Function='categorical_crossentropy'#Weighted_cat_crossentropy or categorical_crossentropy OR mean_squared_error IF BINARY : binary_crossentropy
 
-
-
-    return description, dataset, model, label,Loss_Function
+    return description, dataset, model, label,Loss_Function,Optimizer

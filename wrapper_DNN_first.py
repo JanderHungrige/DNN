@@ -51,7 +51,8 @@ from sklearn.metrics import roc_curve, auc
 from sklearn import svm, cross_validation
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
 from sklearn.linear_model import Perceptron
-
+import keras
+from keras import optimizers 
 import sys #to add strings together
 import pdb # use pdb.set_trace() as breakpoint
 
@@ -119,7 +120,7 @@ class Variablen:
        Kr=0.0 # Kernel regularizers
        Ar=0.0 #ACtivity regularizers
        residual_blocks=1
-        
+       optimizer=keras.optimizers.Adam() 
 Var=Variablen()    
 
 if Var.dataset=='ECG' or 'cECG' or 'cECGDNN':

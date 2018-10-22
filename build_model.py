@@ -17,6 +17,7 @@ from keras import layers
 from keras import callbacks
 from keras import regularizers
 
+from keras import initializers
 from keras.utils import np_utils
 
 from keras.models import Sequential
@@ -106,34 +107,39 @@ def model_3_LSTM(X_train,Y_train,Var):
 #%%
 def model_3_LSTM_advanced(X_train,Y_train,Var):   
    maxnorm=3.
+   iniT=keras.initializers.RandomUniform()
    batch_size=X_train.shape[0]
    n_frames=X_train.shape[2]
    model = Sequential()
    model.add(Masking(mask_value=666, input_shape=(X_train.shape[1],X_train.shape[2])))
    model.add(Dropout(0.2, noise_shape=(None, 1, X_train.shape[2]) ))   
-   model.add(Dense(Var.Dense_Unit, activation=Var.activationF, kernel_constraint=max_norm(max_value=3.)))
-   model.add(Bidirectional(LSTM(Var.hidden_units, return_sequences=True,   
+   model.add(Dense(Var.Dense_Unit, activation=Var.activationF, kernel_constraint=max_norm(max_value=maxnorm)))
+   model.add(Bidirectional(LSTM(Var.hidden_units, return_sequences=True, 
+                                kernel_initializer=iniT,
                                 kernel_regularizer=regularizers.l2(Var.Kr),
                                 activity_regularizer=regularizers.l2(Var.Ar),
-                                kernel_constraint=max_norm(max_value=3.), 
+                                kernel_constraint=max_norm(max_value=maxnorm), 
                                 dropout=Var.dropout, recurrent_dropout=Var.dropout)))
    model.add(Bidirectional(LSTM(Var.hidden_units, return_sequences=True,
+                                kernel_initializer=iniT,                                
                                 kernel_regularizer=regularizers.l2(Var.Kr),
                                 activity_regularizer=regularizers.l2(Var.Ar),
-                                kernel_constraint=max_norm(max_value=3.), 
+                                kernel_constraint=max_norm(max_value=maxnorm), 
                                 dropout=Var.dropout, recurrent_dropout=Var.dropout)))  
    model.add(Bidirectional(LSTM(Var.hidden_units, return_sequences=True,
+                                kernel_initializer=iniT,                                
                                 kernel_regularizer=regularizers.l2(Var.Kr),
                                 activity_regularizer=regularizers.l2(Var.Ar),
-                                kernel_constraint=max_norm(max_value=3.), 
+                                kernel_constraint=max_norm(max_value=maxnorm), 
                                 dropout=Var.dropout, recurrent_dropout=Var.dropout))) 
    model.add(Bidirectional(LSTM(Var.hidden_units, return_sequences=True,
+                                kernel_initializer=iniT,                                
                                 kernel_regularizer=regularizers.l2(Var.Kr),
                                 activity_regularizer=regularizers.l2(Var.Ar),
-                                kernel_constraint=max_norm(max_value=3.), 
+                                kernel_constraint=max_norm(max_value=maxnorm), 
                                 dropout=Var.dropout, recurrent_dropout=Var.dropout)))    
    model.add(Dropout(0.5, noise_shape=(None, 1, Var.hidden_units*2)))
-   model.add(Dense(Y_train.shape[-1], activation='softmax', kernel_constraint=max_norm(max_value=3.)))
+   model.add(Dense(Y_train.shape[-1], activation='softmax', kernel_constraint=max_norm(max_value=maxnorm)))
    model.summary()
    
    return model  
@@ -161,11 +167,6 @@ def model_3_LSTM_advanced_seq(X_train,Y_train,Var):
                                 activity_regularizer=regularizers.l2(Var.Ar),
                                 kernel_constraint=max_norm(max_value=3.), 
                                 dropout=Var.dropout, recurrent_dropout=Var.dropout))(x)  
-   x=Bidirectional(LSTM(Var.hidden_units, return_sequences=True,
-                                kernel_regularizer=regularizers.l2(Var.Kr),
-                                activity_regularizer=regularizers.l2(Var.Ar),
-                                kernel_constraint=max_norm(max_value=3.), 
-                                dropout=Var.dropout, recurrent_dropout=Var.dropout))(x)     
    x=Dropout(0.5, noise_shape=(None, 1, Var.hidden_units*2))(x)
    predictions=Dense(Y_train.shape[-1], activation='softmax', kernel_constraint=max_norm(max_value=3.))(x)
    model=Model(inputs=inp, output=predictions)
@@ -236,12 +237,12 @@ def model_4_GRU_advanced(X_train,Y_train,Var):
                                 kernel_regularizer=regularizers.l2(Var.Kr),
                                 activity_regularizer=regularizers.l2(Var.Ar),
                                 kernel_constraint=max_norm(max_value=3.), 
-                                dropout=Var.dropout, recurrent_dropout=Var.dropout)))   
+                                dropout=Var.dropout, recurrent_dropout=Var.dropout)))  
    model.add(Bidirectional(GRU(Var.hidden_units, return_sequences=True,
                                 kernel_regularizer=regularizers.l2(Var.Kr),
                                 activity_regularizer=regularizers.l2(Var.Ar),
                                 kernel_constraint=max_norm(max_value=3.), 
-                                dropout=Var.dropout, recurrent_dropout=Var.dropout)))   
+                                dropout=Var.dropout, recurrent_dropout=Var.dropout)))    
    model.add(Dropout(0.5, noise_shape=(None, 1, Var.hidden_units*2)))
    model.add(Dense(Y_train.shape[-1], activation='softmax', kernel_constraint=max_norm(max_value=3.)))
    model.summary()

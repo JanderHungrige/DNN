@@ -135,7 +135,8 @@ def leave_one_out_cross_validation(babies,AnnotMatrix_each_patient,FeatureMatrix
 #-------------------------------------------------------------------------------
        for V in range(Var.fold):
            print('**************************')
-           print('Validating on fold: %i' %(V+1) )           
+           print('Validating on fold: %i' %(V+1) ) 
+           Var.Fold=V
 # SHIFT FOR EACH FOLD
            if V > 0: 
                   X_labeled=shiftRbyn(X_labeled,vallength)

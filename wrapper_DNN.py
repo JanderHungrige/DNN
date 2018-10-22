@@ -23,6 +23,8 @@ print ('Python version: ', sep=' ', end='', flush=True);print( python_version())
 from Loading_5min_mat_files_DNN import Loading_data_all,Loading_data_perSession,Feature_names,Loading_Annotations
 from LOOCV_DNN import leave_one_out_cross_validation
 from InputValues import inputcombinations
+from InputValues2 import inputcombinations2
+
 from send_mail import noticeEMail
 import datetime as dt
 starttime=dt.datetime.now()
@@ -48,7 +50,6 @@ from sklearn.metrics import roc_curve, auc
 from sklearn import svm, cross_validation
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
 from sklearn.linear_model import Perceptron
-
 import sys #to add strings together
 import pdb # use pdb.set_trace() as breakpoint
 
@@ -77,23 +78,29 @@ Loading data declaration & Wrapper variables
 **************************************************************************
 """
 arrayId=int(sys.argv[1])
-print('RunningNumber:')
-print(arrayId)
+print('RunningNumber: ' +str(arrayId))
 
-[descriptionID, datasetID, modelID, labelID, Loss_FunctionID]=inputcombinations(arrayId)
+
+if arrayId in arange(39,207) or arrayId in arange(1,15):
+    [descriptionID, datasetID, modelID, labelID, Loss_FunctionID, OptimizerID]=inputcombinations(arrayId)
+if arrayId in arange(500,503) or arrayId in arange(300,307) or arrayId in arange(340,442):
+    [descriptionID, datasetID, modelID, labelID, Loss_FunctionID, OptimizerID]=inputcombinations2(arrayId)
 
 SavingResults=1
 class Variablen:
-       description= descriptionID#'Bi_ASCTW' # Bi_ASQS  Bi_ASIS  Bi_ASCTW  Bi_QSIS  Bi_QSCTW  Bi_ISCTW
+       hidden_units=32 # 2-64 or even 1000 as used by sleepnet best: multible of 32
+       Dense_Unit=32
+       
        runningNumber=str(arrayId) #'125'
        label=labelID #[1,2] # 1=AS 2=QS 3=Wake 4=Care-taking 5=NA 6= transition
        dataset=datasetID  #'MMC+ECG+InSe' #MMC+ECG+InSe     MMC+ECG   MMC+InSe   ECG+InSe   MMC   ECG   InSe         "cECG"   
        model= modelID  #'model_3_LSTM_advanced' # check DNN_routines KeraS for options model_4_GRU_advanced  model_3_LSTM_advanced
        Loss_Function=Loss_FunctionID  #'categorical_crossentropy'#Weighted_cat_crossentropy or categorical_crossentropy OR mean_squared_error IF BINARY : binary_crossentropy
-       
+       optimizer=OptimizerID
        usedPC='Cluster' #Philips or c3po or Cluster
-       Epochs=600
-       fold=3   
+       Epochs=100
+       fold=1   
+
        
        saving_model=1
        SavingResults=1
@@ -102,7 +109,6 @@ class Variablen:
        else:
            resultpath='./Results/'
     
-       
        FeatureSet='Features' #Features ECG, EDR, HRV
        lst= [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46] 
        merge34=1
@@ -113,8 +119,7 @@ class Variablen:
 #       split=[0.60,0.2,0.2];# HOw to split the dataset in [Train, Validation, Test] e.g.70:15:15  or 50:25:25 ,... # The split is done for each fold. Just for the chekout phase use fold one. Later calculate how often the test split fits into the total data, that is the fold. e.g. 30 patients with 15% test -> 4.5 (round to 5) patients per fold. Now see how many times the 30 can be folded with 5 patients in the test set to cover all patients. 30/5=6 -> 6 fold
        split=[0.70,0.30];
        batchsize=5  # LSTM needs [batchsize, timestep, feature] your batch size divides nb_samples from the original tensor. So batchsize should be smaller than samples
-       hidden_units=32 # 2-64 or even 1000 as used by sleepnet best: multible of 32
-       Dense_Unit=34
+
        dropout=0.5 #0.5; 0.9  dropout can be between 0-1  as %  DROPOUT CAN BE ADDED TO EACH LAYER
        learning_rate=0.001 #0.0001 to 0.01 default =0.001
        learning_rate_decay=0.0 #0.0 default
@@ -125,23 +130,34 @@ class Variablen:
        Kr=0.0 # Kernel regularizers
        Ar=0.0 #ACtivity regularizers
        residual_blocks=1
+       
+       if Loss_FunctionID=='categorical_crossentropy' :
+           wID=0
+       if Loss_FunctionID=='Weighted_cat_crossentropy1' :
+           wID=1     
+       if Loss_FunctionID=='Weighted_cat_crossentropy2' :
+           wID=2            
+       description= descriptionID+'_DU'+str(Dense_Unit)+'_W'+str(wID)#'Bi_ASCTW' # Bi_ASQS  Bi_ASIS  Bi_ASCTW  Bi_QSIS  Bi_QSCTW  Bi_ISCTW
+       
         
 Var=Variablen()    
+print('Dense_Unit: ' + str(Var.Dense_Unit))
+print('Hidden_units: ' + str(Var.hidden_units))
 
 if Var.dataset=='ECG' or 'cECG' or 'cECGDNN':
          Var.selectedbabies =[0,1,2,3,5,6,7,8] #0-8 ('4','5','6','7','9','10','11','12','13')
 if Var.dataset == 'InSe':
-         Var.selectedbabies =[0,1,2,3,5,6,7] #0-7      '3','4','5','6','8','9','13','15'              
+         Var.selectedbabies =[0,1,2,3,5,7] #0-7      '3','4','5','6','8','9','13','15'              
 if Var.dataset == 'MMC':
        Var.selectedbabies=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21] #0-21
 if Var.dataset == 'MMC+ECG':
        Var.selectedbabies=[0,1,2,3,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30] #0-27    # first 9 cECG rest MMC   
 if Var.dataset == 'MMC+InSe':
-       Var.selectedbabies=[0,1,2,3,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29] #0-27    # first 8 InSen rest MMC    
+       Var.selectedbabies=[0,1,2,3,5,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29] #0-27    # first 8 InSen rest MMC    
 if Var.dataset == 'ECG+InSe':
-       Var.selectedbabies=[0,1,2,3,5,6,7,8,9,10,11,12,13,14,15,16] #0-17    # first 8 InSe rest cECG               
+       Var.selectedbabies=[0,1,2,3,5,7,8,9,10,11,12,13,14,15,16] #0-17    # first 8 InSe rest cECG               
 if Var.dataset == 'MMC+ECG+InSe':
-       Var.selectedbabies=[0,1,2,3,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38] #0-17    # first 8 InSe,8-16 cECG, rest MMC           
+       Var.selectedbabies=[0,1,2,3,5,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38] #0-17    # first 8 InSe,8-16 cECG, rest MMC           
 
 
 if Var.scalerange==(0,1) :

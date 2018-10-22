@@ -162,7 +162,7 @@ def ResNet_wide_Beta_GRU(X_train,Y_train,Var):
        def cake(Var, hidden_units):
               def unit(x):
                      for j in range(Var.residual_blocks):
-                         x=Block_unit(X_train,Var,hidden_units)(x)              
+                         x=Block_unit(X_train,Var,hidden_units)(x)
                          return x                          
               return unit
     

@@ -137,22 +137,35 @@ def Transfer_wide_Beta_GRU(X_train,Y_train,Var):
        
        loaded_model=ModelLaden(ASQSModel.destination,ASQSModel.modelname)
        loaded_model.load_weights(ASQSModel.destination+ASQSModel.modelweights+'.h5') 
-#       loaded_model.trainable = False  
+       loaded_model.trainable = False  
 #       loaded_model.support_masking=True 
 #       for layer in loaded_model.layers[1:6]:  #0-6 is all 0:4 leaves one dense at the end which is needed for the targets (when using advancedmodel3 or 4 [see build_model])
 #              layer.trainable=False  
        loaded_model.build(input_shape=(X_train.shape[1],X_train.shape[2]))
        loaded_model_functional_api = loaded_model.model 
        Pfad4 = loaded_model_functional_api(intro_out) 
-
-       
+     
        loaded_model=ModelLaden(ASISModel.destination,ASISModel.modelname)
        loaded_model.load_weights(ASISModel.destination+ASISModel.modelweights+'.h5') 
-       loaded_model.trainable = False
-#       for layer in loaded_model.layers[1:6]:  #0-6 is all 0:4 leaves one dense at the end which is needed for the targets (when using advancedmodel3 or 4 [see build_model])
-#              layer.trainable=False         
+       loaded_model.trainable = False    
        Pfad5 = loaded_model(intro_out) 
        
+#       loaded_model=ModelLaden(ASCTWModel.destination,ASCTWModel.modelname)
+#       loaded_model.load_weights(ASCTWModel.destination+ASCTWModel.modelweights+'.h5') 
+#       loaded_model.trainable = False    
+#       Pfad6 = loaded_model(intro_out)        
+#       
+#       loaded_model=ModelLaden(QSISModel.destination,QSISModel.modelname)
+#       loaded_model.load_weights(QSISModel.destination+QSISModel.modelweights+'.h5') 
+#       loaded_model.trainable = False    
+#       Pfad7 = loaded_model(intro_out)  
+#
+#       loaded_model=ModelLaden(QSCTWModel.destination,QSCTWModel.modelname)
+#       loaded_model.load_weights(QSCTWModel.destination+QSCTWModel.modelweights+'.h5') 
+#       loaded_model.trainable = False    
+#       Pfad8 = loaded_model(intro_out)  
+
+         
        i = layers.concatenate([Pfad1, Pfad2, Pfad3, Pfad4, Pfad5])
 
 #       Outro_out=layers.Bidirectional(GRU(Var.hidden_units, return_sequences=True, kernel_constraint=max_norm(max_value=3.), dropout=Var.dropout, recurrent_dropout=Var.dropout))(i)                   
@@ -166,37 +179,36 @@ def Transfer_wide_Beta_GRU(X_train,Y_train,Var):
 #%%      
 def Transfer_wide_Beta_GRU_2(X_train,Y_train,Var):
        # HERE WE BUILD THE MODEL PATH AND LOAD THE WEIGTHS INTO EACH LAYER. THEREBY WE CAN DETERMINE WHICH LAYER SHOULD BE FIXED AND WHICH RETRAINED
-
+       if Var.Dense_Unit==47:
+           pfad='/home/310122653/Git/DNN/Results/UseInTL_47/'
+       if Var.Dense_Unit==32:
+           pfad='/home/310122653/Git/DNN/Results/UseInTL_32/'
+       if Var.Dense_Unit==16:
+           pfad='/home/310122653/Git/DNN/Results/UseInTL_16/'      
+           
        class ASQSModel:
-              destination=('C:/Users/310122653/Documents/GitHub/DNN/Results/')
-              modelname='4_Create_weighs'
-              modelweights='4_Create_weighs_weigths'  
-       
+              destination=pfad
+              modelname='177_Bi_ASQS'
+              
        class ASISModel:
-              destination=('C:/Users/310122653/Documents/GitHub/DNN/Results/')
-              modelname='4_Create_weighs'
-              modelweights='4_Create_weighs_weigths'     
+              destination=pfad
+              modelname='178_Bi_ASIS'
        
        class ASCTWModel:
-              destination=('C:/Users/310122653/Documents/PhD/Article_4_(MMC)/Results/')
-              modelname=''
-              modelweights=''  
+              destination=pfad
+              modelname='179_Bi_ASCTW'
        
        class QSISModel:
-              destination=('C:/Users/310122653/Documents/PhD/Article_4_(MMC)/Results/')
-              modelname=''
-              modelweights=''          
+              destination=pfad
+              modelname='180_Bi_QSIS'
        
        class QSCTWModel:
-              destination=('C:/Users/310122653/Documents/PhD/Article_4_(MMC)/Results/')
-              modelname=''
-              modelweights=''
+              destination=pfad
+              modelname='181_Bi_QSCTW'
        
        class ISCTWModel:
-              destination=('C:/Users/310122653/Documents/PhD/Article_4_(MMC)/Results/')
-              modelname=''
-              modelweights=''          
-
+              destination=pfad
+              modelname='182_Bi_ISCTW'
            
        def ModelLaden(destination,modelname):
               json_file = open(destination+modelname+'.json', 'r')
@@ -234,7 +246,9 @@ def Transfer_wide_Beta_GRU_2(X_train,Y_train,Var):
        def Block_unit_transfer(Var,hidden_units, Bimodel):
             layer_weights=list()  
             loaded_model=ModelLaden(Bimodel.destination,Bimodel.modelname)
-            loaded_model.load_weights(Bimodel.destination+Bimodel.modelweights+'.h5') 
+#            loaded_model.load_weights(Bimodel.destination+Bimodel.modelname+'_weigths.h5') 
+            loaded_model.load_weights(Bimodel.destination+Bimodel.modelname+'_checkpointbestmodel.hdf5') 
+            
             for layer in loaded_model.layers:
                    layer_weights.append( layer.get_weights())
                    # list of numpy arrays
@@ -293,8 +307,11 @@ def Transfer_wide_Beta_GRU_2(X_train,Y_train,Var):
        
        Pfad4 = Block_unit_transfer(Var,Var.hidden_units,ASQSModel)(i)         
        Pfad5 = Block_unit_transfer(Var,Var.hidden_units,ASISModel)(i) 
-       
-       i = layers.concatenate([Pfad1, Pfad2, Pfad3, Pfad4, Pfad5])
+       Pfad6 = Block_unit_transfer(Var,Var.hidden_units,ASCTWModel)(i)         
+       Pfad7 = Block_unit_transfer(Var,Var.hidden_units,QSISModel)(i) 
+       Pfad8 = Block_unit_transfer(Var,Var.hidden_units,QSCTWModel)(i)         
+       Pfad9 = Block_unit_transfer(Var,Var.hidden_units,ISCTWModel)(i)        
+       i = layers.concatenate([Pfad1, Pfad2, Pfad3, Pfad4, Pfad5, Pfad6, Pfad7, Pfad8, Pfad9])
 
 #       Outro_out=layers.Bidirectional(GRU(Var.hidden_units, return_sequences=True, kernel_constraint=max_norm(max_value=3.), dropout=Var.dropout, recurrent_dropout=Var.dropout))(i)                   
 #       Outro_out = Dense(Y_train.shape[-1],activation='softmax', kernel_constraint=max_norm(max_value=3.))(Outro_out)
