@@ -32,7 +32,7 @@ from sklearn.utils import class_weight
 from collections import deque
 import __main__
 
-def leave_one_out_cross_validation(babies,AnnotMatrix_each_patient,FeatureMatrix_each_patient,Var,Varplus):
+def leave_one_out_cross_validation(babies,AnnotMatrix_each_patient,FeatureMatrix_each_patient,Var,Varplus,Ergebnisse):
          
        t_a=list()
        classpredictions=list()
@@ -203,29 +203,61 @@ def leave_one_out_cross_validation(babies,AnnotMatrix_each_patient,FeatureMatrix
 #           class_weights_one_hot=dict(enumerate(class_weights_one_hot)) # it seems that Keras likes dicts. I am not 100% sure if that is the latest info or if an array also works
 #FORWARD SETS TO KERAS WHERE THE MODEL IS BUILT, TRAINED, VALIDATED AND TESTED           
            print ('Training data shape is:[%i, %i, %i]' %(X_Train.shape))
-           model, resultsK_fold, mean_k_fold, mean_train_metric_fold, mean_val_metric_fold, mean_train_loss_fold, mean_val_loss_fold, mean_test_metric_fold, mean_test_loss_fold,\
-           mean_val_f1_fold,mean_val_recall_fold,mean_val_precicion_fold,mean_val_no_mask_acc_fold,mean_train_f1_fold,mean_train_recall_fold,mean_train_precicion_fold,mean_train_no_mask_acc_fold\
-           =KeraS(X_Train, Y_Train, X_Val, Y_Val, X_Test, Y_Test, Var)
+           model,callbackmetric=KeraS(X_Train, Y_Train, X_Val, Y_Val, X_Test, Y_Test, Var)
 
-#GATHERING THE RESULTS OF THE TESTING           
-#           classpredictions.append(prediction)
-           Performance_K.append(mean_k_fold)
-           mean_train_metric.append(mean_train_metric_fold)
-           mean_train_loss.append(mean_train_loss_fold)
-           mean_val_metric.append(mean_val_metric_fold)
-           mean_val_loss.append(mean_val_loss_fold)
-           mean_test_metric.append(mean_test_metric_fold)
-           mean_test_loss.append(mean_test_loss_fold)
-
-           mean_val_f1.append(mean_val_f1_fold)
-           mean_val_recall.append(mean_val_recall_fold)
-           mean_val_precicion.append(mean_val_precicion_fold)
-           mean_val_no_mask_acc.append(mean_val_no_mask_acc_fold)
-           
-           mean_train_f1.append(mean_train_f1_fold)
-           mean_train_recall.append(mean_train_recall_fold)
-           mean_train_precicion.append(mean_train_precicion_fold)
-           mean_train_no_mask_acc.append(mean_train_no_mask_acc_fold)       
+#GATHERING THE RESULTS OF THE TESTING. hre we stack all folds
+           if V==0:             
+               Ergebnisse.val_f1=callbackmetric.val_f1
+               Ergebnisse.val_k=callbackmetric.val_k
+               Ergebnisse.val_recall=callbackmetric.val_recall
+               Ergebnisse.val_precision=callbackmetric.val_precision
+               Ergebnisse.val_no_mask_acc=callbackmetric.val_accuracy_own
+               
+               Ergebnisse.train_f1=callbackmetric.train_f1
+               Ergebnisse.train_k=callbackmetric.train_k
+               Ergebnisse.train_recall=callbackmetric.train_recall
+               Ergebnisse.train_precision=callbackmetric.train_precision
+               Ergebnisse.train_no_mask_acc=callbackmetric.train_accuracy_own
+               
+               Ergebnisse.train_metric=callbackmetric.train_metric
+               Ergebnisse.train_loss=callbackmetric.train_loss
+               Ergebnisse.val_metric=callbackmetric.val_metric
+               Ergebnisse.val_loss=callbackmetric.val_loss
+           if V>0:
+               Ergebnisse.val_f1=np.vstack((Ergebnisse.val_f1, callbackmetric.val_f1))
+               Ergebnisse.val_k=np.vstack((Ergebnisse.val_k, callbackmetric.val_k))
+               Ergebnisse.val_recall=np.vstack((Ergebnisse.val_recall, callbackmetric.val_recall))
+               Ergebnisse.val_precision=np.vstack((Ergebnisse.val_precision, callbackmetric.val_precision))
+               Ergebnisse.val_no_mask_acc=np.vstack((Ergebnisse.val_no_mask_acc, callbackmetric.val_accuracy_own))
+               
+               Ergebnisse.train_f1=np.vstack((Ergebnisse.train_f1, callbackmetric.train_f1))
+               Ergebnisse.train_k=np.vstack((Ergebnisse.train_k, callbackmetric.train_k))
+               Ergebnisse.train_recall=np.vstack((Ergebnisse.train_recall, callbackmetric.train_recall))
+               Ergebnisse.train_precision=np.vstack((Ergebnisse.train_precision, callbackmetric.train_precision))
+               Ergebnisse.train_no_mask_acc=np.vstack((Ergebnisse.train_no_mask_acc, callbackmetric.train_accuracy_own))
+               
+               Ergebnisse.train_metric=np.vstack((Ergebnisse.train_metric, callbackmetric.train_metric))
+               Ergebnisse.train_loss=np.vstack((Ergebnisse.train_loss, callbackmetric.train_loss))
+               Ergebnisse.val_metric=np.vstack((Ergebnisse.val_metric, callbackmetric.val_metric))
+               Ergebnisse.val_loss=np.vstack((Ergebnisse.val_loss, callbackmetric.val_loss))
+               
+#After all folds are collected, create mean               
+       if Var.fold>1:
+           Ergebnisse.mean_val_metric=np.mean(Ergebnisse.val_metric,axis=0) # Kappa is not calculated per epoch but just per fold. Therefor we generate on mean Kappa
+           Ergebnisse.mean_train_metric=np.mean(Ergebnisse.train_metric,axis=0)
+           Ergebnisse.mean_val_loss=np.mean(Ergebnisse.val_loss,axis=0)  
+           Ergebnisse.mean_train_loss=np.mean(Ergebnisse.train_loss,axis=0)
+       
+           Ergebnisse.mean_val_f1=np.mean(Ergebnisse.val_f1,axis=0)
+           Ergebnisse.mean_val_k=np.mean(Ergebnisse.val_k,axis=0)
+           Ergebnisse.mean_val_recall=np.mean(Ergebnisse.val_recall,axis=0)
+           Ergebnisse.mean_val_precision=np.mean(Ergebnisse.val_precision,axis=0)
+           Ergebnisse.mean_val_no_mask_acc=np.mean(Ergebnisse.val_no_mask_acc,axis=0)
+           Ergebnisse.mean_train_f1=np.mean(Ergebnisse.train_f1,axis=0)
+           Ergebnisse.mean_train_k=np.mean(Ergebnisse.train_k,axis=0)
+           Ergebnisse.mean_train_recall=np.mean(Ergebnisse.train_recall,axis=0)
+           Ergebnisse.mean_train_precision=np.mean(Ergebnisse.train_precision,axis=0)
+           Ergebnisse.mean_train_no_mask_acc=np.mean(Ergebnisse.train_no_mask_acc,axis=0)
        
 #           if plotting:
 #                  t_a.append(np.linspace(0,len(y_each_patient_test[V])*30/60,len(y_each_patient_test[V])))
@@ -242,25 +274,8 @@ def leave_one_out_cross_validation(babies,AnnotMatrix_each_patient,FeatureMatrix
        """
        ENDING stuff
        """
-
-       return model,\
-              y_labeled,\
-              Performance_K,\
-              mean_train_metric,\
-              mean_train_loss,\
-              mean_val_metric,\
-              mean_val_loss,\
-              mean_test_metric,\
-              mean_test_loss,\
-              mean_val_f1,\
-              mean_val_recall,\
-              mean_val_precicion,\
-              mean_val_no_mask_acc,\
-              mean_train_f1,\
-              mean_train_recall,\
-              mean_train_precicion,\
-              mean_train_no_mask_acc
-              
+       
+       return model,Ergebnisse            
               
               
   

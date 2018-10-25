@@ -8,7 +8,7 @@ Created on Tue Aug  7 13:21:53 2018
 """
 import numpy as np
 from keras.callbacks import Callback
-from sklearn.metrics import confusion_matrix, f1_score, precision_score, recall_score, accuracy_score
+from sklearn.metrics import confusion_matrix, f1_score, precision_score, recall_score, accuracy_score,cohen_kappa_score
 import sys
 
 class f1_precicion_recall_acc(Callback):
@@ -87,15 +87,22 @@ class categorical_accuracy_no_mask(Callback):
 
 class f1_prec_rec_acc_noMasking(Callback):
        def on_train_begin(self, logs={}):
-              self.val_f1s = []
+              self.val_f1 = []
+              self.val_k = []
               self.val_recall = []
               self.val_precision = []
               self.val_accuracy_own=[]
-              self.train_f1s = []
+              self.train_f1 = []
+              self.train_k = []
               self.train_recall = []
               self.train_precision = []
               self.train_accuracy_own=[]
- 
+              
+              self.train_metric=[] # not in use but the info can be added outside, look DNN_routines
+              self.train_loss=[]
+              self.val_metric=[]
+              self.val_loss=[]
+              
        def on_epoch_end(self, epoch, logs={}):
               #LOAD DATA
               train_predict= (np.asarray(self.model.predict(self.model.X_train_jan)))    
@@ -123,22 +130,26 @@ class f1_prec_rec_acc_noMasking(Callback):
               val_true_nomask=np.argmax(val_true_nomask,axis=1)
               val_pred_nomask=np.argmax(val_pred_nomask,axis=1)
               #CALC. PERFORMANCE
-              _train_f1=               f1_score(train_true_nomask, train_pred_nomask,labels=self.model.label, pos_label=1, average=self.model.Jmethod)
-              _train_recall=       recall_score(train_true_nomask, train_pred_nomask,labels=self.model.label, pos_label=1, average=self.model.Jmethod)
-              _train_precision= precision_score(train_true_nomask, train_pred_nomask,labels=self.model.label, pos_label=1, average=self.model.Jmethod)
-              _train_accuracy_own=   accuracy_score(train_true_nomask, train_pred_nomask,normalize= True)              
+              _train_f1= f1_score(train_true_nomask, train_pred_nomask,labels=self.model.label, pos_label=self.model.label[0], average=self.model.Jmethod)
+              _train_k= cohen_kappa_score(train_true_nomask.ravel(),train_pred_nomask,labels=self.model.label)
+              _train_recall= recall_score(train_true_nomask, train_pred_nomask,labels=self.model.label, pos_label=self.model.label[0], average=self.model.Jmethod)
+              _train_precision= precision_score(train_true_nomask, train_pred_nomask,labels=self.model.label, pos_label=self.model.label[0], average=self.model.Jmethod)
+              _train_accuracy_own= accuracy_score(train_true_nomask, train_pred_nomask,normalize= True)              
               
-              _val_f1=               f1_score(val_true_nomask, val_pred_nomask,labels=self.model.label, pos_label=1, average=self.model.Jmethod)
-              _val_recall=       recall_score(val_true_nomask, val_pred_nomask,labels=self.model.label, pos_label=1, average=self.model.Jmethod)
-              _val_precision= precision_score(val_true_nomask, val_pred_nomask,labels=self.model.label, pos_label=1, average=self.model.Jmethod)
-              _val_accuracy_own=   accuracy_score(val_true_nomask, val_pred_nomask, normalize= True)
+              _val_f1= f1_score(val_true_nomask, val_pred_nomask,labels=self.model.label, pos_label=self.model.label[0], average=self.model.Jmethod)
+              _val_k= cohen_kappa_score(val_true_nomask.ravel(),val_pred_nomask,labels=self.model.label)
+              _val_recall= recall_score(val_true_nomask, val_pred_nomask,labels=self.model.label, pos_label=self.model.label[0], average=self.model.Jmethod)
+              _val_precision= precision_score(val_true_nomask, val_pred_nomask,labels=self.model.label, pos_label=self.model.label[0], average=self.model.Jmethod)
+              _val_accuracy_own= accuracy_score(val_true_nomask, val_pred_nomask, normalize= True)
               
-              self.train_f1s.append(_val_f1)
-              self.train_recall.append(_val_recall)
-              self.train_precision.append(_val_precision)
-              self.train_accuracy_own.append(_val_accuracy_own)
+              self.train_f1.append(_train_f1)
+              self.train_k.append(_train_k)
+              self.train_recall.append(_train_recall)
+              self.train_precision.append(_train_precision)
+              self.train_accuracy_own.append(_train_accuracy_own)
               
-              self.val_f1s.append(_val_f1)
+              self.val_f1.append(_val_f1)
+              self.val_k.append(_val_k)
               self.val_recall.append(_val_recall)
               self.val_precision.append(_val_precision)
               self.val_accuracy_own.append(_val_accuracy_own)

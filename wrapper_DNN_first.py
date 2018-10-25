@@ -30,6 +30,7 @@ import datetime as dt
 starttime=dt.datetime.now()
 #from LOOCV_DNN_using_generator import leave_one_out_cross_validation
 
+#from DNN_routines import *   #import the file as the result clss is defined there which is needed for pickle
 
 import itertools
 
@@ -82,17 +83,17 @@ Loading data declaration & Wrapper variables
 """
 SavingResults=1
 class Variablen:
-       description='Bi_ASQS'
-       runningNumber='40'
+       description='TEST_NEW_RESULTS'
+       runningNumber='000'
        label=[1,2,3,4,6] # 1=AS 2=QS 3=Wake 4=Care-taking 5=NA 6= transition
        usedPC='Cluster' #Philips or c3po or Cluster
-       dataset='MMC+ECG+InSe'  #"ECG" "cECG" "MMC" InSe "MMC+cECG" 'MMC+InSe' 'ECG+InSe' 'MMC+ECG+InSe' 
-       Epochs=2
-       fold=3   
+       dataset='ECG'  #"ECG" "cECG" "MMC" InSe "MMC+cECG" 'MMC+InSe' 'ECG+InSe' 'MMC+ECG+InSe' 
+       Epochs=1
+       fold=1  
        model='model_3_LSTM_advanced_seq' # check DNN_routines KeraS for options
        
-       saving_model=0
-       SavingResults=0
+       saving_model=1
+       SavingResults=1
        if usedPC=='Cluster':
            resultpath='/home/310122653/Git/DNN/Results/'
        else:
@@ -114,29 +115,52 @@ class Variablen:
        learning_rate_decay=0.0 #0.0 default
        scalerange=(0, 2) #(0,1) or (-1,1) #If you are using sigmoid activation functions, rescale your data to values between 0-and-1. If you’re using the Hyperbolic Tangent (tanh), rescale to values between -1 and 1.
        scaler = MinMaxScaler(feature_range=scalerange) #define function
-       Loss_Function='Weighted_cat_crossentropy'#Weighted_cat_crossentropy or categorical_crossentropy OR mean_squared_error IF BINARY : binary_crossentropy
+       Loss_Function='categorical_crossentropy'#Weighted_cat_crossentropy or categorical_crossentropy OR mean_squared_error IF BINARY : binary_crossentropy
        Perf_Metric=['categorical_accuracy']# 'categorical_accuracy' OR 'binary_accuray'
        activationF='sigmoid' # 'relu', 'tanh', 'sigmoid' ,...  Only in case the data is not normalized , only standardised
        Kr=0.0 # Kernel regularizers
        Ar=0.0 #ACtivity regularizers
        residual_blocks=1
-       optimizer=keras.optimizers.Adam() 
-Var=Variablen()    
+       optimizer=keras.optimizers.Adam()
+       info={'label': label,'Features':'all','Lookback': Lookback,'split': split,
+      'batchsize': batchsize,'Epochs': Epochs,
+      'hidden_units':hidden_units, 'Dens_unit': Dense_Unit,
+      'dropout': dropout, 'Kernel Regularizer': Kr , 'Activity regularizer': Ar,
+      'learning_rate': learning_rate,'learning_rate_decay': learning_rate_decay, 
+      'fold': fold, 'Scale': scalerange,'Loss_Function': Loss_Function,
+      'Perf_Metric': Perf_Metric,'Activation_funtion': activationF,
+      'ResidualBlocks':residual_blocks,'model' :model, 'earlystoppingpatience': early_stopping_patience,
+      'Metric weighting method':Jmethod}
+Var=Variablen() 
+
+
+#info={'label': Var.label,'Features':'all','Lookback': Var.Lookback,'split': Var.split,
+#      'batchsize': Var.batchsize,'Epochs': Var.Epochs,
+#      'hidden_units':Var.hidden_units, 'Dens_unit': Var.Dense_Unit,
+#      'dropout': Var.dropout, 'Kernel Regularizer': Var.Kr , 'Activity regularizer': Var.Ar,
+#      'learning_rate': Var.learning_rate,'learning_rate_decay': Var.learning_rate_decay, 
+#      'fold': Var.fold, 'Scale': Var.scalerange,'Loss_Function': Var.Loss_Function,
+#      'Perf_Metric': Var.Perf_Metric,'Activation_funtion': Var.activationF,
+#      'ResidualBlocks':Var.residual_blocks,'model' :Var.model, 'earlystoppingpatience': Var.early_stopping_patience,
+#      'Metric weighting method':Var.Jmethod}
+
+print('Dense_Unit: ' + str(Var.Dense_Unit))
+print('Hidden_units: ' + str(Var.hidden_units))
 
 if Var.dataset=='ECG' or 'cECG' or 'cECGDNN':
          Var.selectedbabies =[0,1,2,3,5,6,7,8] #0-8 ('4','5','6','7','9','10','11','12','13')
 if Var.dataset == 'InSe':
-         Var.selectedbabies =[0,1,2,3,5,6,7] #0-7      '3','4','5','6','8','9','13','15'              
+         Var.selectedbabies =[0,1,2,3,5,7] #0-7      '3','4','5','6','8','9','13','15'              
 if Var.dataset == 'MMC':
        Var.selectedbabies=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21] #0-21
 if Var.dataset == 'MMC+ECG':
        Var.selectedbabies=[0,1,2,3,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30] #0-27    # first 9 cECG rest MMC   
 if Var.dataset == 'MMC+InSe':
-       Var.selectedbabies=[0,1,2,3,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29] #0-27    # first 8 InSen rest MMC    
+       Var.selectedbabies=[0,1,2,3,5,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29] #0-27    # first 8 InSen rest MMC    
 if Var.dataset == 'ECG+InSe':
-       Var.selectedbabies=[0,1,2,3,5,6,7,8,9,10,11,12,13,14,15,16] #0-17    # first 8 InSe rest cECG               
+       Var.selectedbabies=[0,1,2,3,5,7,8,9,10,11,12,13,14,15,16] #0-17    # first 8 InSe rest cECG               
 if Var.dataset == 'MMC+ECG+InSe':
-       Var.selectedbabies=[0,1,2,3,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38] #0-17    # first 8 InSe,8-16 cECG, rest MMC           
+       Var.selectedbabies=[0,1,2,3,5,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38] #0-17    # first 8 InSe,8-16 cECG, rest MMC           
 
 
 if Var.scalerange==(0,1) :
@@ -144,25 +168,17 @@ if Var.scalerange==(0,1) :
 elif Var.scalerange==(-1,1):
        Var.activationF='tanh'    
 
-if len(Var.label)==2:
-       Var.Loss_Function='binary_crossentropy'       
-       Var.Perf_Metric=['categorical_accuracy'] # ['categorical_accuracy'] OR ['binary_accuray']
-       Var.Jmethod='binary'
+#if len(Var.label)==2:
+#       Var.Loss_Function='binary_crossentropy'       
+#       Var.Perf_Metric=['categorical_accuracy'] # ['categorical_accuracy'] OR ['binary_accuray']
+#       Var.Jmethod='binary'
 if Var.Lookback==1337: # The problem is that the patients have different lenght. Then we need to zero pad. Instead of zeropadding we can use diffent length when batchsize==1
        Var.batchsize=1
        
 if Var.merge34 and 3 in Var.label:
               Var.label.remove(3)      
               
-info={'label': Var.label,'Features':'all','Lookback': Var.Lookback,'split': Var.split,
-      'batchsize': Var.batchsize,'Epochs': Var.Epochs,
-      'hidden_units':Var.hidden_units, 'Dens_unit': Var.Dense_Unit,
-      'dropout': Var.dropout, 'Kernel Regularizer': Var.Kr , 'Activity regularizer': Var.Ar,
-      'learning_rate': Var.learning_rate,'learning_rate_decay': Var.learning_rate_decay, 
-      'fold': Var.fold, 'Scale': Var.scalerange,'Loss_Function': Var.Loss_Function,
-      'Perf_Metric': Var.Perf_Metric,'Activation_funtion': Var.activationF,
-      'ResidualBlocks':Var.residual_blocks,'model' :Var.model, 'earlystoppingpatience': Var.early_stopping_patience,
-      'Metric weighting method':Var.Jmethod}
+
 
 
 class Variablenplus:
@@ -201,9 +217,47 @@ class Variablenplus:
 Varplus=Variablenplus()
 # fix random seed for reproducibility
 np.random.seed(42)
+# How to pickle correct. 
+# First initiate the class with instace attributes (self.a=[]) in the same file/function where you want to pickle. As only the instance attributes are pickled correctly
+# The instanciate the class with Rrs=Results(). Otherwise there is no instances to pickle
+# Then fill the instance with values
 class Results:
-       Info=info
-
+    def __init__(self):
+       self.Info=Var.info
+       self.Fold=Var.fold
+       
+       self.train_metric=[]
+       self.train_loss=[]
+       self.val_metric=[]
+       self.val_loss=[]  
+#    
+       self.val_f1=[]
+       self.val_k=[]
+       self.val_recall=[]
+       self.val_precision=[]
+       self.val_no_mask_acc=[]
+       self.train_f1=[]
+       self.train_k=[]
+       self.train_recall=[]
+       self.train_precision=[]
+       self.train_no_mask_acc=[] 
+       
+       self.mean_val_metric=[]
+       self.mean_train_metric=[]
+       self.mean_val_loss=[]
+       self.mean_train_loss=[]
+       
+       self.mean_val_f1=[]
+       self.mean_val_k=[]
+       self.mean_val_recall=[]
+       self.mean_val_precision=[]
+       self.mean_val_no_mask_acc=[]
+       self.mean_train_f1=[]
+       self.mean_train_k=[]
+       self.mean_train_recall=[]
+       self.mean_train_precision=[]
+       self.mean_train_no_mask_acc=[]
+       
 Ergebnisse=Results()     
 
   
@@ -236,38 +290,31 @@ LOOCV
 laenge=[sum(len(FeatureMatrix_each_patient[i]) for i in range(len(FeatureMatrix_each_patient))) ]
 print('Total amount of epochs: {}'.format(laenge))
 
-model,\
-y_each_patient,\
-Ergebnisse.mean_Kappa,\
-Ergebnisse.mean_train_metric,\
-Ergebnisse.mean_train_loss,\
-Ergebnisse.mean_val_metric,\
-Ergebnisse.mean_val_loss,\
-Ergebnisse.mean_test_metric,\
-Ergebnisse.mean_test_loss,\
-Ergebnisse.mean_val_f1,\
-Ergebnisse.mean_val_recall,\
-Ergebnisse.mean_val_precicion,\
-Ergebnisse.mean_val_no_mask_acc,\
-Ergebnisse.mean_train_f1,\
-Ergebnisse.mean_train_recall,\
-Ergebnisse.mean_train_precicion,\
-Ergebnisse.mean_train_no_mask_acc\
-=leave_one_out_cross_validation(babies,AnnotMatrix_each_patient,FeatureMatrix_each_patient,Var,Varplus)
+model,Ergebnisse=leave_one_out_cross_validation(babies,AnnotMatrix_each_patient,FeatureMatrix_each_patient,Var,Varplus,Ergebnisse)
 
+#The results have to be put into the class which uses instance attributes instead of class attribute to be properly pickled
+# Also the class has to be "created" here where it is also pickled. Therfore this mess. 
+# https://stackoverflow/questions/10842553/pickle-with-custom-classes
 
-
-if Var.fold>1:
-       Ergebnisse.mean_test_metric_overall=np.mean(Ergebnisse.mean_test_metric,axis=0) # Kappa is not calculated per epoch but just per fold. Therefor we generate on mean Kappa
-       Ergebnisse.mean_train_metric_overall=np.mean(Ergebnisse.mean_train_metric,axis=0)
-       Ergebnisse.mean_val_metric_overall=np.mean(Ergebnisse.mean_val_metric,axis=0)    
-       Ergebnisse.mean_test_loss_overall=mean(Ergebnisse.mean_test_loss,axis=0)    
-       Ergebnisse.mean_train_loss_overall=np.mean(Ergebnisse.mean_train_loss,axis=0)
-       Ergebnisse.mean_val_loss_overall=np.mean(Ergebnisse.mean_val_loss,axis=0)      
-       Ergebnisse.mean_Kappa_overall=np.mean(Ergebnisse.mean_Kappa)
-
-
-Ergebnisse.info=info       
+#
+#if Var.fold>1:
+#    Results.mean_val_metric=Ergebniss.mean_val_metric
+#    Results.mean_train_metric=Ergebniss.mean_train_metric
+#    Results.mean_val_loss=Ergebniss.mean_val_loss
+#    Results.mean_train_loss=Ergebniss.mean_train_loss
+#       
+#    Results.mean_val_f1=Ergebniss.mean_val_f1
+#    Results.mean_val_k=Ergebniss.mean_val_k
+#    Results.mean_val_recall=Ergebniss.mean_val_recall
+#    Results.mean_val_precision=Ergebniss.mean_val_precision
+#    Results.mean_val_no_mask_acc=Ergebniss.mean_val_no_mask_acc
+#    Results.mean_train_f1=Ergebniss.mean_train_f1
+#    Results.mean_train_k=Ergebniss.mean_train_k
+#    Results.mean_train_recall=Ergebniss.mean_train_recall
+#    Results.mean_train_precision=Ergebniss.mean_train_precision
+#    Results.mean_train_no_mask_acc=Ergebniss.mean_train_no_mask_acc
+#Ergebniss.Info=info
+#Ergebisse=Result_s()     
 #SAVING STUFF
 if Var.saving_model:
        #info https://stackoverflow.com/questions/42763094/how-to-save-final-model-using-keras
@@ -279,9 +326,10 @@ if Var.saving_model:
                      json_file.write(model_json)
         
        model_json = model.to_json()
-       save_Model(model_json,'Results/'+Var.runningNumber+'_'+Var.description+".json")              
+       save_Model(model_json,Var.resultpath+'/'+Var.runningNumber+'_'+Var.description+".json")   
+
        # serialize weights to HDF5
-       model.save_weights('Results/'+Var.runningNumber+'_'+Var.description+'_weigths.h5')  # creates a HDF5 file 'my_model.h5'
+#       model.save_weights(Var.resultpath+'/'+Var.runningNumber+'_'+Var.description+'_weigths.h5')  # creates a HDF5 file 'my_model.h5' for the last used weights. Better checkpooint weights
        print('Model saved')
 #
 if Var.SavingResults:
@@ -289,17 +337,15 @@ if Var.SavingResults:
               with open(filename, 'wb') as output:  # Overwrites any existing file.
                      pickle.dump(obj, output, pickle.HIGHEST_PROTOCOL)
         
-       save_object(Ergebnisse, 'Results/'+Var.runningNumber+'_'+Var.description+'.pkl' )  
+       save_object(Ergebnisse, Var.resultpath+'/'+Var.runningNumber+'_'+Var.description+'_Ergebnisse.pkl' )  
+
        print('Results saved')
 
 """
 END
 """
 disp('-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  - ')
-
-if len(Var.split)<3:
-       disp('don`t give a f** about Kappa. Data is only plit for train and val' )
-       
+   
    
 import time
 t=time.localtime()

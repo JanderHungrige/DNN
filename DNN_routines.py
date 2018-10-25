@@ -73,13 +73,7 @@ def KeraS(X_train, Y_train, X_val, Y_val, X_test, Y_test, Var):
 #### CREATING THE sampleweight FOR SELECTED BABIES  
 #### TRAIN CLASSIFIER
     meanaccLOO=[];accLOO=[];testsubject=[];tpr_mean=[];counter=0;
-    mean_tpr = 0.0;mean_fpr = np.linspace(0, 1, 100)
-    F1_all_collect=[];K_collect=[]
-    all_test_metric=[];all_test_loss=[];all_train_metric=[];all_train_loss=[];all_val_metric=[];all_val_loss=[]
-    resultsK=[];mean_test_metric=[];mean_train_metric=[]
-    all_val_f1=[];all_val_recall=[];all_val_precisions=[];all_val_no_mask_acc=[]
-    all_train_f1=[];all_train_recall=[];all_train_precisions=[];all_train_no_mask_acc=[]
-              
+    mean_tpr = 0.0;mean_fpr = np.linspace(0, 1, 100)            
     
 #BUILT MODEL    
     if Var.model=='model_3_LSTM_advanced':
@@ -208,8 +202,8 @@ def KeraS(X_train, Y_train, X_val, Y_val, X_test, Y_test, Var):
     model.Y_train_jan = Y_train
     model.label=Var.label
     model.Jmethod=Var.Jmethod
-    model.train_f1=[];model.train_precision=[];model.train_recall=[];model.train_accuracy=[];model.train_accuracy=[]
-    model.val_f1=[];model.val_precision=[];model.val_recall=[];model.val_accuracy=[];model.val_accuracy=[]
+#    model.train_f1=[];model.train_k=[];model.train_precision=[];model.train_recall=[];model.train_accuracy=[];model.train_accuracy=[]
+#    model.val_f1=[];model.val_k=[];model.val_precision=[];model.val_recall=[];model.val_accuracy=[];model.val_accuracy=[]
     
 # TRAIN MODEL (in silent mode, verbose=0)       
     history=model.fit(x=X_train,
@@ -239,58 +233,17 @@ def KeraS(X_train, Y_train, X_val, Y_val, X_test, Y_test, Var):
 
 #       print(history.history.keys())     
     
-#COLLECTING RESULTS    
-    resultsK.append(cohen_kappa_score(Y_test_Result.ravel(),prediction_base,labels=Var.label))        
-
-    all_test_metric.append(test_metric)
-    all_test_loss.append(test_loss)
-
-    train_metric=history.history['categorical_accuracy']
-    train_loss = history.history['loss']
-    val_metric = history.history['val_categorical_accuracy']         
-    val_loss = history.history['val_loss'] 
- 
-    all_train_metric.append(train_metric)
-    all_train_loss.append(train_loss)
-    all_val_metric.append(val_metric)
-    all_val_loss.append(val_loss)   
+#COLLECTING RESULTS 
+# Here we save the results from the callback into a class as the callback itself makes problems with saving with pickle
+    callbackmetric.train_metric.append(history.history['categorical_accuracy'])
+    callbackmetric.train_loss.append(history.history['loss'])
+    callbackmetric.val_metric.append(history.history['val_categorical_accuracy'] )
+    callbackmetric.val_loss.append(history.history['val_loss'] )   
     
-    all_val_f1.append(model.val_f1)
-    all_val_recall.append(model.val_recall)
-    all_val_precisions.append(model.val_precision)
-    all_val_no_mask_acc.append(model.val_accuracy)
-    all_train_f1.append(model.val_f1)
-    all_train_recall.append(model.val_recall)
-    all_train_precisions.append(model.val_precision)
-    all_train_no_mask_acc.append(model.val_accuracy)
-     
-       
-#    mean_test_metric=np.mean(all_test_metric) # Kappa is not calculated per epoch but just per fold. Therefor we generate on mean Kappa
-#    mean_train_metric=np.mean(all_train_metric,axis=0)
-    mean_test_metric=all_test_metric # Kappa is not calculated per epoch but just per fold. Therefor we generate on mean Kappa
-    mean_train_metric= np.mean(all_train_metric,axis=0)
-    mean_val_metric=   np.mean(all_val_metric,axis=0)    
-    mean_test_loss=    np.mean(all_test_loss,axis=0)    
-    mean_train_loss=   np.mean(all_train_loss,axis=0)
-    mean_val_loss=     np.mean(all_val_loss,axis=0)      
-    mean_k=            np.mean(resultsK)
-    
-    mean_val_f1=np.mean(all_val_f1)
-    mean_val_recall=np.mean(all_val_recall)
-    mean_val_precicion=np.mean(all_val_precisions)
-    mean_val_no_mask_acc=np.mean(all_val_no_mask_acc)
-    
-    mean_train_f1=np.mean(all_train_f1)
-    mean_train_recall=np.mean(all_train_recall)
-    mean_train_precicion=np.mean(all_train_precisions)
-    mean_train_no_mask_acc=np.mean(all_train_no_mask_acc)
 #    from sklearn.metrics import classification_report
 #    target_names = ['AS', 'QS', 'CTW','IS']
 #    Report=(classification_report(Y_test_Result.ravel(), prediction_base, target_names=target_names))
 #
-#      
-    model.perfmatrix= callbackmetric
-    return model, resultsK, mean_k, mean_train_metric, mean_val_metric, mean_train_loss, mean_val_loss, mean_test_metric, mean_test_loss,\
-    mean_val_f1,mean_val_recall,mean_val_precicion,mean_val_no_mask_acc,mean_train_f1,mean_train_recall,mean_train_precicion,mean_train_no_mask_acc
-
-
+#    Ergebniss=callbackmetric()
+    model.perfmatrix=callbackmetric
+    return model,callbackmetric

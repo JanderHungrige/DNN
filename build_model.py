@@ -157,16 +157,16 @@ def model_3_LSTM_advanced_seq(X_train,Y_train,Var):
                                 activity_regularizer=regularizers.l2(Var.Ar),
                                 kernel_constraint=max_norm(max_value=3.), 
                                 dropout=Var.dropout, recurrent_dropout=Var.dropout))(x)
-   x=Bidirectional(LSTM(Var.hidden_units, return_sequences=True,
-                                kernel_regularizer=regularizers.l2(Var.Kr),
-                                activity_regularizer=regularizers.l2(Var.Ar),
-                                kernel_constraint=max_norm(max_value=3.), 
-                                dropout=Var.dropout, recurrent_dropout=Var.dropout))(x)  
-   x=Bidirectional(LSTM(Var.hidden_units, return_sequences=True,
-                                kernel_regularizer=regularizers.l2(Var.Kr),
-                                activity_regularizer=regularizers.l2(Var.Ar),
-                                kernel_constraint=max_norm(max_value=3.), 
-                                dropout=Var.dropout, recurrent_dropout=Var.dropout))(x)  
+#   x=Bidirectional(LSTM(Var.hidden_units, return_sequences=True,
+#                                kernel_regularizer=regularizers.l2(Var.Kr),
+#                                activity_regularizer=regularizers.l2(Var.Ar),
+#                                kernel_constraint=max_norm(max_value=3.), 
+#                                dropout=Var.dropout, recurrent_dropout=Var.dropout))(x)  
+#   x=Bidirectional(LSTM(Var.hidden_units, return_sequences=True,
+#                                kernel_regularizer=regularizers.l2(Var.Kr),
+#                                activity_regularizer=regularizers.l2(Var.Ar),
+#                                kernel_constraint=max_norm(max_value=3.), 
+#                                dropout=Var.dropout, recurrent_dropout=Var.dropout))(x)  
    x=Dropout(0.5, noise_shape=(None, 1, Var.hidden_units*2))(x)
    predictions=Dense(Y_train.shape[-1], activation='softmax', kernel_constraint=max_norm(max_value=3.))(x)
    model=Model(inputs=inp, output=predictions)
