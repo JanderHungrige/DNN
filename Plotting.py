@@ -69,6 +69,8 @@ if fold>1:
        mean_val_loss_all=Ergebnisse.mean_val_loss
        
        
+       best_mean_metric=np.max(mean_val_metric_all)
+       best_mean_loss=np.min(mean_val_loss)
        
        train,=plt.plot(XAxse,mean_train_metric,label='Train')#,color=[0.4,0.4,0.4])
        val,=plt.plot(XAxse,mean_val_metric,label='Val')#,color=[0,0,0])
@@ -100,6 +102,8 @@ if fold>1:
               plt.xlabel('Epochs')
               plt.ylabel('Cat-acc')       
        plt.show
+       
+       
 
 if fold==1:
        XAxse= range(len(Ergebnisse.mean_train_loss[0]))
@@ -108,6 +112,10 @@ if fold==1:
        mean_val_metric_all=Ergebnisse.mean_val_metric
        mean_train_loss_all=Ergebnisse.mean_train_loss
        mean_val_loss_all=Ergebnisse.mean_val_loss
+       
+       best_metric=np.max(mean_val_metric_all)
+       best_loss=np.min(mean_val_loss)
+       
        plt.figure()
        for i in range(len(mean_train_metric_all)):
        #       train,=plt.plot(XAxse,mean_train_metric_all[i].T,label='Train')#,color=[0.4,0.4,0.4])

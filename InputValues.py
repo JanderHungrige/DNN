@@ -15,6 +15,15 @@ def inputcombinations(whatID):
     adaDelta=keras.optimizers.Adadelta()
     rmsProp=keras.optimizers.RMSprop()
     
+    
+    if whatID in np.arange(39,123): 
+       Loss_Function='Weighted_cat_crossentropy1'#Weighted_cat_crossentropy or categorical_crossentropy OR mean_squared_error IF BINARY : binary_crossentropy
+    if whatID in np.arange(123,207): 
+       Loss_Function='categorical_crossentropy'#Weighted_cat_crossentropy or categorical_crossentropy OR mean_squared_error IF BINARY : binary_crossentropy
+
+    if whatID in np.arange(177,183):
+       Loss_Function='categorical_crossentropy'    
+    
     if whatID in np.arange(39,118,6) or whatID in np.arange(123,202,6):
        description='Bi_ASQS' # Bi_ASQS  Bi_ASIS  Bi_ASCTW  Bi_QSIS  Bi_QSCTW  Bi_ISCTW
     if whatID in np.arange(40,119,6) or whatID in np.arange(124,203,6):
@@ -54,6 +63,7 @@ def inputcombinations(whatID):
     :
        model='model_3_LSTM_advanced' # check DNN_routines KeraS for options model_4_GRU_advanced  model_3_LSTM_advanced
        Optimizer=adam
+       
     if whatID in np.arange(45,51)   or whatID in np.arange(129,135)\
     or whatID in np.arange(57,63)   or whatID in np.arange(141,147)\
     or whatID in np.arange(69,75)   or whatID in np.arange(153,159)\
@@ -162,9 +172,5 @@ def inputcombinations(whatID):
     elif description=='Bi_ISCTW':
         label=[3,4,6]  
 
-    if whatID in np.arange(39,123): 
-       Loss_Function='Weighted_cat_crossentropy1'#Weighted_cat_crossentropy or categorical_crossentropy OR mean_squared_error IF BINARY : binary_crossentropy
-    if whatID in np.arange(123,207): 
-       Loss_Function='categorical_crossentropy'#Weighted_cat_crossentropy or categorical_crossentropy OR mean_squared_error IF BINARY : binary_crossentropy
 
     return description, dataset, model, label,Loss_Function,Optimizer

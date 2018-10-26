@@ -85,7 +85,7 @@ print('RunningNumber: ' +str(arrayId))
 
 if arrayId in arange(39,207) or arrayId in arange(1,15):
     [descriptionID, datasetID, modelID, labelID, Loss_FunctionID, OptimizerID]=inputcombinations(arrayId)
-if arrayId in arange(500,503) or arrayId in arange(300,307) or arrayId in arange(340,442):
+if arrayId in arange(500,503) or arrayId in arange(300,307) or arrayId in arange(340,442)  or arrayId in arange(600,607)or arrayId in arange(700,742):
     [descriptionID, datasetID, modelID, labelID, Loss_FunctionID, OptimizerID]=inputcombinations2(arrayId)
 
 SavingResults=1
@@ -100,14 +100,14 @@ class Variablen:
        Loss_Function=Loss_FunctionID  #'categorical_crossentropy'#Weighted_cat_crossentropy or categorical_crossentropy OR mean_squared_error IF BINARY : binary_crossentropy
        optimizer=OptimizerID
        usedPC='Cluster' #Philips or c3po or Cluster
-       Epochs=100
-       fold=1   
+       Epochs=800
+       fold=3   
 
        
        saving_model=1
        SavingResults=1
        if usedPC=='Cluster':
-           resultpath='/home/310122653/Git/DNN/Results/'
+           resultpath='/home/310122653/Git/DNN/Results_paper/'
        else:
            resultpath='./Results/'
     
@@ -133,6 +133,16 @@ class Variablen:
        Ar=0.0 #ACtivity regularizers
        residual_blocks=1
        
+       info={'label': label,'Features':'all','Lookback': Lookback,'split': split,
+      'batchsize': batchsize,'Epochs': Epochs,
+      'hidden_units':hidden_units, 'Dens_unit': Dense_Unit,
+      'dropout': dropout, 'Kernel Regularizer': Kr , 'Activity regularizer': Ar,
+      'learning_rate': learning_rate,'learning_rate_decay': learning_rate_decay, 
+      'fold': fold, 'Scale': scalerange,'Loss_Function': Loss_Function,
+      'Perf_Metric': Perf_Metric,'Activation_funtion': activationF,
+      'ResidualBlocks':residual_blocks,'model' :model, 'earlystoppingpatience': early_stopping_patience,
+      'Metric weighting method':Jmethod}       
+       
        if Loss_FunctionID=='categorical_crossentropy' :
            wID=0
        if Loss_FunctionID=='Weighted_cat_crossentropy1' :
@@ -141,7 +151,9 @@ class Variablen:
            wID=2            
        description= descriptionID+'_DU'+str(Dense_Unit)+'_W'+str(wID)#'Bi_ASCTW' # Bi_ASQS  Bi_ASIS  Bi_ASCTW  Bi_QSIS  Bi_QSCTW  Bi_ISCTW
        
-        
+#%% Var finished --------------------------------------------------------------
+
+       
 Var=Variablen()    
 print('Dense_Unit: ' + str(Var.Dense_Unit))
 print('Hidden_units: ' + str(Var.hidden_units))
@@ -177,15 +189,15 @@ if Var.Lookback==1337: # The problem is that the patients have different lenght.
 if Var.merge34 and 3 in Var.label:
               Var.label.remove(3)      
               
-info={'label': Var.label,'Features':'all','Lookback': Var.Lookback,'split': Var.split,
-      'batchsize': Var.batchsize,'Epochs': Var.Epochs,
-      'hidden_units':Var.hidden_units, 'Dens_unit': Var.Dense_Unit,
-      'dropout': Var.dropout, 'Kernel Regularizer': Var.Kr , 'Activity regularizer': Var.Ar,
-      'learning_rate': Var.learning_rate,'learning_rate_decay': Var.learning_rate_decay, 
-      'fold': Var.fold, 'Scale': Var.scalerange,'Loss_Function': Var.Loss_Function,
-      'Perf_Metric': Var.Perf_Metric,'Activation_funtion': Var.activationF,
-      'ResidualBlocks':Var.residual_blocks,'model' :Var.model, 'earlystoppingpatience': Var.early_stopping_patience,
-      'Metric weighting method':Var.Jmethod}
+#info={'label': Var.label,'Features':'all','Lookback': Var.Lookback,'split': Var.split,
+#      'batchsize': Var.batchsize,'Epochs': Var.Epochs,
+#      'hidden_units':Var.hidden_units, 'Dens_unit': Var.Dense_Unit,
+#      'dropout': Var.dropout, 'Kernel Regularizer': Var.Kr , 'Activity regularizer': Var.Ar,
+#      'learning_rate': Var.learning_rate,'learning_rate_decay': Var.learning_rate_decay, 
+#      'fold': Var.fold, 'Scale': Var.scalerange,'Loss_Function': Var.Loss_Function,
+#      'Perf_Metric': Var.Perf_Metric,'Activation_funtion': Var.activationF,
+#      'ResidualBlocks':Var.residual_blocks,'model' :Var.model, 'earlystoppingpatience': Var.early_stopping_patience,
+#      'Metric weighting method':Var.Jmethod}
 
 
 class Variablenplus:

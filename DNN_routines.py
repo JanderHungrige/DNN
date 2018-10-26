@@ -47,6 +47,7 @@ from build_model_bi import model_3_LSTM_advanced1
 from build_model_bi import model_3_LSTM_advanced2
 
 from build_model_residual import ResNet_deep_Beta_LSTM
+from build_model_residual import ResNet_deep_Beta_GRU
 from build_model_residual import ResNet_wide_Beta_LSTM
 from build_model_residual import ResNet_wide_Beta_GRU
 
@@ -97,7 +98,9 @@ def KeraS(X_train, Y_train, X_val, Y_val, X_test, Y_test, Var):
            model=model_3_LSTM_advanced2(X_train,Y_train,Var)
            
     if Var.model=='ResNet_deep_Beta_LSTM':
-           model=ResNet_deep_Beta_LSTM(X_train,Y_train,Var)           
+           model=ResNet_deep_Beta_LSTM(X_train,Y_train,Var)    
+    if Var.model=='ResNet_deep_Beta_GRU':
+           model=ResNet_deep_Beta_GRU(X_train,Y_train,Var)             
     if Var.model=='ResNet_wide_Beta_LSTM':
            model=ResNet_wide_Beta_LSTM(X_train,Y_train,Var)             
     if Var.model=='ResNet_wide_Beta_GRU':
