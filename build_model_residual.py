@@ -135,7 +135,67 @@ def ResNet_deep_Beta_GRU(X_train,Y_train,Var):
        model = Model(inputs=inp,outputs=i)  
        
        return model
+#%%
+def ResNet_deep_Beta_GRU_growing(X_train,Y_train,Var):   
 
+       def Block_unit(X_train,Var):
+            def unit(x):
+                 ident = x
+                 x=layers.Bidirectional(GRU(Var.hidden_units, activation=Var.activationF, return_sequences=True,   
+                                kernel_regularizer=regularizers.l2(Var.Kr),
+                                activity_regularizer=regularizers.l2(Var.Ar),
+                                kernel_constraint=max_norm(max_value=3.), dropout=Var.dropout, recurrent_dropout=Var.dropout))(x)
+                 x=layers.GRU(Var.hidden_units*2, return_sequences=True,
+                                kernel_regularizer=regularizers.l2(Var.Kr),
+                                activity_regularizer=regularizers.l2(Var.Ar),
+                                kernel_constraint=max_norm(max_value=3.), dropout=Var.dropout, recurrent_dropout=Var.dropout)(x)  
+                 x=layers.Bidirectional(GRU(Var.hidden_units*2, return_sequences=True,
+                                kernel_regularizer=regularizers.l2(Var.Kr),
+                                activity_regularizer=regularizers.l2(Var.Ar),
+                                kernel_constraint=max_norm(max_value=3.), dropout=Var.dropout, recurrent_dropout=Var.dropout))(x)                            
+                 x=layers.GRU(Var.hidden_units*4, return_sequences=True,
+                                kernel_regularizer=regularizers.l2(Var.Kr),
+                                activity_regularizer=regularizers.l2(Var.Ar),
+                                kernel_constraint=max_norm(max_value=3.), dropout=Var.dropout, recurrent_dropout=Var.dropout)(x)                            
+                 x=layers.Bidirectional(GRU(Var.hidden_units*4, return_sequences=True,
+                                kernel_regularizer=regularizers.l2(Var.Kr),
+                                activity_regularizer=regularizers.l2(Var.Ar),
+                                kernel_constraint=max_norm(max_value=3.), dropout=Var.dropout, recurrent_dropout=Var.dropout))(x)                                             
+                 x=layers.Dropout(Var.dropout, noise_shape=(None, 1, Var.hidden_units*8))(x) 
+                 x=layers.Dense(Var.Dense_Unit, activation=Var.activationF, kernel_constraint=max_norm(max_value=3.))(x)                                                  
+#                 x = merge([ident,x], mode = 'sum') #mode 'sum' concat
+                 x=layers.add([ident,x]) 
+                 
+                 return x
+            return unit
+                             
+       def cake(Var):
+              def unit(x):
+                     for j in range(Var.residual_blocks):
+                         x=Block_unit(X_train,Var)(x)              
+                         return x                          
+              return unit
+    
+       
+       inp = Input(shape=(X_train.shape[1],X_train.shape[2]))
+#       i = inp
+       i=layers.Masking(mask_value=666,input_shape=(X_train.shape[1],X_train.shape[2]))(inp)
+       i=layers.Dropout(Var.dropout/2, noise_shape=(None, 1, X_train.shape[2]))(i)
+       i=layers.Dense(Var.Dense_Unit, activation=Var.activationF, kernel_constraint=max_norm(max_value=3.))(i) 
+       i=BatchNormalization(axis=1)(i)     
+          
+       i = cake(Var)(i) 
+       i = cake(Var)(i) 
+       i = cake(Var)(i)
+       i = cake(Var)(i)       
+       i = cake(Var)(i)
+               
+       i=layers.Bidirectional(LSTM(Var.hidden_units, return_sequences=True, kernel_constraint=max_norm(max_value=3.), dropout=Var.dropout, recurrent_dropout=Var.dropout))(i)                   
+       i = Dense(Y_train.shape[-1],activation='softmax', kernel_constraint=max_norm(max_value=3.))(i)
+
+       model = Model(inputs=inp,outputs=i)  
+       
+       return model
 #%%    
 def ResNet_wide_Beta_LSTM(X_train,Y_train,Var):   
 

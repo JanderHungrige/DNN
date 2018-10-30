@@ -50,6 +50,7 @@ from build_model_residual import ResNet_deep_Beta_LSTM
 from build_model_residual import ResNet_deep_Beta_GRU
 from build_model_residual import ResNet_wide_Beta_LSTM
 from build_model_residual import ResNet_wide_Beta_GRU
+from build_model_residual import ResNet_deep_Beta_GRU_growing
 
 from build_model_transfer import Transfer_wide_Beta_GRU
 from build_model_transfer import Transfer_wide_Beta_GRU_2
@@ -105,6 +106,8 @@ def KeraS(X_train, Y_train, X_val, Y_val, X_test, Y_test, Var):
            model=ResNet_wide_Beta_LSTM(X_train,Y_train,Var)             
     if Var.model=='ResNet_wide_Beta_GRU':
            model=ResNet_wide_Beta_GRU(X_train,Y_train,Var)  
+    if Var.model=='ResNet_deep_Beta_GRU_growing':
+           model=ResNet_deep_Beta_GRU_growing(X_train,Y_train,Var)             
      
     if Var.model=='Transfer_wide_Beta_GRU':
            model=Transfer_wide_Beta_GRU(X_train,Y_train,Var)   
@@ -114,6 +117,7 @@ def KeraS(X_train, Y_train, X_val, Y_val, X_test, Y_test, Var):
     if Var.usedPC=='Philips': # Plotting model
            from keras.utils.vis_utils import plot_model    
            plot_model(model, to_file='model_plot.png', show_shapes=True, show_layer_names=True) 
+           plot_model(model, to_file='model_plot.svg', show_shapes=True, show_layer_names=True) 
            
     tensorboard = TensorBoard(log_dir=Var.resultpath +'/logs') 
 

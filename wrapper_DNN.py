@@ -85,7 +85,7 @@ print('RunningNumber: ' +str(arrayId))
 
 if arrayId in arange(39,207) or arrayId in arange(1,15):
     [descriptionID, datasetID, modelID, labelID, Loss_FunctionID, OptimizerID]=inputcombinations(arrayId)
-if arrayId in arange(500,503) or arrayId in arange(300,307) or arrayId in arange(340,442)  or arrayId in arange(600,607)or arrayId in arange(700,742):
+if arrayId in arange(500,503) or arrayId in arange(300,307) or arrayId in arange(340,442) or arrayId in arange(600,607) or arrayId in arange(700,742)or arrayId in arange(800,830) or arrayId in arange(900,907):
     [descriptionID, datasetID, modelID, labelID, Loss_FunctionID, OptimizerID]=inputcombinations2(arrayId)
 
 SavingResults=1
@@ -100,14 +100,15 @@ class Variablen:
        Loss_Function=Loss_FunctionID  #'categorical_crossentropy'#Weighted_cat_crossentropy or categorical_crossentropy OR mean_squared_error IF BINARY : binary_crossentropy
        optimizer=OptimizerID
        usedPC='Cluster' #Philips or c3po or Cluster
-       Epochs=800
-       fold=3   
+       Epochs=600
+       fold=1   
 
        
        saving_model=1
        SavingResults=1
        if usedPC=='Cluster':
-           resultpath='/home/310122653/Git/DNN/Results_paper/'
+#           resultpath='/home/310122653/Git/DNN/Results/'
+           resultpath='/home/310122653/Git/DNN/Results/'
        else:
            resultpath='./Results/'
     
@@ -149,7 +150,7 @@ class Variablen:
            wID=1     
        if Loss_FunctionID=='Weighted_cat_crossentropy2' :
            wID=2            
-       description= descriptionID+'_DU'+str(Dense_Unit)+'_W'+str(wID)#'Bi_ASCTW' # Bi_ASQS  Bi_ASIS  Bi_ASCTW  Bi_QSIS  Bi_QSCTW  Bi_ISCTW
+       description= descriptionID+'_DU'+str(Dense_Unit)+'_W'+str(wID)+'_'+str(fold)+'_folds'#'Bi_ASCTW' # Bi_ASQS  Bi_ASIS  Bi_ASCTW  Bi_QSIS  Bi_QSCTW  Bi_ISCTW
        
 #%% Var finished --------------------------------------------------------------
 
