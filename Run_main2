@@ -1,6 +1,6 @@
 #! /bin/sh -p
 #PBS -l nodes=1:ppn=1
-#PBS -N  AA_Resdeepgrowing_all_W2
+#PBS -N  A_ECGwhichpatient_w0
 #PBS -j oe
 
 python3 /home/310122653/Git/DNN/wrapper_DNN.py $PBS_ARRAYID
@@ -10,4 +10,4 @@ python3 /home/310122653/Git/DNN/wrapper_DNN.py $PBS_ARRAYID
 ###  qdel 3326330[].osios
 ### https://confluence.atlas.philips.com/pages/viewpage.action?pageId=16491197 
 ### Info on qsub and qstat:
-### http://docs.adaptivecomputing.com/torque/archive/3-0-2/2.1jobsubmission.php
+### http://docs.adaptivecomputing.com/torque/archive/3-0-2/2.1jobsubmissmystaion.php

@@ -69,7 +69,7 @@ def ResNet_deep_Beta_LSTM(X_train,Y_train,Var):
        
        inp = Input(shape=(X_train.shape[1],X_train.shape[2]))
 #       i = inp
-       i=layers.Masking(mask_value=666,input_shape=(X_train.shape[1],X_train.shape[2]))(inp)
+       i=layers.Masking(mask_value=Var.mask_value,input_shape=(X_train.shape[1],X_train.shape[2]))(inp)
        i=layers.Dropout(Var.dropout/2, noise_shape=(None, 1, X_train.shape[2]))(i)
        i=layers.Dense(Var.Dense_Unit, activation=Var.activationF, kernel_constraint=max_norm(max_value=3.))(i) 
        i=BatchNormalization(axis=1)(i)     
@@ -118,7 +118,7 @@ def ResNet_deep_Beta_GRU(X_train,Y_train,Var):
        
        inp = Input(shape=(X_train.shape[1],X_train.shape[2]))
 #       i = inp
-       i=layers.Masking(mask_value=666,input_shape=(X_train.shape[1],X_train.shape[2]))(inp)
+       i=layers.Masking(mask_value=Var.mask_value,input_shape=(X_train.shape[1],X_train.shape[2]))(inp)
        i=layers.Dropout(Var.dropout/2, noise_shape=(None, 1, X_train.shape[2]))(i)
        i=layers.Dense(Var.Dense_Unit, activation=Var.activationF, kernel_constraint=max_norm(max_value=3.))(i) 
        i=BatchNormalization(axis=1)(i)     
@@ -179,7 +179,7 @@ def ResNet_deep_Beta_GRU_growing(X_train,Y_train,Var):
        
        inp = Input(shape=(X_train.shape[1],X_train.shape[2]))
 #       i = inp
-       i=layers.Masking(mask_value=666,input_shape=(X_train.shape[1],X_train.shape[2]))(inp)
+       i=layers.Masking(mask_value=Var.mask_value,input_shape=(X_train.shape[1],X_train.shape[2]))(inp)
        i=layers.Dropout(Var.dropout/2, noise_shape=(None, 1, X_train.shape[2]))(i)
        i=layers.Dense(Var.Dense_Unit, activation=Var.activationF, kernel_constraint=max_norm(max_value=3.))(i) 
        i=BatchNormalization(axis=1)(i)     
@@ -226,7 +226,7 @@ def ResNet_wide_Beta_LSTM(X_train,Y_train,Var):
 
        inp = Input(shape=(X_train.shape[1],X_train.shape[2]))
 #       i = inp
-       i=layers.Masking(mask_value=666,input_shape=(X_train.shape[1],X_train.shape[2]))(inp)
+       i=layers.Masking(mask_value=Var.mask_value,input_shape=(X_train.shape[1],X_train.shape[2]))(inp)
        i=layers.Dropout(Var.dropout/2, noise_shape=(None, 1, X_train.shape[2]))(i)
        i=layers.Dense(Var.Dense_Unit, activation=Var.activationF, kernel_constraint=max_norm(max_value=3.))(i) 
        intro_out=BatchNormalization(axis=1)(i)     
@@ -279,7 +279,7 @@ def ResNet_wide_Beta_GRU(X_train,Y_train,Var):
 
        inp = Input(shape=(X_train.shape[1],X_train.shape[2]))
 #       i = inp
-       i=layers.Masking(mask_value=666,input_shape=(X_train.shape[1],X_train.shape[2]))(inp)
+       i=layers.Masking(mask_value=Var.mask_value,input_shape=(X_train.shape[1],X_train.shape[2]))(inp)
        i=layers.Dropout(Var.dropout/2, noise_shape=(None, 1, X_train.shape[2]))(i)
        i=layers.Dense(Var.Dense_Unit, activation=Var.activationF, kernel_constraint=max_norm(max_value=3.))(i) 
        intro_out=BatchNormalization(axis=1)(i)     

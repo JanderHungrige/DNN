@@ -121,7 +121,7 @@ def Transfer_wide_Beta_GRU(X_train,Y_train,Var):
 
        inp = Input(shape=(X_train.shape[1],X_train.shape[2]))
 #       i = inp
-       i=layers.Masking(mask_value=666,input_shape=(X_train.shape[1],X_train.shape[2]))(inp)
+       i=layers.Masking(mask_value=Var.mask_value,input_shape=(X_train.shape[1],X_train.shape[2]))(inp)
        i=layers.Dropout(Var.dropout/2, noise_shape=(None, 1, X_train.shape[2]))(i)
        i=layers.Dense(Var.Dense_Unit, activation=Var.activationF, kernel_constraint=max_norm(max_value=3.))(i) 
        intro_out=BatchNormalization(axis=1)(i)     
@@ -180,36 +180,37 @@ def Transfer_wide_Beta_GRU(X_train,Y_train,Var):
 def Transfer_wide_Beta_GRU_2(X_train,Y_train,Var):
        # HERE WE BUILD THE MODEL PATH AND LOAD THE WEIGTHS INTO EACH LAYER. THEREBY WE CAN DETERMINE WHICH LAYER SHOULD BE FIXED AND WHICH RETRAINED
        if Var.Dense_Unit==47:
-           pfad='/home/310122653/Git/DNN/Results/UseInTL_47/'
+           pfad='/home/310122653/Git/DNN/Results_paper/'
        if Var.Dense_Unit==32:
-           pfad='/home/310122653/Git/DNN/Results/UseInTL_32/'
+           pfad='/home/310122653/Git/DNN/Results_paper/'
        if Var.Dense_Unit==16:
-           pfad='/home/310122653/Git/DNN/Results/UseInTL_16/'      
-           
+           pfad='/home/310122653/Git/DNN/Results_paper/'      
+
        class ASQSModel:
               destination=pfad
-              modelname='177_Bi_ASQS'
+              modelname='177_Bi_ASQS_DU32_W0'
+              Fold='0'
               
        class ASISModel:
               destination=pfad
-              modelname='178_Bi_ASIS'
-       
+              modelname='178_Bi_ASIS_DU32_W0'
+              Fold='0'
        class ASCTWModel:
               destination=pfad
-              modelname='179_Bi_ASCTW'
-       
+              modelname='179_Bi_ASCTW_DU32_W0'
+              Fold='0'
        class QSISModel:
               destination=pfad
-              modelname='180_Bi_QSIS'
-       
+              modelname='180_Bi_QSIS_DU32_W0'
+              Fold='1'
        class QSCTWModel:
               destination=pfad
-              modelname='181_Bi_QSCTW'
-       
+              modelname='181_Bi_QSCTW_DU32_W0'
+              Fold='2'
        class ISCTWModel:
               destination=pfad
-              modelname='182_Bi_ISCTW'
-           
+              modelname='182_Bi_ISCTW_DU32_W0'
+              Fold='2'
        def ModelLaden(destination,modelname):
               json_file = open(destination+modelname+'.json', 'r')
               loaded_model_json = json_file.read()
@@ -247,7 +248,7 @@ def Transfer_wide_Beta_GRU_2(X_train,Y_train,Var):
             layer_weights=list()  
             loaded_model=ModelLaden(Bimodel.destination,Bimodel.modelname)
 #            loaded_model.load_weights(Bimodel.destination+Bimodel.modelname+'_weigths.h5') 
-            loaded_model.load_weights(Bimodel.destination+Bimodel.modelname+'_checkpointbestmodel.hdf5') 
+            loaded_model.load_weights(Bimodel.destination+Bimodel.modelname+'Fold_'+Bimodel.Fold+'__checkpointbestmodel.hdf5') 
             
             for layer in loaded_model.layers:
                    layer_weights.append( layer.get_weights())
@@ -291,7 +292,7 @@ def Transfer_wide_Beta_GRU_2(X_train,Y_train,Var):
 
        inp = Input(shape=(X_train.shape[1],X_train.shape[2]))
 #       i = inp
-       i=layers.Masking(mask_value=666,input_shape=(X_train.shape[1],X_train.shape[2]))(inp)
+       i=layers.Masking(mask_value=Var.mask_value,input_shape=(X_train.shape[1],X_train.shape[2]))(inp)
        i=layers.Dropout(Var.dropout/2, noise_shape=(None, 1, X_train.shape[2]))(i)
        ii=layers.Dense(Var.Dense_Unit, activation=Var.activationF, kernel_constraint=max_norm(max_value=3.))(i) 
        intro_out=BatchNormalization(axis=1)(ii)

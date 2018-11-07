@@ -16,7 +16,7 @@ class Results:
 
 
 system='Cluster' 
-name='500_Transfer_ECG_InSe_DU32_W0_Ergebnisse'
+name='2303_Res_MMC_InSe_DU32_W0_1_folds_PS_all_MV_0.666_Ergebnisse'
 Fold=0
 
 if system=='Philips':
@@ -28,14 +28,16 @@ if system=='Cluster':
 
 #with (open(pfad+name+'_Ergebnisse.pkl', 'rb') ) as input:
 #    Ergebniss=pickle.load(input)
+
 with (open(pfad+name+'.pkl', 'rb') ) as input:
     Ergebnisse=pickle.load(input)  
 #    
 #with (open(pfad+name+'_Ergebnisse.pkl', 'rb') ) as input:
 #    Ergebnisse=pickle.load(input)
 maxAcc=np.max(Ergebnisse.val_metric)
-maxf1=np.max(Ergebnisse.val_f1)
+#maxf1=np.max(Ergebnisse.val_f1)
 maxk=np.max(Ergebnisse.val_k)
+maxkACC=np.ravel(Ergebnisse.val_metric)[Ergebnisse.val_k.index(maxk)]
 
 #------------------------------------------
 
@@ -57,6 +59,6 @@ if Fold>0:
     meanMaxk3=[np.mean([a,b]),np.std([a,b])]
     meanMaxk4=[np.mean([b,c]),np.std([b,c])]
 
-    del a,b,c,
+#    del a,b,c,
     
 del name, pfad, system, Fold

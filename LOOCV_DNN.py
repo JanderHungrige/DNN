@@ -150,7 +150,7 @@ def leave_one_out_cross_validation(babies,AnnotMatrix_each_patient,FeatureMatrix
 #ZEROPADDING IF TOTAL SET IS USED AS TIMESTEP           
            if Var.Lookback==1337:
                   list_len = [len(i) for i in X_labeled] # zero pad all sessions/patientsets to have same length
-                  X_labeled=[np.pad(X_labeled[i],pad_width=((0,max(list_len)-len(X_labeled[i])),(0,0)),mode ='constant',constant_values=666) for i in range(len(X_labeled))] #padwith=((before axe0, after axe0),(before axe1, before axe1)))
+                  X_labeled=[np.pad(X_labeled[i],pad_width=((0,max(list_len)-len(X_labeled[i])),(0,0)),mode ='constant',constant_values=Var.mask_value) for i in range(len(X_labeled))] #padwith=((before axe0, after axe0),(before axe1, before axe1)))
                   y_labeled=[np.pad(y_labeled[i],pad_width=((0,max(list_len)-len(y_labeled[i])),(0,0)),mode ='constant') for i in range(len(y_labeled))] #padwith=((before axe0, after axe0),(before axe1, before axe1)))
                   Weights_all=[np.pad(Weights_all[i],pad_width=((0,max(list_len)-len(Weights_all[i])),(0,0)),mode ='constant') for i in range(len(Weights_all))] #padwith=((before axe0, after axe0),(before axe1, before axe1)))
 # SPLIT DATASET                     

@@ -221,7 +221,7 @@ def KeraS(X_train, Y_train, X_val, Y_val, X_test, Y_test, Var):
                       sample_weight=Var.class_weights,
                       validation_data=(X_val,Y_val),                       
                       shuffle=True,
-                      callbacks=[checkp,callbackmetric])
+                      callbacks=[callbackmetric])
 
     print(model.summary()) 
 #EVALUATE MODEL     

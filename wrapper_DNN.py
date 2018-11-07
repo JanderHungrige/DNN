@@ -85,7 +85,9 @@ print('RunningNumber: ' +str(arrayId))
 
 if arrayId in arange(39,207) or arrayId in arange(1,15):
     [descriptionID, datasetID, modelID, labelID, Loss_FunctionID, OptimizerID]=inputcombinations(arrayId)
-if arrayId in arange(500,503) or arrayId in arange(300,307) or arrayId in arange(340,442) or arrayId in arange(600,607) or arrayId in arange(700,742)or arrayId in arange(800,830) or arrayId in arange(900,907):
+if arrayId in arange(500,503) or arrayId in arange(300,307) or arrayId in arange(340,442) or arrayId in arange(600,607) or arrayId in arange(700,742)or arrayId in arange(800,836) or arrayId in arange(900,907):
+    [descriptionID, datasetID, modelID, labelID, Loss_FunctionID, OptimizerID]=inputcombinations2(arrayId)
+if arrayId in arange(1300,1307) or arrayId in arange(2300,2307) or arrayId in arange(1600,1607) or arrayId in arange(2600,2607)or arrayId in arange(1800,1836)or arrayId in arange(2800,2836) or arrayId in arange(1900,1907)or arrayId in arange(2900,2907):
     [descriptionID, datasetID, modelID, labelID, Loss_FunctionID, OptimizerID]=inputcombinations2(arrayId)
 
 SavingResults=1
@@ -100,11 +102,14 @@ class Variablen:
        Loss_Function=Loss_FunctionID  #'categorical_crossentropy'#Weighted_cat_crossentropy or categorical_crossentropy OR mean_squared_error IF BINARY : binary_crossentropy
        optimizer=OptimizerID
        usedPC='Cluster' #Philips or c3po or Cluster
-       Epochs=600
+       Epochs=500
        fold=1   
 
-       
-       saving_model=1
+       PatSet='all'  #'023578'  'all'
+       mask_value=0.666 
+       saving_model=0
+       if arrayId in arange(39,207):
+           saving_model=1
        SavingResults=1
        if usedPC=='Cluster':
 #           resultpath='/home/310122653/Git/DNN/Results/'
@@ -133,6 +138,7 @@ class Variablen:
        Kr=0.0 # Kernel regularizers
        Ar=0.0 #ACtivity regularizers
        residual_blocks=1
+
        
        info={'label': label,'Features':'all','Lookback': Lookback,'split': split,
       'batchsize': batchsize,'Epochs': Epochs,
@@ -150,7 +156,7 @@ class Variablen:
            wID=1     
        if Loss_FunctionID=='Weighted_cat_crossentropy2' :
            wID=2            
-       description= descriptionID+'_DU'+str(Dense_Unit)+'_W'+str(wID)+'_'+str(fold)+'_folds'#'Bi_ASCTW' # Bi_ASQS  Bi_ASIS  Bi_ASCTW  Bi_QSIS  Bi_QSCTW  Bi_ISCTW
+       description= descriptionID+'_2_DU'+str(Dense_Unit)+'_W'+str(wID)+'_'+str(fold)+'_folds_Pat_' + PatSet+'_Mask_'+str(mask_value)#'Bi_ASCTW' # Bi_ASQS  Bi_ASIS  Bi_ASCTW  Bi_QSIS  Bi_QSCTW  Bi_ISCTW
        
 #%% Var finished --------------------------------------------------------------
 
@@ -159,21 +165,73 @@ Var=Variablen()
 print('Dense_Unit: ' + str(Var.Dense_Unit))
 print('Hidden_units: ' + str(Var.hidden_units))
 
-if Var.dataset=='ECG' or 'cECG' or 'cECGDNN':
-         Var.selectedbabies =[0,1,2,3,5,6,7,8] #0-8 ('4','5','6','7','9','10','11','12','13')
-if Var.dataset == 'InSe':
-         Var.selectedbabies =[0,1,2,3,5,7] #0-7      '3','4','5','6','8','9','13','15'              
-if Var.dataset == 'MMC':
-       Var.selectedbabies=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21] #0-21
-if Var.dataset == 'MMC+ECG':
-       Var.selectedbabies=[0,1,2,3,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30] #0-27    # first 9 cECG rest MMC   
-if Var.dataset == 'MMC+InSe':
-       Var.selectedbabies=[0,1,2,3,5,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29] #0-27    # first 8 InSen rest MMC    
-if Var.dataset == 'ECG+InSe':
-       Var.selectedbabies=[0,1,2,3,5,7,8,9,10,11,12,13,14,15,16] #0-17    # first 8 InSe rest cECG               
-if Var.dataset == 'MMC+ECG+InSe':
-       Var.selectedbabies=[0,1,2,3,5,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38] #0-17    # first 8 InSe,8-16 cECG, rest MMC           
 
+
+if Var.PatSet=='all':
+    if Var.dataset=='ECG' or 'cECG' or 'cECGDNN':
+#           Var.selectedbabies =[0,1,2,3,5,6,7,8] #0-8 ('4','5','6','7','9','10','11','12','13')
+           Var.selectedbabies =[0,1,3,5,6,7,8] #0-8 ('4','5','6','7','9','10','11','12','13')
+
+    if Var.dataset == 'InSe':
+           Var.selectedbabies =[0,1,2,3,5,7] #0-7      '3','4','5','6','8','9','13','15'              
+    if Var.dataset == 'MMC':
+           Var.selectedbabies=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21] #0-21
+    if Var.dataset == 'MMC+ECG':
+           Var.selectedbabies=[0,1,2,3,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30] #0-27    # first 9 cECG rest MMC    
+    if Var.dataset == 'MMC+InSe':
+           Var.selectedbabies=[0,1,2,3,5,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29] #0-27    # first 8 InSen rest MMC    
+    if Var.dataset == 'ECG+InSe':
+           Var.selectedbabies=[0,1,2,3,5,7,8,9,10,11,12,13,14,15,16] #0-17    # first 8 InSe rest cECG               
+    if Var.dataset == 'MMC+ECG+InSe':
+           Var.selectedbabies= [0,1,2,3,5,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38] #0-17    # first 8 InSe,8-16 cECG, rest MMC           
+
+if Var.PatSet=='01235678':
+    if Var.dataset=='ECG' or 'cECG' or 'cECGDNN':
+           Var.selectedbabies =[0,1,2,3,5,6,7,8] #0-8 ('4','5','6','7','9','10','11','12','13')
+    if Var.dataset == 'InSe':
+           Var.selectedbabies =[0,1,2,3,5,7] #0-7      '3','4','5','6','8','9','13','15'              
+    if Var.dataset == 'MMC':
+           Var.selectedbabies=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21] #0-21
+    if Var.dataset == 'MMC+ECG':
+           Var.selectedbabies=[0,1,2,3,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30] #0-27    # first 9 cECG rest MMC    
+    if Var.dataset == 'MMC+InSe':
+           Var.selectedbabies=[0,1,2,3,5,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29] #0-27    # first 8 InSen rest MMC    
+    if Var.dataset == 'ECG+InSe':
+           Var.selectedbabies=[0,1,2,3,5,7,8,9,10,11,12,13,14,15,16] #0-17    # first 8 InSe rest cECG               
+    if Var.dataset == 'MMC+ECG+InSe':
+           Var.selectedbabies= [0,1,2,3,5,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38] #0-17    # first 8 InSe,8-16 cECG, rest MMC           
+    
+if Var.PatSet=='02357':
+    if Var.dataset=='ECG' or 'cECG' or 'cECGDNN':
+           Var.selectedbabies =[0,2,3,5,7]#[0,1,2,3,5,6,7,8] #0-8 ('4','5','6','7','9','10','11','12','13')
+    if Var.dataset == 'InSe':
+           Var.selectedbabies =[0,1,2,3,5,7] #0-7      '3','4','5','6','8','9','13','15'              
+    if Var.dataset == 'MMC':
+           Var.selectedbabies=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21] #0-21
+    if Var.dataset == 'MMC+ECG':
+           Var.selectedbabies=[0,2,3,5,7,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30] #[0,1,2,3,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30] #0-27    # first 9 cECG rest MMC    
+    if Var.dataset == 'MMC+InSe':
+           Var.selectedbabies=[0,1,2,3,5,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29] #0-27    # first 8 InSen rest MMC    
+    if Var.dataset == 'ECG+InSe':
+           Var.selectedbabies=[0,1,2,3,5,7,8,10,11,13,15]#[0,1,2,3,5,7,8,9,10,11,12,13,14,15,16] #0-17    # first 8 InSe rest cECG               
+    if Var.dataset == 'MMC+ECG+InSe':
+           Var.selectedbabies=[0,1,2,3,5,7,8,10,11,13,15,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38] #0-17    # first 8 InSe,8-16 cECG, rest MMC           #[0,1,2,3,5,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38] #0-17    # first 8 InSe,8-16 cECG, rest MMC           
+
+if Var.PatSet=='023578':
+    if Var.dataset=='ECG' or 'cECG' or 'cECGDNN':
+           Var.selectedbabies =[0,2,3,5,7,8]#[0,1,2,3,5,6,7,8] #0-8 ('4','5','6','7','9','10','11','12','13')
+    if Var.dataset == 'InSe':
+           Var.selectedbabies =[0,1,2,3,5,7] #0-7      '3','4','5','6','8','9','13','15'              
+    if Var.dataset == 'MMC':
+           Var.selectedbabies=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21] #0-21
+    if Var.dataset == 'MMC+ECG':
+           Var.selectedbabies=[0,2,3,5,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30] #[0,1,2,3,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30] #0-27    # first 9 cECG rest MMC    
+    if Var.dataset == 'MMC+InSe':
+           Var.selectedbabies=[0,1,2,3,5,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29] #0-27    # first 8 InSen rest MMC    
+    if Var.dataset == 'ECG+InSe':
+           Var.selectedbabies=[0,1,2,3,5,7,8,10,11,13,15,16]#[0,1,2,3,5,7,8,9,10,11,12,13,14,15,16] #0-17    # first 8 InSe rest cECG               
+    if Var.dataset == 'MMC+ECG+InSe':
+           Var.selectedbabies=[0,1,2,3,5,7,8,10,11,13,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38] #0-17    # first 8 InSe,8-16 cECG, rest MMC           #[0,1,2,3,5,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38] #0-17    # first 8 InSe,8-16 cECG, rest MMC           
 
 if Var.scalerange==(0,1) :
        Var.activationF='sigmoid'

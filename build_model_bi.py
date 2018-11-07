@@ -50,7 +50,7 @@ def model_3_LSTM_advanced1(X_train,Y_train,Var):
    batch_size=X_train.shape[0]
    n_frames=X_train.shape[2]
    model = Sequential()
-   model.add(Masking(mask_value=666, input_shape=(X_train.shape[1],X_train.shape[2])))
+   model.add(Masking(mask_value=Var.mask_value, input_shape=(X_train.shape[1],X_train.shape[2])))
    model.add(Dropout(0.2, noise_shape=(None, 1, X_train.shape[2]) ))   
    model.add(Dense(Var.Dense_Unit, activation=Var.activationF, kernel_constraint=max_norm(max_value=3.)))
    model.add(Bidirectional(LSTM(Var.hidden_units, return_sequences=True,   
@@ -79,7 +79,7 @@ def model_3_LSTM_advanced1(X_train,Y_train,Var):
 #%%
 def model_4_GRU_advanced1(X_train,Y_train,Var):   
    model = Sequential()
-   model.add(Masking(mask_value=666, input_shape=(X_train.shape[1],X_train.shape[2])))
+   model.add(Masking(mask_value=Var.mask_value, input_shape=(X_train.shape[1],X_train.shape[2])))
    model.add(Dropout(0.2, noise_shape=(None, 1, X_train.shape[2]) ))   
    model.add(Dense(Var.Dense_Unit, activation=Var.activationF, kernel_constraint=max_norm(max_value=3.)))
    model.add(Bidirectional(GRU(Var.hidden_units, return_sequences=True,   
@@ -108,7 +108,7 @@ def model_3_LSTM_advanced2(X_train,Y_train,Var):
    batch_size=X_train.shape[0]
    n_frames=X_train.shape[2]
    model = Sequential()
-   model.add(Masking(mask_value=666, input_shape=(X_train.shape[1],X_train.shape[2])))
+   model.add(Masking(mask_value=Var.mask_value, input_shape=(X_train.shape[1],X_train.shape[2])))
    model.add(Dropout(0.2, noise_shape=(None, 1, X_train.shape[2]) ))   
    model.add(Dense(Var.Dense_Unit, activation=Var.activationF, kernel_constraint=max_norm(max_value=3.)))
    model.add(Bidirectional(LSTM(Var.hidden_units, return_sequences=True,   
@@ -140,7 +140,7 @@ def model_3_LSTM_advanced2(X_train,Y_train,Var):
 #%%
 def model_4_GRU_advanced2(X_train,Y_train,Var):   
    model = Sequential()
-   model.add(Masking(mask_value=666, input_shape=(X_train.shape[1],X_train.shape[2])))
+   model.add(Masking(mask_value=Var.mask_value, input_shape=(X_train.shape[1],X_train.shape[2])))
    model.add(Dropout(0.2, noise_shape=(None, 1, X_train.shape[2]) ))   
    model.add(Dense(Var.Dense_Unit, activation=Var.activationF, kernel_constraint=max_norm(max_value=3.)))
    model.add(Bidirectional(GRU(Var.hidden_units, return_sequences=True,   

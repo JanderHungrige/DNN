@@ -117,8 +117,8 @@ class f1_prec_rec_acc_noMasking(Callback):
               val_true_merged=np.reshape(val_true, (-1, np.shape(val_true)[2])) 
               
               #DELETE MASKED VALUES
-              indxT=np.where(~train_true_merged.any(axis=1))[0] #find where all targets are zero. That are the masked once as we masked the target with 0 and the data with 666
-              indxV=np.where(~val_true_merged.any(axis=1))[0] #find where all targets are zero. That are the masked once as we masked the target with 0 and the data with 666
+              indxT=np.where(~train_true_merged.any(axis=1))[0] #find where all targets are zero. That are the masked once as we masked the target with 0 and the data with Var.mask_value
+              indxV=np.where(~val_true_merged.any(axis=1))[0] #find where all targets are zero. That are the masked once as we masked the target with 0 and the data with Var.mask_value
               
               train_true_nomask = np.delete(train_true_merged, indxT, axis=0)
               train_pred_nomask = np.delete(train_predict_merged, indxT, axis=0)               
