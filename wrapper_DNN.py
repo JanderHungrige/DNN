@@ -102,7 +102,7 @@ class Variablen:
        Loss_Function=Loss_FunctionID  #'categorical_crossentropy'#Weighted_cat_crossentropy or categorical_crossentropy OR mean_squared_error IF BINARY : binary_crossentropy
        optimizer=OptimizerID
        usedPC='Cluster' #Philips or c3po or Cluster
-       Epochs=500
+       Epochs=150
        fold=1   
 
        PatSet='all'  #'023578'  'all'
@@ -156,8 +156,9 @@ class Variablen:
            wID=1     
        if Loss_FunctionID=='Weighted_cat_crossentropy2' :
            wID=2            
-       description= descriptionID+'_2_DU'+str(Dense_Unit)+'_W'+str(wID)+'_'+str(fold)+'_folds_Pat_' + PatSet+'_Mask_'+str(mask_value)#'Bi_ASCTW' # Bi_ASQS  Bi_ASIS  Bi_ASCTW  Bi_QSIS  Bi_QSCTW  Bi_ISCTW
-       
+#       description= descriptionID+'_2_DU'+str(Dense_Unit)+'_W'+str(wID)+'_'+str(fold)+'_folds_Pat_' + PatSet+'_Mask_'+str(mask_value)#'Bi_ASCTW' # Bi_ASQS  Bi_ASIS  Bi_ASCTW  Bi_QSIS  Bi_QSCTW  Bi_ISCTW
+       description= descriptionID+'oldTest' # Bi_ASQS  Bi_ASIS  Bi_ASCTW  Bi_QSIS  Bi_QSCTW  Bi_ISCTW
+      
 #%% Var finished --------------------------------------------------------------
 
        

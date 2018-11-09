@@ -76,10 +76,10 @@ def inputcombinations(whatID):
        Optimizer=adam
 #The following is only for testing       
     if whatID in [1]:
-        description='Bi_QSIS'
-        dataset='ECG+InSe'
-        model='model_4_GRU_advanced1'
-        Optimizer=rmsProp  
+        description='Bi_ASQS'
+        dataset='MMC'
+        model='model_4_GRU_advanced'
+        Optimizer=adam 
     if whatID in [2]:
         description='Bi_QSIS'
         dataset='ECG+InSe'

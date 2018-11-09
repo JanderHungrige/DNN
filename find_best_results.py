@@ -16,7 +16,7 @@ class Results:
 
 
 system='Cluster' 
-name='2303_Res_MMC_InSe_DU32_W0_1_folds_PS_all_MV_0.666_Ergebnisse'
+name='302_Res_InSe_DU32_W0_1_folds_Pat_all_Mask_0.666_Ergebnisse'
 Fold=0
 
 if system=='Philips':
