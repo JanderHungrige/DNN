@@ -36,6 +36,8 @@ from build_model import LSTM_model_1_gen
 from build_model import LSTM_model_2
 from build_model import model_3_LSTM
 from build_model import model_3_LSTM_advanced
+from build_model import model_3b_LSTM_advanced
+
 from build_model import model_3_LSTM_advanced_seq
 from build_model import model_3_LSTM_advanced_no_bi
 from build_model import model_4_GRU
@@ -43,6 +45,11 @@ from build_model import model_4_GRU_advanced
 
 from build_model_bi import model_4_GRU_advanced1
 from build_model_bi import model_4_GRU_advanced2
+from build_model_bi import model_4_GRU_advanced3
+from build_model_bi import model_4_GRU_advanced4
+from build_model_bi import model_4_GRU_advanced5
+from build_model_bi import model_4_GRU_advanced6
+from build_model_bi import model_4_GRU_advanced7
 from build_model_bi import model_3_LSTM_advanced1
 from build_model_bi import model_3_LSTM_advanced2
 
@@ -80,6 +87,8 @@ def KeraS(X_train, Y_train, X_val, Y_val, X_test, Y_test, Var):
 #BUILT MODEL    
     if Var.model=='model_3_LSTM_advanced':
            model=model_3_LSTM_advanced(X_train,Y_train,Var)
+    if Var.model=='model_3b_LSTM_advanced':
+           model=model_3b_LSTM_advanced(X_train,Y_train,Var)           
     if Var.model=='model_3_LSTM_advanced_seq':
            model=model_3_LSTM_advanced(X_train,Y_train,Var)
     if Var.model=='model_3__LSTM_advanced_no_bi':
@@ -92,7 +101,17 @@ def KeraS(X_train, Y_train, X_val, Y_val, X_test, Y_test, Var):
     if Var.model=='model_4_GRU_advanced1':
            model=model_4_GRU_advanced1(X_train,Y_train,Var) 
     if Var.model=='model_4_GRU_advanced2':
-           model=model_4_GRU_advanced2(X_train,Y_train,Var)              
+           model=model_4_GRU_advanced2(X_train,Y_train,Var)      
+    if Var.model=='model_4_GRU_advanced3':
+           model=model_4_GRU_advanced3(X_train,Y_train,Var)   
+    if Var.model=='model_4_GRU_advanced4':
+           model=model_4_GRU_advanced4(X_train,Y_train,Var)       
+    if Var.model=='model_4_GRU_advanced5':
+           model=model_4_GRU_advanced5(X_train,Y_train,Var)   
+    if Var.model=='model_4_GRU_advanced6':
+           model=model_4_GRU_advanced6(X_train,Y_train,Var)   
+    if Var.model=='model_4_GRU_advanced7':
+           model=model_4_GRU_advanced7(X_train,Y_train,Var)              
     if Var.model=='model_3_LSTM_advanced1':
            model=model_3_LSTM_advanced1(X_train,Y_train,Var)
     if Var.model=='model_3_LSTM_advanced2':

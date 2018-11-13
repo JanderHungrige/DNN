@@ -102,7 +102,7 @@ class Variablen:
        Loss_Function=Loss_FunctionID  #'categorical_crossentropy'#Weighted_cat_crossentropy or categorical_crossentropy OR mean_squared_error IF BINARY : binary_crossentropy
        optimizer=OptimizerID
        usedPC='Cluster' #Philips or c3po or Cluster
-       Epochs=150
+       Epochs=1000
        fold=1   
 
        PatSet='all'  #'023578'  'all'
@@ -135,8 +135,8 @@ class Variablen:
        scaler = MinMaxScaler(feature_range=scalerange) #define function
        Perf_Metric=['categorical_accuracy']# 'categorical_accuracy' OR 'binary_accuray'
        activationF='sigmoid' # 'relu', 'tanh', 'sigmoid' ,...  Only in case the data is not normalized , only standardised
-       Kr=0.0 # Kernel regularizers
-       Ar=0.0 #ACtivity regularizers
+       Kr=0.001 # Kernel regularizers
+       Ar=0.001 #ACtivity regularizers
        residual_blocks=1
 
        
@@ -157,7 +157,7 @@ class Variablen:
        if Loss_FunctionID=='Weighted_cat_crossentropy2' :
            wID=2            
 #       description= descriptionID+'_2_DU'+str(Dense_Unit)+'_W'+str(wID)+'_'+str(fold)+'_folds_Pat_' + PatSet+'_Mask_'+str(mask_value)#'Bi_ASCTW' # Bi_ASQS  Bi_ASIS  Bi_ASCTW  Bi_QSIS  Bi_QSCTW  Bi_ISCTW
-       description= descriptionID+'oldTest' # Bi_ASQS  Bi_ASIS  Bi_ASCTW  Bi_QSIS  Bi_QSCTW  Bi_ISCTW
+       description= descriptionID+'_Kr_'+str(Kr)+'_Ar_'+str(Ar)+'_drop_'+str(dropout)+'_wID_'+str(wID)+'_Fold_'+str(fold)# Bi_ASQS  Bi_ASIS  Bi_ASCTW  Bi_QSIS  Bi_QSCTW  Bi_ISCTW
       
 #%% Var finished --------------------------------------------------------------
 

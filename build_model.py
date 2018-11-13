@@ -143,6 +143,40 @@ def model_3_LSTM_advanced(X_train,Y_train,Var):
    model.summary()
    
    return model  
+
+#%%
+def model_3b_LSTM_advanced(X_train,Y_train,Var):   
+   maxnorm=3.
+   iniT=keras.initializers.RandomUniform()
+   batch_size=X_train.shape[0]
+   n_frames=X_train.shape[2]
+   model = Sequential()
+   model.add(Masking(mask_value=Var.mask_value, input_shape=(X_train.shape[1],X_train.shape[2])))
+#   model.add(Dropout(0.2, noise_shape=(None, 1, X_train.shape[2]) ))   
+   model.add(Dense(Var.Dense_Unit, activation=Var.activationF, kernel_constraint=max_norm(max_value=maxnorm)))
+   model.add(Bidirectional(LSTM(Var.hidden_units,Freturn_sequences=True, 
+                                kernel_initializer=iniT,
+                                kernel_regularizer=regularizers.l2(Var.Kr),
+#                                activity_regularizer=regularizers.l2(Var.Ar),
+                                kernel_constraint=max_norm(max_value=maxnorm), 
+                                dropout=Var.dropout, recurrent_dropout=Var.dropout)))
+   model.add(Bidirectional(LSTM(Var.hidden_units, return_sequences=True,
+                                kernel_initializer=iniT,                                
+                                kernel_regularizer=regularizers.l2(Var.Kr),
+#                                activity_regularizer=regularizers.l2(Var.Ar),
+                                kernel_constraint=max_norm(max_value=maxnorm), 
+                                dropout=Var.dropout, recurrent_dropout=Var.dropout)))  
+   model.add(Bidirectional(LSTM(Var.hidden_units, return_sequences=True,
+                                kernel_initializer=iniT,                                
+                                kernel_regularizer=regularizers.l2(Var.Kr),
+#                                activity_regularizer=regularizers.l2(Var.Ar),
+                                kernel_constraint=max_norm(max_value=maxnorm), 
+                                dropout=Var.dropout, recurrent_dropout=Var.dropout)))   
+   model.add(Dropout(0.5, noise_shape=(None, 1, Var.hidden_units*2)))
+   model.add(Dense(Y_train.shape[-1], activation='softmax', kernel_constraint=max_norm(max_value=maxnorm)))
+   model.summary()
+   
+   return model  
 #%% written as functional API instead of sequential
 def model_3_LSTM_advanced_seq(X_train,Y_train,Var):   
    inp = Input(shape=(X_train.shape[1],X_train.shape[2]))

@@ -87,11 +87,11 @@ class Variablen:
        runningNumber='000'
        label=[1,2,3,4,6] # 1=AS 2=QS 3=Wake 4=Care-taking 5=NA 6= transition
        usedPC='Cluster' #Philips or c3po or Cluster
-       dataset='ECG'  #"ECG" "cECG" "MMC" InSe "MMC+cECG" 'MMC+InSe' 'ECG+InSe' 'MMC+ECG+InSe' 
+       dataset='MMC+ECG+InSe'  #"ECG" "cECG" "MMC" InSe "MMC+cECG" 'MMC+InSe' 'ECG+InSe' 'MMC+ECG+InSe' 
        Epochs=1
        fold=1  
        model='model_3_LSTM_advanced_seq' # check DNN_routines KeraS for options
-       
+       mask_value=666
        saving_model=1
        SavingResults=1
        if usedPC=='Cluster':
@@ -287,7 +287,7 @@ babies, AnnotMatrix_each_patient, FeatureMatrix_each_patient\
 """
 LOOCV 
 """    
-laenge=[sum(len(FeatureMatrix_each_patient[i]) for i in range(len(FeatureMatrix_each_patient))) ]
+laenge=sum(len(FeatureMatrix_each_patient[i]) for i in range(len(FeatureMatrix_each_patient)))
 print('Total amount of epochs: {}'.format(laenge))
 
 model,Ergebnisse=leave_one_out_cross_validation(babies,AnnotMatrix_each_patient,FeatureMatrix_each_patient,Var,Varplus,Ergebnisse)

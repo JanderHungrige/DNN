@@ -24,12 +24,12 @@ def inputcombinations2(whatID):
         Loss_Function='categorical_crossentropy'#Weighted_cat_crossentropy or categorical_crossentropy OR mean_squared_error IF BINARY : binary_crossentropy
         label=[1,2,3,4,6]       
         Optimizer=adam
-        
+#        
     if whatID in np.arange(400,442):
         model='ResNet_wide_Beta_GRU'
-        Loss_Function='Weighted_cat_crossentropy2'
+        Loss_Function='categorical_crossentropy'
         Optimizer=adam
-        
+#        
     if whatID in np.arange(600,607):
         model='ResNet_deep_Beta_GRU'
         Loss_Function='categorical_crossentropy'#Weighted_cat_crossentropy or categorical_crossentropy OR mean_squared_error IF BINARY : binary_crossentropy
