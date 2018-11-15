@@ -37,18 +37,19 @@ class Results:
   
 system='Cluster' 
 #name='3_Bi_ASQS_lb1337_7525_Kr0001Ar0001_drop04_w0_L1L2 lessbatchnorm_Ergebnisse'
-name='177_Bi_ASQS_Kr_0.0_Ar_0.0_drop_0.6_Ergebnisse'
+name='724_Res_Bi_ASQS_Kr_0.001_Ar_0.001_drop_0.5_wID_0_Ergebnisse'
+
 
 #name='1_Bi_ASQS_lb1337_7525_Kr0001Ar0001_drop04_w0_L1L2 lessbatchnorm_Ergebnisse'
 
-saving=0
+saving=1
 fold=1
-
+print(name)
 if system=='Philips':
     pfad='C:/Users/310122653/Documents/PhD/Article_4_(MMC)/Results/'
 if system=='Cluster':
     pfad='/home/310122653/Git/DNN/Results_paper/'
-    pfad='/home/310122653/Git/DNN/Results/'
+#    pfad='/home/310122653/Git/DNN/Results/'
 #    pfad='/home/310122653/Git/DNN/Results/before7.11/'
     
     picpfad='/home/310122653/Git/DNN/Pictures/'
@@ -172,11 +173,11 @@ if fold>1:
        plt.show  
 #---------1336
        standardt=np.std(Ergebnisse.train_k,0)
-       standardv=meanMaxk4[1]         
+       standardv=meanMaxk3[1]         
        fig=plt.figure()
        ax=fig.add_subplot(gs[:-1,:])       
        ax.errorbar(XAxse,Ergebnisse.mean_train_k,standardt,errorevery=100,ecolor=[0.4,0.4,0.4],capsize=5,label='Train',color=[0.4,0.4,0.4])
-       ax.errorbar(XAxse,meanMaxk4[0],standardv,errorevery=100,ecolor=[0,0,0],capsize=5,solid_capstyle='projecting',label='Val',color=[0,0,0])
+       ax.errorbar(XAxse,meanMaxk3[0],standardv,errorevery=100,ecolor=[0,0,0],capsize=5,solid_capstyle='projecting',label='Val',color=[0,0,0])
        ax.legend(loc=0)
        ax.set_ylabel('Kappa') 
        ax.tick_params(axis='x',bottom='off',labelbottom='off') #only use one x axis       

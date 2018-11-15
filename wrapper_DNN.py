@@ -102,7 +102,7 @@ class Variablen:
        Loss_Function=Loss_FunctionID  #'categorical_crossentropy'#Weighted_cat_crossentropy or categorical_crossentropy OR mean_squared_error IF BINARY : binary_crossentropy
        optimizer=OptimizerID
        usedPC='Cluster' #Philips or c3po or Cluster
-       Epochs=1000
+       Epochs=1400
        fold=1   
 
        PatSet='all'  #'023578'  'all'
@@ -128,7 +128,7 @@ class Variablen:
        split=[0.70,0.30];
        batchsize=5  # LSTM needs [batchsize, timestep, feature] your batch size divides nb_samples from the original tensor. So batchsize should be smaller than samples
 
-       dropout=0.5 #0.5; 0.9  dropout can be between 0-1  as %  DROPOUT CAN BE ADDED TO EACH LAYER
+       dropout=0.6 #0.5; 0.9  dropout can be between 0-1  as %  DROPOUT CAN BE ADDED TO EACH LAYER
        learning_rate=0.001 #0.0001 to 0.01 default =0.001
        learning_rate_decay=0.0 #0.0 default
        scalerange=(0, 2) #(0,1) or (-1,1) #If you are using sigmoid activation functions, rescale your data to values between 0-and-1. If you’re using the Hyperbolic Tangent (tanh), rescale to values between -1 and 1.
@@ -136,7 +136,7 @@ class Variablen:
        Perf_Metric=['categorical_accuracy']# 'categorical_accuracy' OR 'binary_accuray'
        activationF='sigmoid' # 'relu', 'tanh', 'sigmoid' ,...  Only in case the data is not normalized , only standardised
        Kr=0.001 # Kernel regularizers
-       Ar=0.001 #ACtivity regularizers
+       Ar=0.0001 #ACtivity regularizers
        residual_blocks=1
 
        
@@ -155,9 +155,14 @@ class Variablen:
        if Loss_FunctionID=='Weighted_cat_crossentropy1' :
            wID=1     
        if Loss_FunctionID=='Weighted_cat_crossentropy2' :
-           wID=2            
+           wID=2         
+           
+       if 'LSTM' in model:
+           modelNr='3'
+       if 'GRU' in model:
+           modelNr='4'
 #       description= descriptionID+'_2_DU'+str(Dense_Unit)+'_W'+str(wID)+'_'+str(fold)+'_folds_Pat_' + PatSet+'_Mask_'+str(mask_value)#'Bi_ASCTW' # Bi_ASQS  Bi_ASIS  Bi_ASCTW  Bi_QSIS  Bi_QSCTW  Bi_ISCTW
-       description= descriptionID+'_Kr_'+str(Kr)+'_Ar_'+str(Ar)+'_drop_'+str(dropout)+'_wID_'+str(wID)+'_Fold_'+str(fold)# Bi_ASQS  Bi_ASIS  Bi_ASCTW  Bi_QSIS  Bi_QSCTW  Bi_ISCTW
+       description= descriptionID+'_Kr_'+str(Kr)+'_Ar_'+str(Ar)+'_drop_'+str(dropout)+'_wID_'+str(wID)+'_Fold_'+str(fold)+'_Model_'+str(modelNr)# Bi_ASQS  Bi_ASIS  Bi_ASCTW  Bi_QSIS  Bi_QSCTW  Bi_ISCTW
       
 #%% Var finished --------------------------------------------------------------
 

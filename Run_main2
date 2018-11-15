@@ -1,6 +1,6 @@
 #! /bin/sh -p
 #PBS -l nodes=1:ppn=1
-#PBS -N  A_fo_1000
+#PBS -N  ./drops/A_fo_1400
 #PBS -j oe
 
 python3 /home/310122653/Git/DNN/wrapper_DNN.py $PBS_ARRAYID

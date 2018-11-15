@@ -78,47 +78,69 @@ def inputcombinations(whatID):
        Optimizer=adam
 #The following is only for testing       
     if whatID in [1]:
-        description='Bi_ASQS'
-        dataset='MMC'
-        model='model_4_GRU_advanced'
+#        description='Bi_ASQS'
+        description='all'
+        dataset='MMC+ECG+InSe'
+#        dataset='MMC'        
+#        model='model_4_GRU_advanced'
+        model='model_3_LSTM_advanced'
         Optimizer=adam 
     if whatID in [2]:
-        description='Bi_ASQS'
-        dataset='MMC'
-        model='model_4_GRU_advanced1'
+#        description='Bi_ASQS'
+        description='all'
+        dataset='MMC+ECG+InSe'
+#        dataset='MMC'        
+#        model='model_4_GRU_advanced1'
+        model='model_3_LSTM_advanced1'
         Optimizer=adam 
-        Optimizer=rmsProp        
+#        Optimizer=rmsProp        
     if whatID in [3]:
-        description='Bi_ASQS'
-        dataset='MMC'
-        model='model_4_GRU_advanced2'
+#        description='Bi_ASQS'
+        description='all'
+        dataset='MMC+ECG+InSe'
+#        dataset='MMC'        
+#        model='model_4_GRU_advanced2'
+        model='model_3_LSTM_advanced2'  
         Optimizer=adam        
     if whatID in [4]:
-        description='Bi_ASQS'
-        dataset='MMC'
-        model='model_4_GRU_advanced3'
-      
+#        description='Bi_ASQS'
+        description='all'
+        dataset='MMC+ECG+InSe'
+#        dataset='MMC'        
+#        model='model_4_GRU_advanced3'
+        model='model_3_LSTM_advanced3'
         Optimizer=adam
     if whatID in [5]:
         description='Bi_ASQS'
-        dataset='MMC'
-        model='model_4_GRU_advanced4'
-        Optimizer=nadam        
+#        description='all'
+#        dataset='MMC+ECG+InSe'
+        dataset='MMC'        
+#        model='model_4_GRU_advanced4'
+        model='model_3_LSTM_advanced4'    
+        Optimizer=adam        
     if whatID in [6]:
-        description='Bi_ASQS'
-        dataset='MMC'
-        model='model_4_GRU_advanced5'  
-        Optimizer=nadam
+#        description='Bi_ASQS'
+        description='all'
+        dataset='MMC+ECG+InSe'
+#        model='model_4_GRU_advanced5' 
+        model='model_3_LSTM_advanced5'   
+        Optimizer=adam
     if whatID in [7]:
-        description='Bi_ASQS'
-        dataset='MMC'
-        model='model_4_GRU_advanced6' 
-        Optimizer=adamax        
+#        description='Bi_ASQS'
+        description='all'
+        dataset='MMC+ECG+InSe'
+#        model='model_4_GRU_advanced6' 
+        model='model_3_LSTM_advanced6' 
+        Optimizer=adam        
     if whatID in [8]:
-        description='Bi_ASQS'
-        dataset='MMC'
-        model='model_4_GRU_advanced7' 
-        Optimizer=adamax      
+        description='all'
+#        description='Bi_ASQS'
+        dataset='MMC+ECG+InSe'
+#        model='model_4_GRU_advanced7' 
+        model='model_3_LSTM_advanced7'  
+        Optimizer=adam  
+        
+        
     if whatID in [9]:
         description='Bi_QSIS'
         dataset='ECG+InSe'
@@ -173,6 +195,7 @@ def inputcombinations(whatID):
         label=[2,3,4]
     elif description=='Bi_ISCTW':
         label=[3,4,6]  
-
-
+    elif description=='all':
+        label=[1,2,3,4,6] 
+ 
     return description, dataset, model, label,Loss_Function,Optimizer

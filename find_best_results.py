@@ -16,14 +16,14 @@ class Results:
 
 
 system='Cluster' 
-name='302_Res_InSe_DU32_W0_1_folds_Pat_all_Mask_0.666_Ergebnisse'
-Fold=0
+name='724_Res_Bi_ASQS_Kr_0.001_Ar_0.001_drop_0.5_wID_0_Ergebnisse'
+Fold=1
 
 if system=='Philips':
     pfad='C:/Users/310122653/Documents/PhD/Article_4_(MMC)/Results/'
 if system=='Cluster':
     pfad='/home/310122653/Git/DNN/Results/'    
-#    pfad='/home/310122653/Git/DNN/Results_paper/'
+    pfad='/home/310122653/Git/DNN/Results_paper/'
 
 
 #with (open(pfad+name+'_Ergebnisse.pkl', 'rb') ) as input:
@@ -34,10 +34,10 @@ with (open(pfad+name+'.pkl', 'rb') ) as input:
 #    
 #with (open(pfad+name+'_Ergebnisse.pkl', 'rb') ) as input:
 #    Ergebnisse=pickle.load(input)
-maxAcc=np.max(Ergebnisse.val_metric)
-#maxf1=np.max(Ergebnisse.val_f1)
-maxk=np.max(Ergebnisse.val_k)
-maxkACC=np.ravel(Ergebnisse.val_metric)[Ergebnisse.val_k.index(maxk)]
+#maxAcc=np.max(Ergebnisse.val_metric)
+##maxf1=np.max(Ergebnisse.val_f1)
+#maxk=np.max(Ergebnisse.val_k)
+#maxkACC=np.ravel(Ergebnisse.val_metric)[Ergebnisse.val_k.index(maxk)]
 
 #------------------------------------------
 
