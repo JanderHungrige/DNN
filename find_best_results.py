@@ -16,14 +16,14 @@ class Results:
 
 
 system='Cluster' 
-name='724_Res_Bi_ASQS_Kr_0.001_Ar_0.001_drop_0.5_wID_0_Ergebnisse'
+name='1902_Res_InSe_Kr_0.001_Ar_0.0001_drop_0.5_wID_0_Fold_3_Model_4_Ergebnisse'
 Fold=1
 
 if system=='Philips':
     pfad='C:/Users/310122653/Documents/PhD/Article_4_(MMC)/Results/'
 if system=='Cluster':
     pfad='/home/310122653/Git/DNN/Results/'    
-    pfad='/home/310122653/Git/DNN/Results_paper/'
+#    pfad='/home/310122653/Git/DNN/Results_paper/'
 
 
 #with (open(pfad+name+'_Ergebnisse.pkl', 'rb') ) as input:
@@ -54,10 +54,16 @@ if Fold>0:
     a=np.max(Ergebnisse.val_k[0,:])
     b=np.max(Ergebnisse.val_k[1,:])
     c=np.max(Ergebnisse.val_k[2,:])
-    meanMaxk1=[np.mean([a,b,c]),np.std([a,b,c])]
+    meanMaxk1=[np.max(np.mean([a,b,c])),np.max(np.std([a,b,c]))]
     meanMaxk2=[np.mean([a,c]),np.std([a,c])]
     meanMaxk3=[np.mean([a,b]),np.std([a,b])]
     meanMaxk4=[np.mean([b,c]),np.std([b,c])]
+    
+    k1=[np.max(np.mean([Ergebnisse.val_k[0,:], Ergebnisse.val_k[1,:],Ergebnisse.val_k[2,:]],0)),np.std(np.mean([Ergebnisse.val_k[0,:], Ergebnisse.val_k[1,:],Ergebnisse.val_k[2,:]],0))]
+    k2=[np.max(np.mean([Ergebnisse.val_k[0,:],Ergebnisse.val_k[2,:]],0)),np.std(np.mean([Ergebnisse.val_k[0,:],Ergebnisse.val_k[2,:]],0))]
+    k3=[np.max(np.mean([Ergebnisse.val_k[0,:], Ergebnisse.val_k[1,:]],0)),np.std(np.mean([Ergebnisse.val_k[0,:], Ergebnisse.val_k[1,:]],0))]
+    k4=[np.max(np.mean([Ergebnisse.val_k[1,:],Ergebnisse.val_k[2,:]],0)),np.std(np.mean([Ergebnisse.val_k[1,:],Ergebnisse.val_k[2,:]],0))]
+
 
 #    del a,b,c,
     

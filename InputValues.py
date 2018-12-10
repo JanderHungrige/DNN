@@ -111,10 +111,10 @@ def inputcombinations(whatID):
         model='model_3_LSTM_advanced3'
         Optimizer=adam
     if whatID in [5]:
-        description='Bi_ASQS'
-#        description='all'
-#        dataset='MMC+ECG+InSe'
-        dataset='MMC'        
+#        description='Bi_ASQS'
+        description='all'
+        dataset='MMC+ECG+InSe'
+#        dataset='MMC'        
 #        model='model_4_GRU_advanced4'
         model='model_3_LSTM_advanced4'    
         Optimizer=adam        

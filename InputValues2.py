@@ -26,7 +26,7 @@ def inputcombinations2(whatID):
         Optimizer=adam
 #        
     if whatID in np.arange(400,442):
-        model='ResNet_wide_Beta_GRU'
+        model='ResNet_wide_Beta_LSTM'
         Loss_Function='categorical_crossentropy'
         Optimizer=adam
 #        
@@ -37,12 +37,12 @@ def inputcombinations2(whatID):
         Optimizer=adam
         
     if whatID in np.arange(700,742):
-        model='ResNet_deep_Beta_GRU'  #ResNet_deep_Beta_GRU  categorical_crossentropy
+        model='ResNet_deep_Beta_LSTM'  #ResNet_deep_Beta_GRU  categorical_crossentropy
         Loss_Function='categorical_crossentropy'
         Optimizer=adam  
         
     if whatID in np.arange(800,807) or whatID in np.arange(824,836):
-        model='ResNet_deep_Beta_GRU_growing'
+        model='ResNet_deep_Beta_LSTM_growing'
         Loss_Function='categorical_crossentropy'#Weighted_cat_crossentropy or categorical_crossentropy OR mean_squared_error IF BINARY : binary_crossentropy
         label=[1,2,3,4,6]       
         Optimizer=adam    
